@@ -53,3 +53,4 @@
 - Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
 - Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?
 - Planning beheerder: is 4 weken vooruit genoeg, of wil de beheerder een langere periode of een vrije keuze van periode? Is er een maximum aantal kinderen (capaciteit) per locatie dat we moeten tonen?
+- Goed om te weten: mag de ouder dit ook zien, of zelf punten voorstellen? En moet medische informatie ook door de ouder bevestigd worden (bijvoorbeeld via de actie Medicatie)?

@@ -240,6 +240,10 @@ label.btn{position:relative}
 .locgrid{display:grid;gap:12px}
 .app.webapp .locgrid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
 .app.webapp .main .screen > .locgrid{max-width:none}
+.medsec{padding:14px;border-radius:18px;background:#FDE3DE;border:1px solid #F5C2B8}
+.noterow{display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
+.noterow textarea.input,.app.webapp .noterow textarea.input{min-height:56px;flex:1}
+.medsec .noterow textarea.input{border-color:#E9A79A}
 .contact{display:grid;gap:6px}
 .contact a{display:flex;align-items:center;gap:10px;min-height:40px;padding:6px 10px;border-radius:12px;background:var(--ground);color:var(--ink);font-weight:600;font-size:14px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .contact a:hover{background:var(--brand-tint)}
@@ -909,8 +913,9 @@ const SCREENS = {
     return header(k.name) + `<div class="screen">
       <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div>${t ? chip(t.status) : ''}</div></div>
         <button class="btn sm block" style="margin-top:14px" type="button" data-act="open" data-v="chat" data-id="${id}">${ic('chat')} Bericht aan ${k.parent.split(' ')[0]}</button></div>
-      <div class="eyebrow">Goed om te weten</div>
-      <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => n.med ? `<li class="med">${ic('pill')}<span><b>Medisch:</b> ${esc(n.text)}</span></li>` : `<li>${esc(n)}</li>`).join('')}</ul></div>
+      <div class="eyebrow" style="display:flex;align-items:center;gap:8px">Goed om te weten${canEditNotes() ? `<button class="btn ghost sm" type="button" data-act="open" data-v="notities" data-id="${id}" style="margin-left:auto;min-height:34px;text-transform:none;letter-spacing:0">${ic('pen')} Bewerken</button>` : ''}</div>
+      <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6">${k.notes.length ? `<ul class="notes">${k.notes.map(n => n.med ? `<li class="med">${ic('pill')}<span><b>Medisch:</b> ${esc(n.text)}</span></li>` : `<li>${esc(n)}</li>`).join('')}</ul>` : '<p class="small muted" style="margin:0">Nog niets ingevuld.</p>'}
+        ${k.notesBy ? `<p class="small muted" style="margin:10px 0 0">Bijgewerkt door ${esc(k.notesBy)}, ${k.notesAt}</p>` : ''}</div>
       ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
       ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Administratie</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
       <div class="eyebrow">Ouder en toestemming</div>
@@ -1331,6 +1336,9 @@ Object.assign(ACT, {
     rerender('beg'); toast('beg', 'Niet akkoord', `Eva gaat niet akkoord met “${b.title}”.`); },
   reopen(r, d){ const a = actOf(d.id), b = batchOf(a); Object.assign(a, {status:'open', remark:'Opnieuw klaargezet na overleg. Wil je het nog een keer bekijken?', result:null});
     back(r); if (a.kid === 'liam') { rerender('ouder'); toast('ouder', 'Actie opnieuw klaargezet', b.title); } },
+  noteadd(r, d){ syncInputs(r); const f = V[r].form; f[d.k].push(''); rerender(r); },
+  noterm(r, d){ syncInputs(r); const f = V[r].form, arr = f[d.k], i = +d.i;
+    const vals = arr.map((v, j) => f[d.k + '-' + j] ?? v); vals.splice(i, 1); arr.forEach((_, j) => delete f[d.k + '-' + j]); f[d.k] = vals; rerender(r); },
   rmdoc(r, d){ syncInputs(r); V[r].form[d.k].splice(+d.i, 1); rerender(r); },
   demodoc(r){ toast(r, 'Voorbeelddocument', 'In de demo is dit bestand niet echt aanwezig. In de app opent het document hier.'); },
   addmed(r){ syncInputs(r); const f = V[r].form; f.meds.push({name:'', dose:'', time:'', care:'nee'}); rerender(r); },
@@ -1407,6 +1415,7 @@ const activeLocs = () => Object.keys(LOCS).filter(l => LOCS[l].active !== false)
 function syncParent(k){ const ps = (k.parents || []).map(id => S.parents[id]).filter(p => p && p.active !== false); k.parent = ps[0] ? ps[0].name : 'Geen ouder gekoppeld'; }
 const contact = p => `<div class="contact"><a href="tel:${(p.phone || '').replace(/[^0-9+]/g, '')}">${ic('phone')}${p.phone ? esc(p.phone) : '<span class="muted">Geen telefoonnummer</span>'}</a><a href="mailto:${esc(p.email)}">${ic('mail')}${esc(p.email)}</a></div>`;
 const locFilter = () => `<div class="choices" style="margin-bottom:12px">${[ALL, ...activeLocs()].map(l => `<button class="choice" type="button" data-act="setfilter" data-v="${l}" aria-pressed="${(V.beg.filter || ALL) === l}">${locName(l)}</button>`).join('')}</div>`;
+const canEditNotes = () => ['begeleider','manager'].includes(ME().role);
 const statusChip = on => on === false ? '<span class="chip st-afgemeld">Uitgeschreven</span>' : '<span class="chip st-aangekomen">Actief</span>';
 const roleChip = role => `<span class="chip ${role === 'begeleider' ? 'st-gepland' : role === 'manager' ? 'st-aangevraagd' : 'st-verwacht'}">${ROLES[role]}</span>`;
 
@@ -1459,6 +1468,24 @@ B.beheer = function(){
 };
 
 Object.assign(SCREENS, {
+  notities(r, id){
+    const k = kid(id), f = V[r].form;
+    if (f.init !== id) { Object.keys(f).forEach(x => delete f[x]); f.init = id; f.med = k.notes.filter(n => n.med).map(n => n.text); f.oth = k.notes.filter(n => !n.med); }
+    const rows = (key, arr, ph) => arr.map((v, i) => `<div class="noterow"><textarea class="input" name="${key}-${i}" rows="2" placeholder="${ph}">${esc(f[key + '-' + i] ?? v)}</textarea><button class="iconbtn" type="button" data-act="noterm" data-k="${key}" data-i="${i}" aria-label="Punt verwijderen">✕</button></div>`).join('');
+    return header('Goed om te weten · ' + k.first) + `<div class="screen"><form data-form="notities" data-id="${id}">
+      <div class="medsec">
+        <div class="row" style="gap:8px;margin-bottom:8px">${ic('pill').replace('<svg','<svg style="width:20px;height:20px;color:#A0321F"')}<b style="color:#7A2414">Medisch</b></div>
+        <p class="small" style="margin:0 0 10px;color:#7A2414">Allergieën, aandoeningen, noodmedicatie en waar die ligt. Deze punten staan altijd apart en bovenaan.</p>
+        ${rows('med', f.med, 'Bijvoorbeeld: Pinda-allergie. EpiPen ligt bij de overige medicatie.')}
+        <button class="btn ghost sm" type="button" data-act="noteadd" data-k="med">${ic('plus')} Medisch punt toevoegen</button>
+      </div>
+      <div class="field" style="margin-top:18px"><span>Overige punten</span></div>
+      ${rows('oth', f.oth, 'Bijvoorbeeld: Kondig overgangen vooraf aan.')}
+      <button class="btn ghost sm" type="button" data-act="noteadd" data-k="oth" style="margin-bottom:16px">${ic('plus')} Punt toevoegen</button>
+      <button class="btn block" type="submit">Opslaan</button>
+      <p class="small muted">Alle begeleiders en managers van ${LOCS[k.loc].name} zien deze punten. De wijziging wordt vastgelegd met jouw naam.</p>
+    </form></div>`;
+  },
   mijngegevens(r){
     const p = S.parents.eva, f = V[r].form;
     return header('Contactgegevens') + `<div class="screen"><form data-form="mijngegevens">
@@ -1624,6 +1651,12 @@ Object.assign(ACT, {
 });
 
 Object.assign(FORM, {
+  notities(r, fd, id){ syncInputs(r); const f = V[r].form, k = kid(id);
+    const get = key => f[key].map((v, i) => (f[key + '-' + i] ?? v).trim()).filter(Boolean);
+    k.notes = [...get('med').map(text => ({med:true, text})), ...get('oth')];
+    k.notesBy = ME().name; k.notesAt = fmtDay(0).toLowerCase() + ' om ' + now();
+    logChange(`Goed om te weten van ${k.first} bijgewerkt`);
+    V[r].form = {}; back(r); toast('beg', 'Opgeslagen', `Goed om te weten van ${k.first} is bijgewerkt.`); },
   mijngegevens(r){ syncInputs(r); const f = V[r].form, p = S.parents.eva, ph = (f.ophone || '').trim(), m = (f.omail || '').trim();
     if (ph.replace(/[^0-9]/g, '').length < 10) { f.err = 'Vul een geldig telefoonnummer in (10 cijfers).'; return rerender(r); }
     if (!m.includes('@')) { f.err = 'Vul een geldig e-mailadres in.'; return rerender(r); }
