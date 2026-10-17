@@ -256,7 +256,7 @@ label.btn{position:relative}
     <ol>
       <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld. De begeleider kiest daarna een locatie: Sanne werkt in Didam en Ulft. Liam zit in Didam.</li>
       <li>Begeleider: tik bij Liam op <b>Aangekomen</b>. De ouder krijgt meteen een melding.</li>
-      <li>Begeleider: schrijf een dagverslag voor Liam. Het verschijnt bij de ouder onder <b>Verslagen</b>.</li>
+      <li>Hoe de dag ging, deelt de begeleider met de ouder via de 1-op-1-chat (bij het kind: <b>Bericht aan Eva</b>).</li>
       <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
       <li>Begeleider: open <b>Groep vandaag</b> en deel een foto of tekst. Alle ouders van kinderen die er vandaag zijn, zien het, alleen vandaag. Ouders kunnen niet reageren. Bij Daan staat geen toestemming voor foto's; dat ziet de begeleider bij het delen.</li>
       <li>Stuur ook 1-op-1-berichten heen en weer.</li>
@@ -373,15 +373,10 @@ function seed(){
       {id:8, kid:'liam',  off:10, type:'Zaterdagopvang', time:'09:30 – 15:30', status:'gepland'},
       {id:9, kid:'liam',  off:-4, type:'Dagopvang', time:'09:00 – 16:00', status:'opgehaald'}
     ],
-    reports: [
-      {id:1, kid:'liam', off:-4, author:'Sanne', mood:4, tags:['Samen gespeeld','Goed gegeten','Rustig moment nodig'], photo:true,
-       text:'Liam heeft samen met Yusuf een hele lange Lego-brug gebouwd. Bij het opruimen werd het even druk; met zijn koptelefoon op de bank was hij snel weer rustig. Aan tafel heeft hij goed gegeten.'},
-      {id:2, kid:'liam', off:-11, author:'Ruben', mood:5, tags:['Buiten gespeeld','Trots op zichzelf'], photo:false,
-       text:'Wat een fijne dag! Liam heeft de hele middag buiten gevoetbald en zelf de teams verdeeld. Hij was trots dat dat zo goed ging.'},
-      {id:3, kid:'noor', off:-2, author:'Sanne', mood:3, tags:['Moe'], photo:false, text:'Noor was moe en wilde vooral tekenen. Na het eten ging het beter.'}
-    ],
     threads: {
       liam: [
+        {from:'beg', who:'Sanne', off:-4, t:'16:05', text:'Hoi Eva, fijne dag gehad met Liam! Hij heeft samen met Yusuf een hele lange Lego-brug gebouwd. Bij het opruimen werd het even druk, maar met zijn koptelefoon op de bank was hij snel weer rustig. Aan tafel heeft hij goed gegeten.'},
+        {from:'ouder', who:'Eva', off:-4, t:'18:30', text:'Wat leuk om te horen, dank je wel! Thuis vertelde hij er ook al over.'},
         {from:'beg', who:'Sanne', off:-1, t:'16:40', text:'Hoi Eva, de spullen voor het logeren mogen vrijdag gewoon in zijn eigen tas mee. Een knuffel van thuis is altijd welkom.'},
         {from:'ouder', who:'Eva', off:-1, t:'17:02', text:'Top, dank je! Dan doe ik zijn konijn erbij.'},
         {from:'ouder', who:'Eva', off:0, t:ago(52), text:'Goedemorgen! Liam heeft vannacht slecht geslapen. Misschien is hij vandaag wat sneller moe.'}
@@ -396,7 +391,7 @@ function seed(){
     ], ulft: [
       {sys:true, t:ago(40), text:'De groep van vandaag is aangemaakt voor de ouders van de kinderen die vandaag op locatie Ulft zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto\'s.'}
     ]},
-    unread: {ouderMsg:0, ouderRep:0, ouderGroup:2, begGroup:{didam:0, ulft:0}, beg:{liam:1, mila:0, lotte:1}}
+    unread: {ouderMsg:0, ouderGroup:2, begGroup:{didam:0, ulft:0}, beg:{liam:1, mila:0, lotte:1}}
   };
   seedActions();
   V = {
@@ -431,14 +426,13 @@ const PHOTO_LABEL = {bos:'Hutten bouwen in het bos', knutsel:'Knutselen aan tafe
 const requests = loc => S.plan.filter(p => p.status === 'aangevraagd' && kid(p.kid).loc === loc);
 
 const TABS = {
-  ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['acties','Acties','task'],['berichten','Berichten','chat'],['verslagen','Verslagen','book']],
+  ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['acties','Acties','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']],
   beg:[['vandaag','Vandaag','home'],['kinderen','Kinderen','users'],['acties','Acties','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']]
 };
 function tabbar(r){
   const badge = t => {
     let n = 0;
     if (r === 'ouder' && t === 'berichten') n = S.unread.ouderMsg + (ouderInGroup() ? S.unread.ouderGroup : 0);
-    if (r === 'ouder' && t === 'verslagen') n = S.unread.ouderRep;
     if (r === 'beg' && t === 'berichten') n = begUnread();
     if (r === 'beg' && t === 'vandaag') n = requests(V.beg.loc).length;
     if (r === 'ouder' && t === 'acties') n = ouderOpen().length;
@@ -448,7 +442,7 @@ function tabbar(r){
   return `<nav class="tabbar" aria-label="Menu">${TABS[r].map(([id,label,icon]) =>
     `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}</nav>`;
 }
-const oHello = (small, title) => `<div class="hello" style="display:flex;align-items:flex-end;gap:12px"><div class="grow"><small>${small}</small><h2>${title}</h2></div><button class="avbtn" type="button" data-act="tab" data-v="profiel" aria-label="Profiel">E</button></div>`;
+const oHello = (small, title) => `<div class="hello"><small>${small}</small><h2>${title}</h2></div>`;
 const header = (title, extra='') => `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><h2>${esc(title)}</h2>${extra}</div>`;
 
 /* ---------- Inloggen ---------- */
@@ -457,7 +451,7 @@ function loginScreen(r){
   return `<div class="login">
     <div class="brand"><img src="${LOGO}" alt="Opvang Uniek"></div>
     <h2>${o ? 'Fijn dat je er bent' : 'Welkom terug'}</h2>
-    <p class="lead">${o ? 'Zie hoe het met je kind gaat, wat er gepland staat en praat met de begeleiding.' : 'Je groep van vandaag, verslagen en contact met ouders op één plek.'}</p>
+    <p class="lead">${o ? 'Zie hoe het met je kind gaat, wat er gepland staat en praat met de begeleiding.' : 'Je groep van vandaag, acties en contact met ouders op één plek.'}</p>
     <div class="who"><div class="avatar ${o?'c1':'c2'}">${o?'E':'S'}</div><div>Demo: je logt in als <b>${o ? 'Eva, moeder van Liam' : 'Sanne, begeleider in Didam en Ulft'}</b>.</div></div>
     <form data-form="login">
       <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : 'sanne@opvanguniek.nl'}"></label>
@@ -493,7 +487,6 @@ const O = {
       opgehaald:`Om ${t.at} opgehaald. Tot de volgende keer!`,
       afgemeld:`Afgemeld${t.reason ? ' · ' + esc(t.reason) : ''}`
     }[t.status];
-    const last = S.reports.filter(x => x.kid === 'liam').sort((a,b) => b.off - a.off)[0];
     const next = S.plan.filter(p => p.kid === 'liam' && p.off > 0 && p.status !== 'afgemeld' && p.status !== 'afgewezen').sort((a,b) => a.off - b.off)[0];
     return `<div class="screen">
       ${oHello(greeting() + ', Eva', 'Zo gaat het met ' + k.first)}
@@ -503,11 +496,6 @@ const O = {
         <div class="btns">${ouderInGroup() ? `<button class="btn soft sm" type="button" data-act="open" data-v="groep">${ic('users')} Groep vandaag${S.unread.ouderGroup ? ` <span class="chip st-afgemeld" style="padding:2px 7px">${S.unread.ouderGroup}</span>` : ''}</button>` : ''}<button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="liam">${ic('chat')} Sanne</button>${t.status === 'verwacht' ? `<button class="btn ghost sm" type="button" data-act="open" data-v="afmelden" data-id="${t.id}">Afmelden</button>` : ''}</div>
       </div>
       ${(() => { const o = ouderOpen(); if (!o.length) return ''; const b = batchOf(o[0]); return `<button class="card" type="button" data-act="tab" data-v="acties" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;background:var(--pink-tint);border-color:#F4C6DD"><div class="avatar" style="background:#fff;color:var(--pink-strong)">${ic('task').replace('<svg','<svg style="width:22px;height:22px"')}</div><div class="grow"><div style="font-weight:800">${o.length === 1 ? '1 actie' : o.length + ' acties'} te doen</div><div class="small" style="color:#7A1446">${esc(b.title)} · ${dueText(b.due).toLowerCase()}</div></div>${ic('chev').replace('<svg','<svg style="width:18px;height:18px"')}</button>`; })()}
-      ${last ? `<div class="eyebrow">Laatste verslag</div>
-      <button class="card item" style="display:block;border:1px solid var(--line);border-radius:22px;padding:16px" type="button" data-act="open" data-v="verslag" data-id="${last.id}">
-        <div class="row"><span class="report-mood">${face(last.mood)} ${mood(last.mood).label}</span><span class="grow"></span><span class="small muted">${fmtDay(last.off)} · ${last.author}</span></div>
-        <p style="margin:10px 0 0;font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${esc(last.text)}</p>
-      </button>` : ''}
       ${next ? `<div class="eyebrow">Volgende keer</div>
       <div class="list"><button class="item" type="button" data-act="tab" data-v="planning"><div class="avatar c5">${ic('cal').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${next.type}</div><div class="s">${fmtDay(next.off)} · ${next.time}</div></div>${chip(next.status)}</button></div>` : ''}
       <div class="eyebrow">Vandaag op de groep</div>
@@ -527,14 +515,6 @@ const O = {
       <p class="small muted" style="margin:4px 4px 0">Afmelden kan tot 24 uur van tevoren zonder kosten. Bij ziekte kan het altijd. <i>(voorbeeldregel)</i></p>
     </div>`;
   },
-  verslagen(){
-    S.unread.ouderRep = 0;
-    const list = S.reports.filter(x => x.kid === 'liam').sort((a,b) => b.off - a.off || b.id - a.id);
-    return `<div class="screen">
-      ${oHello('Liam', 'Verslagen')}
-      <div class="list">${list.map(x => `<button class="item" type="button" data-act="open" data-v="verslag" data-id="${x.id}">${face(x.mood)}<div class="grow"><div class="t">${fmtDay(x.off)} · ${mood(x.mood).label}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.text)}</div></div>${ic('chev')}</button>`).join('')}</div>
-    </div>`;
-  },
   berichten(){
     const inG = ouderInGroup(), lg = lastGroup('didam'), lt = S.threads.liam.at(-1);
     return `<div class="screen">
@@ -551,7 +531,7 @@ const O = {
     return `<div class="screen">
       <div class="hello"><small>Profiel</small><h2>Eva de Vries</h2></div>
       <div class="card"><dl class="kv"><dt>E-mail</dt><dd>eva@voorbeeld.nl</dd><dt>Kind</dt><dd>Liam de Vries, 9 jaar</dd><dt>Locatie</dt><dd>Didam</dd><dt>Bij Uniek sinds</dt><dd>maart 2024</dd></dl></div>
-      <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Aankomst, ophalen, verslagen en berichten</div></div><span class="chip st-aangekomen">Aan</span></div></div>
+      <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Aankomst, ophalen, acties en berichten</div></div><span class="chip st-aangekomen">Aan</span></div></div>
       <div class="eyebrow">Toestemming</div>
       <div class="list"><div class="item" style="cursor:default;align-items:flex-start"><div class="avatar c1">${ic('camera').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Foto's van Liam in de groepschat</div><div class="s">De begeleiding mag foto's waarop Liam herkenbaar is delen in de groep van de dag. Andere ouders zien die foto's alleen die dag.</div></div>
         <button class="btn sm ${kid('liam').photoOk ? '' : 'ghost'}" type="button" data-act="consent" role="switch" aria-checked="${kid('liam').photoOk}" style="min-width:64px">${kid('liam').photoOk ? 'Ja' : 'Nee'}</button></div></div>
@@ -588,7 +568,7 @@ const B = {
                      : p.status === 'aangekomen' ? `<button class="btn ghost sm" type="button" data-act="checkout" data-id="${p.id}">Opgehaald</button>` : chip(p.status);
         const sub = p.status === 'aangekomen' ? `Binnen sinds ${p.at}` : p.status === 'opgehaald' ? `Opgehaald om ${p.at}` : p.status === 'afgemeld' ? `Afgemeld${p.reason ? ' · ' + esc(p.reason) : ''}` : 'Nog niet binnen';
         return `<div class="item" style="cursor:default"><button class="avatar ${k.c}" style="border:0;cursor:pointer" type="button" data-act="open" data-v="kind" data-id="${k.id}" aria-label="${k.first} openen">${initials(k)}</button><button class="grow" type="button" data-act="open" data-v="kind" data-id="${k.id}" style="border:0;background:none;text-align:left;padding:0;cursor:pointer"><div class="t">${k.first} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${sub}</div></button>${action}</div>`; }).join('')}</div>
-      <div class="btns" style="flex-wrap:nowrap"><button class="btn block" type="button" data-act="open" data-v="groep" style="flex:1">${ic('camera')} Groepschat${S.unread.begGroup[loc] ? ` <span class="chip" style="background:var(--accent);color:#fff;padding:2px 7px">${S.unread.begGroup[loc]}</span>` : ''}</button><button class="btn ghost block" type="button" data-act="open" data-v="kiesverslag" style="flex:1">${ic('pen')} Verslag</button></div>
+      <button class="btn block" type="button" data-act="open" data-v="groep">${ic('camera')} Groepschat${S.unread.begGroup[loc] ? ` <span class="chip" style="background:var(--accent);color:#fff;padding:2px 7px">${S.unread.begGroup[loc]}</span>` : ''}</button>
     </div>`;
   },
   kinderen(){
@@ -663,19 +643,6 @@ function groupScreen(r){
 
 const SCREENS = {
   groep(r){ return groupScreen(r); },
-  verslag(r, id){
-    const x = S.reports.find(y => y.id == id), k = kid(x.kid);
-    return header('Verslag van ' + fmtDay(x.off).toLowerCase()) + `<div class="screen">
-      <div class="card">
-        <div class="row"><span class="report-mood" style="font-size:16px">${face(x.mood).replace('class="face"','class="face" style="width:40px;height:40px"')} ${mood(x.mood).label}</span></div>
-        <p style="margin:14px 0 0;font-size:16px">${esc(x.text)}</p>
-        ${x.photo ? `<div class="photo">Foto van de Lego-brug</div>` : ''}
-        ${x.tags.length ? `<div class="tags">${x.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
-      </div>
-      <div class="row small muted" style="padding:0 4px"><div class="avatar c2" style="width:32px;height:32px;border-radius:10px;font-size:13px">${x.author[0]}</div>Geschreven door ${x.author} · ${fmtDay(x.off,true)} · over ${k.first}</div>
-      ${r === 'ouder' ? `<button class="btn soft block" type="button" data-act="open" data-v="chat" data-id="liam" style="margin-top:16px">${ic('chat')} Reageren</button>` : ''}
-    </div>`;
-  },
   afmelden(r, id){
     const p = S.plan.find(y => y.id == id), f = V[r].form;
     return header('Afmelden') + `<div class="screen"><form data-form="afmelden" data-id="${id}">
@@ -701,39 +668,17 @@ const SCREENS = {
   },
   kind(r, id){
     const k = kid(id), t = todayOf(id);
-    const reps = S.reports.filter(x => x.kid === id).sort((a,b) => b.off - a.off);
     const plan = S.plan.filter(p => p.kid === id && p.off > 0).sort((a,b) => a.off - b.off);
     return header(k.name) + `<div class="screen">
       <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div>${t ? chip(t.status) : ''}</div></div>
-        <div class="btns" style="margin-top:14px"><button class="btn sm" type="button" data-act="open" data-v="schrijf" data-id="${id}">${ic('pen')} Verslag</button><button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="${id}">${ic('chat')} ${k.parent.split(' ')[0]}</button></div></div>
+        <button class="btn sm block" style="margin-top:14px" type="button" data-act="open" data-v="chat" data-id="${id}">${ic('chat')} Bericht aan ${k.parent.split(' ')[0]}</button></div>
       <div class="eyebrow">Goed om te weten</div>
       <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
       ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
-      <div class="eyebrow">Verslagen</div>
-      ${reps.length ? `<div class="list">${reps.map(x => `<button class="item" type="button" data-act="open" data-v="verslag" data-id="${x.id}">${face(x.mood)}<div class="grow"><div class="t">${fmtDay(x.off)} · ${x.author}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.text)}</div></div>${ic('chev')}</button>`).join('')}</div>` : '<div class="card empty">Nog geen verslagen.</div>'}
       ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Acties</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
       <div class="eyebrow">Ouder en toestemming</div>
       <div class="card"><dl class="kv"><dt>Naam</dt><dd>${k.parent}</dd><dt>Telefoon</dt><dd>06-12345678</dd><dt>Foto's in groepschat</dt><dd>${k.photoOk ? '<span class="chip st-aangekomen">Toestemming</span>' : '<span class="chip st-afgemeld">Geen toestemming</span>'}</dd></dl></div>
     </div>`;
-  },
-  kiesverslag(){
-    const here = S.plan.filter(p => p.off === 0 && kid(p.kid).loc === V.beg.loc && (p.status === 'aangekomen' || p.status === 'opgehaald'));
-    return header('Verslag schrijven') + `<div class="screen"><p class="muted" style="margin:4px 4px 12px">Over wie wil je schrijven?</p>
-      ${here.length ? `<div class="list">${here.map(p => { const k = kid(p.kid); return `<button class="item" type="button" data-act="open" data-v="schrijf" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.first}</div><div class="s">${STATUS_LABEL[p.status]}</div></div>${ic('chev')}</button>`; }).join('')}</div>` : '<div class="card empty">Er is nog niemand binnen.</div>'}
-    </div>`;
-  },
-  schrijf(r, id){
-    const k = kid(id), f = V[r].form; f.tags = f.tags || [];
-    return header('Verslag over ' + k.first) + `<div class="screen"><form data-form="schrijf" data-id="${id}">
-      <div class="field"><span>Hoe ging het vandaag?</span></div>
-      <div class="moods">${MOODS.map(m => `<button class="mood" type="button" data-act="pick" data-k="mood" data-v="${m.n}" aria-pressed="${f.mood==m.n}">${face(m.n)}${m.label}</button>`).join('')}</div>
-      <div class="field"><span>Wat viel op?</span></div>
-      <div class="choices">${HIGHLIGHTS.map(h => `<button class="choice" type="button" data-act="tag" data-v="${h}" aria-pressed="${f.tags.includes(h)}">${h}</button>`).join('')}</div>
-      <label class="field"><span>Verslag voor ${k.parent.split(' ')[0]}</span><textarea class="input" name="text" placeholder="Wat heeft ${k.first} gedaan, wat ging goed, wat was lastig?">${esc(f.text||'')}</textarea></label>
-      ${f.err ? `<div class="err">${f.err}</div>` : ''}
-      <button class="btn block" type="submit">Delen met ${k.parent.split(' ')[0]}</button>
-      <p class="small muted">${k.parent.split(' ')[0]} krijgt een melding. In de melding staat niet wat je schrijft.</p>
-    </form></div>`;
   },
   chat(r, id){ return chat(r, id); }
 };
@@ -782,7 +727,7 @@ const ACT = {
   checkin(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'aangekomen'; p.at = now(); const k = kid(p.kid);
     rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is aangekomen', `Om ${p.at} bij locatie Didam.`); } },
   checkout(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'opgehaald'; p.at = now();
-    rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is opgehaald', `Om ${p.at}. Het verslag volgt.`); } },
+    rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is opgehaald', `Om ${p.at}.`); } },
   approve(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'gepland'; rerender('beg'); rerender('ouder');
     toast('ouder', 'Aanvraag ingepland', `${p.type} op ${fmtDay(p.off).toLowerCase()} gaat door.`); },
   decline(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'afgewezen'; rerender('beg'); rerender('ouder');
@@ -839,14 +784,6 @@ const FORM = {
     toast('ouder', 'Aanvraag verstuurd', 'Je hoort zo snel mogelijk of het past.');
     rerender('beg'); toast('beg', 'Nieuw verzoek van Eva', `${f.type} voor Liam, ${fmtDay(off).toLowerCase()}.`);
   },
-  schrijf(r, fd, id){
-    const f = V[r].form, text = (fd.get('text')||'').trim();
-    if (!f.mood || !text) { f.text = fd.get('text'); f.err = !f.mood ? 'Kies hoe het vandaag ging.' : 'Schrijf een paar zinnen voor de ouder.'; return rerender(r); }
-    S.reports.push({id:++idc, kid:id, off:0, author:'Sanne', mood:f.mood, tags:f.tags||[], photo:false, text});
-    V[r].stack = []; V[r].form = {}; render(r);
-    const k = kid(id); toast('beg', 'Verslag gedeeld', `${k.parent.split(' ')[0]} kan het nu lezen.`);
-    if (id === 'liam') { S.unread.ouderRep++; rerender('ouder'); toast('ouder', 'Nieuw verslag over Liam', `Sanne heeft geschreven hoe het vandaag ging.`); }
-  }
 };
 
 /* ---------- Acties ---------- */

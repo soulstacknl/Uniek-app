@@ -13,7 +13,7 @@
 | 17-10-2026 | Er komt een aparte toestemming voor foto's in de groepschat, per kind. |
 | 17-10-2026 | Een begeleider kan op meerdere locaties werken en kiest na het inloggen een locatie. |
 | 17-10-2026 | Ouder en begeleider krijgen een tab Acties: Uniek zet een actie klaar, de ouder voert die uit, de begeleider ziet het resultaat en de status. |
-| 17-10-2026 | Aanname: bij de ouder zit Profiel achter de ronde knop rechtsboven, zodat er plek is voor de tab Acties (vijf tabs). |
+| 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Acties, Berichten en Profiel. |
 
 ## Open vragen
 
