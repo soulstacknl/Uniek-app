@@ -228,6 +228,10 @@ label.btn{position:relative}
 .ptable tr.rowlink{cursor:pointer}
 .ptable tr.rowlink:hover{background:var(--brand-tint)}
 .ptable td.hot{color:#7A5300;font-weight:800;background:var(--sun-tint)}
+.mini.stf{text-align:left;cursor:pointer;font:inherit;color:inherit;position:relative}
+.mini.stf[aria-pressed="false"]{opacity:.45;background:transparent;border-style:dashed}
+.mini.stf[aria-pressed="true"]{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.mini.stf:hover{border-color:var(--brand)}
 .kidadmin .kidhead{display:flex;width:100%;border:0;background:none;padding:0;text-align:left;cursor:pointer;color:inherit}
 .kidadmin .list{border-radius:16px}
 .minis{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
@@ -1169,17 +1173,21 @@ B.acties = function(){
   const kids = Object.values(S.kids).filter(k => k.active !== false && k.loc === loc);
   const acts = S.actions.filter(a => kid(a.kid).loc === loc && kid(a.kid).active !== false);
   const cnt = st => acts.filter(a => begStatus(a) === st).length;
-  const sorted = kids.map(k => ({k, as:acts.filter(a => a.kid === k.id).sort((x,y) => BEG_ST[begStatus(x)].o - BEG_ST[begStatus(y)].o || batchOf(x).due - batchOf(y).due)}))
+  const STF = ['controle','afgekeurd','klaargezet','goed'], sel = V.beg.stf || STF, allOn = sel.length === STF.length;
+  const sorted = kids.map(k => ({k, as:acts.filter(a => a.kid === k.id && sel.includes(begStatus(a))).sort((x,y) => BEG_ST[begStatus(x)].o - BEG_ST[begStatus(y)].o || batchOf(x).due - batchOf(y).due)}))
+    .filter(x => allOn || x.as.length)
     .sort((x,y) => (y.as.filter(a => begStatus(a) === 'controle').length - x.as.filter(a => begStatus(a) === 'controle').length) || x.k.name.localeCompare(y.k.name, 'nl'));
+  const tile = st => `<button class="mini stf${st === 'controle' || st === 'afgekeurd' ? (cnt(st) ? ' warn' : '') : ''}" type="button" data-act="stf" data-v="${st}" aria-pressed="${sel.includes(st)}"><b>${cnt(st)}</b><span>${BEG_ST[st].l.toLowerCase()}</span></button>`;
   return `<div class="screen">
     <div class="hello"><small>Locatie ${LOCS[loc].name}</small><h2>Administratie</h2></div>
     ${beh ? `<div class="choices" style="margin-bottom:12px">${[ALL, ...activeLocs()].map(l => `<button class="choice" type="button" data-act="setfilter" data-v="${l}" aria-pressed="${loc === l}">${locName(l)}</button>`).join('')}</div>` : ''}
-    <div class="minis" style="margin-bottom:12px"><div class="mini${cnt('controle') ? ' warn' : ''}"><b>${cnt('controle')}</b><span>te controleren</span></div><div class="mini"><b>${cnt('klaargezet')}</b><span>klaargezet</span></div><div class="mini"><b>${cnt('goed')}</b><span>goedgekeurd</span></div><div class="mini${cnt('afgekeurd') ? ' warn' : ''}"><b>${cnt('afgekeurd')}</b><span>afgekeurd</span></div></div>
+    <div class="row" style="justify-content:space-between;margin:0 2px 6px"><span class="small muted" style="font-weight:700">Filter op status</span><span class="small"><button class="linkbtn" type="button" data-act="stfset" data-v="open" style="min-height:32px">Alleen open</button> · <button class="linkbtn" type="button" data-act="stfset" data-v="alles" style="min-height:32px">Alles</button></span></div>
+    <div class="minis" style="margin-bottom:12px">${STF.map(tile).join('')}</div>
     <button class="btn block" type="button" data-act="open" data-v="nieuweactie" style="margin-bottom:14px">${ic('plus')} Nieuwe actie voor ouders</button>
     ${sorted.length ? sorted.map(({k, as}) => `<div class="card kidadmin">
       <button class="row kidhead" type="button" data-act="open" data-v="kind" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div style="font-weight:800">${k.name}</div><div class="small muted">Ouder: ${esc(k.parent)}</div></div>${as.filter(a => begStatus(a) === 'controle').length ? `<span class="chip st-aangevraagd">${as.filter(a => begStatus(a) === 'controle').length} te controleren</span>` : ''}</button>
       ${as.length ? `<div class="list" style="margin:12px 0 0">${as.map(a => { const b = batchOf(a); return `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(b.type)}<div class="grow"><div class="t">${esc(b.title)}</div><div class="s">${a.status === 'open' ? dueText(b.due) : (a.status === 'afgerond' ? 'Goedgekeurd' : a.status === 'afgekeurd' ? 'Niet akkoord' : 'Ingevuld') + ' ' + fmtDay(a.doneOff).toLowerCase() + (a.by ? ' door ' + a.by : '')}${b.docs?.length ? ' · 📎 ' + b.docs.length : ''}</div></div>${actChip(a, 'beg')}</button>`; }).join('')}</div>` : '<p class="small muted" style="margin:10px 0 0">Nog niets klaargezet voor dit kind.</p>'}
-    </div>`).join('') : '<div class="card empty">Er staan geen kinderen op deze locatie.</div>'}
+    </div>`).join('') : `<div class="card empty">${kids.length ? 'Geen acties met deze status.' : 'Er staan geen kinderen op deze locatie.'}</div>`}
   </div>`;
 };
 
@@ -1336,6 +1344,9 @@ Object.assign(ACT, {
     rerender('beg'); toast('beg', 'Niet akkoord', `Eva gaat niet akkoord met “${b.title}”.`); },
   reopen(r, d){ const a = actOf(d.id), b = batchOf(a); Object.assign(a, {status:'open', remark:'Opnieuw klaargezet na overleg. Wil je het nog een keer bekijken?', result:null});
     back(r); if (a.kid === 'liam') { rerender('ouder'); toast('ouder', 'Actie opnieuw klaargezet', b.title); } },
+  stf(r, d){ const ALLST = ['controle','afgekeurd','klaargezet','goed']; let s = (V.beg.stf || ALLST).slice();
+    s = s.includes(d.v) ? s.filter(x => x !== d.v) : [...s, d.v]; V.beg.stf = s.length ? s : ALLST; rerender('beg'); },
+  stfset(r, d){ V.beg.stf = d.v === 'open' ? ['controle','afgekeurd','klaargezet'] : ['controle','afgekeurd','klaargezet','goed']; rerender('beg'); },
   noteadd(r, d){ syncInputs(r); const f = V[r].form; f[d.k].push(''); rerender(r); },
   noterm(r, d){ syncInputs(r); const f = V[r].form, arr = f[d.k], i = +d.i;
     const vals = arr.map((v, j) => f[d.k + '-' + j] ?? v); vals.splice(i, 1); arr.forEach((_, j) => delete f[d.k + '-' + j]); f[d.k] = vals; rerender(r); },
