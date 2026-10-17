@@ -52,7 +52,7 @@ Via de keuzelijst op het inlogscherm kun je ook inloggen als een van de andere m
 | Contactgegevens van ouders | F-08 |
 | Persoonlijke inlog; webbrowserweergave | F-04, NF-01 |
 | Beheer: locaties, medewerkers, ouders en kinderen, koppelingen, logboek | F-07 |
-| Beheerder: planning van de komende 4 weken en administratie over alle locaties | F-09 |
+| Beheerder: overzicht per locatie en onderdeel (kinderen en acties, filter op status), kinderen per locatie en onderdeel, administratie over alle locaties | F-09 |
 
 ### Testgegevens
 
