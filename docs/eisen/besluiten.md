@@ -25,6 +25,7 @@ Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname;
 | 17-10-2026 | Elk gebouw is een eigen locatie, zoals op de website: 7 locaties (Ulft 2, Didam 3, Bemmel 2). |
 | 17-10-2026 | Administratie is gegroepeerd per kind, niet per status. Statussen per actie: te controleren, klaargezet, goedgekeurd, afgekeurd. Bij lezen en akkoord kan een ouder ook niet akkoord geven. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
+| 17-10-2026 | Er komt een algemene nieuwsbrief voor alle ouders, bij Berichten als derde onderdeel (Nieuws van Uniek). Ouders kunnen niet reageren (F-15). |
 
 ## Open vragen
 
@@ -69,6 +70,7 @@ Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname;
 
 ### Beheer en rollen
 
+- Nieuwsbrief: mag alleen de beheerder een nieuwsbrief versturen, of de manager ook? (In de demo kunnen beide.)
 - Beheer: mag een manager alleen de eigen locaties beheren (medewerkers en kinderen daarvan), en mag alleen de beheerder rollen toekennen en locaties toevoegen?
 - Beheerder: mag de beheerder ook de chats met ouders en de groepschats van alle locaties lezen? (In de demo nu niet: de beheerder heeft geen tab Berichten.)
 - Beheer: zien managers en beheerders de chats en medische gegevens van alle locaties, of alleen de locaties waaraan ze gekoppeld zijn?

@@ -244,6 +244,10 @@ label.btn{position:relative}
 .locgrid{display:grid;gap:12px}
 .app.webapp .locgrid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
 .app.webapp .main .screen > .locgrid{max-width:none}
+.newsletter{padding:20px}
+.newshead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:12px;border-bottom:3px solid var(--pink)}
+.newshead img{height:34px;width:auto}
+.newsbody p{margin:0 0 10px;font-size:15px;line-height:1.55}
 .medsec{padding:14px;border-radius:18px;background:#FDE3DE;border:1px solid #F5C2B8}
 .noterow{display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
 .noterow textarea.input,.app.webapp .noterow textarea.input{min-height:56px;flex:1}
@@ -350,6 +354,7 @@ label.btn{position:relative}
       <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
       <li>Begeleider: open <b>Groep vandaag</b> en deel een foto of tekst. Alle ouders van kinderen die er vandaag zijn, zien het, alleen vandaag. Ouders kunnen niet reageren. Bij Daan staat geen toestemming voor foto's; dat ziet de begeleider bij het delen.</li>
       <li>Stuur ook 1-op-1-berichten heen en weer.</li>
+      <li><b>Nieuwsbrief:</b> de ouder vindt die onderaan bij Berichten, onder Nieuws van Uniek. Een manager of beheerder verstuurt een nieuwe via Beheer › Nieuwsbrief.</li>
       <li>Wissel bij de begeleider tussen <b>Telefoon</b> en <b>Webbrowser</b>. In de browser staat het menu links en is er meer ruimte om te typen.</li>
       <li><b>Administratie:</b> de ouder vult bij Administratie de medicatie, de vakantieplanning of de indicatie in. De begeleider ziet het bij Administratie onder <b>Te controleren</b>, zet het op Verwerkt of stuurt het terug. Met <b>Nieuwe actie</b> (bij Administratie) zet de begeleider zelf iets klaar voor één of alle ouders.</li>
     </ol>
@@ -414,6 +419,7 @@ const ICONS = {
   gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 6.5l2.2 1.6M17.6 15.9l2.2 1.6M2.5 12h3M18.5 12h3M4.2 17.5l2.2-1.6M17.6 8.1l2.2-1.6"/><circle cx="12" cy="12" r="7"/>',
   phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  news:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h6M7 12h10M7 16h10"/><rect x="15" y="7" width="3" height="3"/>',
   bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'
 };
 const ic = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
@@ -618,6 +624,18 @@ function seed(){
   Object.keys(LOCS).forEach(l => { if (!S.groups[l]) S.groups[l] = [{sys:true, t:ago(30), text:`De groep van vandaag is aangemaakt voor de ouders van de kinderen die vandaag op ${LOCS[l].name} zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto's.`}]; if (S.unread.begGroup[l] == null) S.unread.begGroup[l] = 0; });
   seedParents();
   seedActions(); genActions();
+  S.news = [
+    {id:3, off:-2, by:'Opvang Uniek', title:'Nieuwsbrief oktober 2026', read:false, readN:31,
+     intro:'De herfstvakantie, een nieuwe locatie-indeling en de Uniek-app.',
+     body:['Beste ouders en verzorgers,','Na een fijne zomer zijn alle groepen weer goed gestart. In deze nieuwsbrief leest u wat er de komende tijd verandert.','**Herfstvakantie** – In de herfstvakantie zijn alle locaties gewoon open voor vakantieopvang. Heeft u nog geen opvang aangevraagd? Dat kan via Planning in de app.','**Eén app voor alles** – Vanaf deze maand regelt u de vakantieplanning, medicatie en akkoordverklaringen via Administratie in de app. Papieren formulieren zijn dan niet meer nodig.','**Kerstvakantie** – Binnenkort zetten wij de vakantieplanning voor de kerstvakantie voor u klaar. Wilt u die vóór 31 oktober invullen?','Met vriendelijke groet,\nHet team van Opvang Uniek'],
+     docs:[{name:'Nieuwsbrief oktober 2026.pdf', size:412000}]},
+    {id:2, off:-33, by:'Opvang Uniek', title:'Nieuwsbrief september 2026', read:true, readN:44,
+     intro:'Terug van vakantie, nieuwe collega’s en de sportdag.',
+     body:['Beste ouders en verzorgers,','Welkom terug na de zomervakantie! Wij heten drie nieuwe begeleiders van harte welkom in Ulft, Didam en Bemmel.','**Sportdag** – Op zaterdag 26 september houden wij een sportdag op het DRU-park in Ulft. Alle kinderen zijn welkom.','Met vriendelijke groet,\nHet team van Opvang Uniek'], docs:[]},
+    {id:1, off:-95, by:'Opvang Uniek', title:'Zomernieuws 2026', read:true, readN:47,
+     intro:'De zomeropvang, het Glazenhuis in Bemmel en tips voor de vakantie.',
+     body:['Beste ouders en verzorgers,','De zomeropvang is weer van start. In Bemmel is Het Glazenhuis, achter het Dorpshuis, nu ook in gebruik voor logeeropvang.','Met vriendelijke groet,\nHet team van Opvang Uniek'], docs:[]}
+  ];
   V = {
     ouder:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false},
     beg:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false, loc:null, user:'sanne'}
@@ -666,7 +684,7 @@ function tabsFor(r){
 function tabbar(r){
   const badge = t => {
     let n = 0;
-    if (r === 'ouder' && t === 'berichten') n = S.unread.ouderMsg + (ouderInGroup() ? S.unread.ouderGroup : 0);
+    if (r === 'ouder' && t === 'berichten') n = S.unread.ouderMsg + (ouderInGroup() ? S.unread.ouderGroup : 0) + S.news.filter(x => !x.read).length;
     if (r === 'beg' && t === 'berichten') n = begUnread();
     if (r === 'beg' && t === 'vandaag') n = requests(V.beg.loc).length;
     if (r === 'ouder' && t === 'acties') n = ouderOpen().length;
@@ -762,7 +780,9 @@ const O = {
         : `<div class="item" style="cursor:default"><div class="avatar" style="background:#EDEBE6;color:#5B6478">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Geen groep vandaag</div><div class="s">Liam is vandaag niet op de locatie.</div></div></div>`}</div>
       <div class="eyebrow">Met de begeleiding</div>
       <div class="list"><button class="item" type="button" data-act="open" data-v="chat" data-id="liam"><div class="avatar c2">D</div><div class="grow"><div class="t">Team ${LS()}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${S.unread.ouderMsg ? 'color:var(--ink);font-weight:700' : ''}">${lt ? esc(lt.text) : ''}</div></div>${S.unread.ouderMsg ? `<span class="chip st-afgemeld" style="padding:4px 8px">${S.unread.ouderMsg}</span>` : ic('chev')}</button></div>
-      <p class="small muted" style="margin:4px">In de groep deelt de begeleiding foto's en nieuwtjes van de dag met alle ouders van kinderen die er vandaag zijn. De groep is alleen vandaag zichtbaar. Iets persoonlijks over Liam? Gebruik dan Team ${LS()}.</p>
+      <div class="eyebrow">Nieuws van Uniek</div>
+      <div class="list">${S.news.map(x => `<button class="item" type="button" data-act="open" data-v="nieuws" data-id="${x.id}"><div class="avatar" style="background:var(--brand);color:#fff">${ic('news').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t" style="${x.read ? '' : 'font-weight:800'}">${esc(x.title)}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${fmtDay(x.off)} · ${esc(x.intro)}</div></div>${x.read ? ic('chev') : '<span class="chip st-afgemeld" style="padding:4px 8px">Nieuw</span>'}</button>`).join('')}</div>
+      <p class="small muted" style="margin:4px">In de groep deelt de begeleiding foto's en nieuwtjes van de dag met alle ouders van kinderen die er vandaag zijn. De groep is alleen vandaag zichtbaar. Iets persoonlijks over Liam? Gebruik dan Team ${LS()}. De nieuwsbrief is voor alle ouders van Uniek.</p>
     </div>`;
   },
   profiel(){
@@ -1469,6 +1489,7 @@ B.beheer = function(){
     <div class="list">
       ${row('locaties', 'pin', 'Locaties', `${locs.filter(l => LOCS[l].active !== false).length} actief${locs.some(l => LOCS[l].active === false) ? ' · ' + locs.filter(l => LOCS[l].active === false).length + ' uitgeschreven' : ''}`)}
       ${row('medewerkers', 'users', 'Medewerkers', `${staff.filter(s => s.active !== false).length} actief · begeleiders, managers en beheerders`)}
+      ${row('nieuwsbrieven', 'news', 'Nieuwsbrief', `${S.news.length} verstuurd · laatste ${fmtDay(S.news[0] ? S.news[0].off : 0).toLowerCase()}`)}
       ${row('gezinnen', 'user', 'Ouders en kinderen', `${kids.filter(k => k.active !== false).length} kinderen · ${pars.filter(p => p.active !== false).length} ouders`)}
     </div>
     ${WEB ? '' : `<button class="btn ghost block" type="button" data-act="tab" data-v="profiel" style="margin-bottom:6px">${ic('user')} Mijn profiel</button>`}
@@ -1479,6 +1500,42 @@ B.beheer = function(){
 };
 
 Object.assign(SCREENS, {
+  nieuws(r, id){
+    const x = S.news.find(n => n.id == id);
+    if (r === 'ouder' && !x.read) { x.read = true; x.readN++; }
+    const para = s => s.startsWith('**') ? `<p><b>${esc(s.slice(2, s.indexOf('**', 2)))}</b>${esc(s.slice(s.indexOf('**', 2) + 2))}</p>` : `<p>${esc(s).replace(/\n/g, '<br>')}</p>`;
+    return header('Nieuws van Uniek') + `<div class="screen">
+      <div class="card newsletter">
+        <div class="newshead"><img src="${LOGO}" alt="Opvang Uniek"><span class="small muted">${fmtDay(x.off, true)}</span></div>
+        <h2 style="margin:12px 0 4px;font-size:22px;letter-spacing:-.02em">${esc(x.title)}</h2>
+        <p class="muted" style="margin:0 0 12px">${esc(x.intro)}</p>
+        <div class="newsbody">${x.body.map(para).join('')}</div>
+        ${x.docs?.length ? `<div style="margin-top:12px">${docList(x.docs)}</div>` : ''}
+      </div>
+      ${r === 'ouder' ? `<p class="small muted" style="margin:4px">Reageren op de nieuwsbrief is niet mogelijk. Een vraag? Stuur Team ${LS()} een bericht.</p>` : `<p class="small muted" style="margin:4px">Gelezen door ${x.readN} van ${Object.values(S.parents).filter(p => p.active !== false).length} ouders.</p>`}
+    </div>`;
+  },
+  nieuwsbrieven(r){
+    const n = Object.values(S.parents).filter(p => p.active !== false).length;
+    return header('Nieuwsbrief') + `<div class="screen">
+      <button class="btn block" type="button" data-act="open" data-v="nieuwsbriefnieuw" style="margin-bottom:12px">${ic('plus')} Nieuwe nieuwsbrief</button>
+      <p class="small muted" style="margin:0 2px 12px">De nieuwsbrief gaat naar alle ouders van Uniek, los van locaties en groepen. Ouders kunnen niet reageren.</p>
+      <div class="list">${S.news.map(x => `<button class="item" type="button" data-act="open" data-v="nieuws" data-id="${x.id}"><div class="avatar" style="background:var(--brand);color:#fff">${ic('news').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${esc(x.title)}</div><div class="s">Verstuurd ${fmtDay(x.off).toLowerCase()} · gelezen door ${x.readN} van ${n} ouders</div><div class="progress" style="margin-top:6px"><i style="width:${Math.round(x.readN / n * 100)}%"></i></div></div>${ic('chev')}</button>`).join('')}</div>
+    </div>`;
+  },
+  nieuwsbriefnieuw(r){
+    const f = V[r].form;
+    return header('Nieuwe nieuwsbrief') + `<div class="screen"><form data-form="nieuwsbrief">
+      <label class="field"><span>Titel</span><input class="input" name="ntitle" value="${esc(f.ntitle ?? 'Nieuwsbrief ' + dayDate(0).toLocaleDateString('nl-NL', {month:'long', year:'numeric'}))}"></label>
+      <label class="field"><span>Korte samenvatting</span><input class="input" name="nintro" value="${esc(f.nintro || '')}" placeholder="Eén zin die ouders in de lijst zien"></label>
+      <label class="field"><span>Tekst</span><textarea class="input" name="nbody" style="min-height:200px" placeholder="Beste ouders en verzorgers, ...">${esc(f.nbody || '')}</textarea></label>
+      <div class="field"><span>Bijlagen (mag leeg blijven)</span></div>
+      ${docPicker('ndocs', f.ndocs || [], 'Pdf of foto toevoegen')}
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">${ic('send')} Versturen naar alle ouders</button>
+      <p class="small muted">Alle ouders krijgen een melding. De nieuwsbrief staat daarna bij Berichten, onder Nieuws van Uniek.</p>
+    </form></div>`;
+  },
   notities(r, id){
     const k = kid(id), f = V[r].form;
     if (f.init !== id) { Object.keys(f).forEach(x => delete f[x]); f.init = id; f.med = k.notes.filter(n => n.med).map(n => n.text); f.oth = k.notes.filter(n => !n.med); }
@@ -1662,6 +1719,13 @@ Object.assign(ACT, {
 });
 
 Object.assign(FORM, {
+  nieuwsbrief(r){ syncInputs(r); const f = V[r].form, title = (f.ntitle || '').trim(), body = (f.nbody || '').trim();
+    if (!title || !body) { f.err = 'Vul een titel en tekst in.'; return rerender(r); }
+    const x = {id:++idc, off:0, by:ME().full, title, intro:(f.nintro || '').trim() || body.split('\n')[0].slice(0, 90), body:body.split(/\n\s*\n/), docs:(f.ndocs || []).slice(), read:false, readN:0};
+    S.news.unshift(x); logChange(`Nieuwsbrief "${title}" verstuurd`);
+    V[r].form = {}; V[r].stack = [{v:'nieuwsbrieven'}]; render(r);
+    toast('beg', 'Verstuurd', 'Alle ouders krijgen de nieuwsbrief.');
+    rerender('ouder'); toast('ouder', 'Nieuws van Uniek', title); },
   notities(r, fd, id){ syncInputs(r); const f = V[r].form, k = kid(id);
     const get = key => f[key].map((v, i) => (f[key + '-' + i] ?? v).trim()).filter(Boolean);
     k.notes = [...get('med').map(text => ({med:true, text})), ...get('oth')];

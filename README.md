@@ -9,7 +9,7 @@ De eisen staan in `docs/eisen/`, de klikbare demo in `demo/`. Werkafspraken voor
 | Onderdeel | Status |
 | --- | --- |
 | Context van Opvang Uniek (locaties, adressen, opvangvormen) | Klaar: `docs/context-opvang-uniek.md` |
-| Functionele eisen | Concept met 14 eisen (F-01 t/m F-14), rollen, rechten en schermen: `docs/eisen/functioneel.md` |
+| Functionele eisen | Concept met 15 eisen (F-01 t/m F-15), rollen, rechten en schermen: `docs/eisen/functioneel.md` |
 | Niet-functionele eisen | Concept (NF-01 t/m NF-15): `docs/eisen/niet-functioneel.md` |
 | Besluiten en open vragen | Bijgehouden in `docs/eisen/besluiten.md` |
 | Huisstijl | Logo, beeldmerk en kleuren in `assets/brand/` en in de demo. Lettertype in de demo: Plus Jakarta Sans (nog te bevestigen) |
@@ -40,6 +40,7 @@ Via de keuzelijst op het inlogscherm kun je ook inloggen als een van de andere m
 | Vandaag: aanwezigheid, aangekomen en opgehaald, kind toevoegen aan vandaag | F-11, F-06 |
 | Planning voor ouders: afmelden en extra opvang aanvragen; begeleider plant in | F-12 |
 | Teamgesprek per locatie tussen ouder en begeleiders | F-02 |
+| Nieuwsbrief van Uniek voor alle ouders (bij Berichten) | F-15 |
 | Groepschat van de dag met foto's, met toestemming per kind | F-01, F-03 |
 | Administratie: vakantieplanning, medicatie, indicatie, lezen en akkoord; documenten; status per kind met filter | F-05 |
 | Kinderen en kinddossier, met Goed om te weten (medisch apart, te bewerken) | F-13, F-10 |

@@ -63,13 +63,14 @@ _Mag het kind of de jongere zelf inloggen?_
 | F-12 | **Planning, afmelden en extra opvang aanvragen** | Ouder, begeleider, manager | M | De ouder ziet de komende opvang van het kind, meldt af met een reden en vraagt extra opvang aan (soort, datum, opmerking). De begeleider ziet de aanvragen op Vandaag en kiest *inplannen* of *niet mogelijk*; de ouder krijgt een melding. Een afmelding is direct zichtbaar voor de begeleider. In de demo. |
 | F-13 | **Kinderen en kinddossier** | Begeleider, manager, beheerder | M | Lijst met de kinderen van de locatie (beheerder: alle locaties, met filter). Per kind: leeftijd, status van vandaag, Goed om te weten (F-10), planning, administratie, de gekoppelde ouders met contactgegevens (F-08) en de toestemming voor foto's (F-03). In de demo. |
 | F-14 | **Profiel** | Ouder, begeleider, manager, beheerder | M | De ouder ziet en wijzigt de eigen contactgegevens, ziet de gegevens van het kind, zet meldingen aan of uit en geeft of trekt de foto-toestemming in. Medewerkers zien hun rol en locaties, kunnen van locatie wisselen (niet de beheerder) en uitloggen. In de demo. |
+| F-15 | **Nieuwsbrief van Uniek** | Ouder, manager, beheerder | M | Een algemene nieuwsbrief voor **alle ouders**, los van locaties en groepen. De ouder vindt die bij **Berichten**, als derde onderdeel onderaan: *Nieuws van Uniek*, onder de groep van vandaag en het teamgesprek. Daar staan alle edities, de nieuwste bovenaan; een ongelezen editie heeft het label *Nieuw* en telt mee in de teller op de tab Berichten. **Ouders kunnen niet reageren**; voor vragen verwijst de nieuwsbrief naar het teamgesprek. Managers en beheerders versturen een nieuwsbrief via Beheer › Nieuwsbrief (titel, samenvatting, tekst, bijlagen) en zien per editie hoeveel ouders hem hebben gelezen. Ouders krijgen een melding. In de demo sinds 17-10-2026. |
 
 
 ## 5. Schermen
 
 | Rol | Tabs (menu) | Na het inloggen |
 | --- | --- | --- |
-| Ouder | Vandaag · Planning · Administratie · Berichten · Profiel | Vandaag |
+| Ouder | Vandaag · Planning · Administratie · Berichten (groep van vandaag, teamgesprek, nieuws van Uniek) · Profiel | Vandaag |
 | Begeleider | Vandaag · Kinderen · Administratie · Berichten · Profiel | Eerst locatie kiezen (als er meer dan één is) |
 | Manager | Vandaag · Kinderen · Administratie · Berichten · Profiel · Beheer (op de telefoon vervangt Beheer de tab Profiel) | Eerst locatie kiezen |
 | Beheerder | Planning · Kinderen · Administratie · Beheer · Profiel | Planning van alle locaties |
