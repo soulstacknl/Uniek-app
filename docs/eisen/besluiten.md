@@ -22,6 +22,7 @@ Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname;
 | 17-10-2026 | Binnen Uniek zijn er drie rollen: begeleider, manager en beheerder. Managers en beheerders beheren locaties, medewerkers, ouders en kinderen, en de koppelingen daartussen (F-07). |
 | 17-10-2026 | De beheerder is locatie-onafhankelijk en ziet geen dagplanning. Hij of zij ziet de planning van de komende weken per locatie, en de administratie (open en gesloten) per locatie en voor alle locaties samen (F-09). De manager werkt per locatie. |
 | 17-10-2026 | Testgegevens in de demo: 6 tot 10 kinderen en 3 begeleiders per locatie, 1 of 2 managers per locatie, 5 beheerders. |
+| 17-10-2026 | Alleen in de demo: op het inlogscherm een dag kiezen, zodat je een zaterdag of een doordeweekse dag kunt laten zien. Welke opvang er op een dag is, volgt uit de opvangvormen per locatie. Dit is geen functie van de echte app. |
 | 17-10-2026 | Elk gebouw is een eigen locatie, zoals op de website: 7 locaties (Ulft 2, Didam 3, Bemmel 2). |
 | 17-10-2026 | Administratie is gegroepeerd per kind, niet per status. Statussen per actie: te controleren, klaargezet, goedgekeurd, afgekeurd. Bij lezen en akkoord kan een ouder ook niet akkoord geven. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |

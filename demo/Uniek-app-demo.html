@@ -100,6 +100,7 @@ button.item:hover{background:var(--ground)}
 .c1{background:var(--pink-tint);color:var(--pink-strong)}.c2{background:var(--mint-tint);color:var(--mint)}.c3{background:var(--lilac-tint);color:var(--lilac)}.c4{background:var(--accent-tint);color:#9B2E1C}.c5{background:var(--brand-tint);color:var(--brand)}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
 .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-geen{background:#EDEBE6;color:#5B6478}
 .st-verwacht{background:var(--lilac-tint);color:var(--lilac)}
 .st-aangekomen{background:var(--mint-tint);color:var(--mint)}
 .st-opgehaald{background:#EDEBE6;color:#5B6478}
@@ -248,6 +249,8 @@ label.btn{position:relative}
 .newshead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:12px;border-bottom:3px solid var(--pink)}
 .newshead img{height:34px;width:auto}
 .newsbody p{margin:0 0 10px;font-size:15px;line-height:1.55}
+.demoday{margin-bottom:16px}
+.demoday select{background:var(--sun-tint);border-color:#F2DFA6}
 .medsec{padding:14px;border-radius:18px;background:#FDE3DE;border:1px solid #F5C2B8}
 .noterow{display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
 .noterow textarea.input,.app.webapp .noterow textarea.input{min-height:56px;flex:1}
@@ -339,12 +342,14 @@ label.btn{position:relative}
     <img class="logo" id="bar-logo" alt="Opvang Uniek">
     <h1>Uniek-app</h1>
     <span class="pill">Demo · voorbeeldgegevens</span>
+    <span class="pill" id="demoday" style="color:var(--page-fg)"></span>
     <p>Eerste ontwerp voor ouders en begeleiders van Opvang Uniek. Wat je op de ene telefoon doet, zie je meteen op de andere.</p>
     <button class="reset" id="reset" type="button">Opnieuw beginnen</button>
   </header>
   <details class="tips" id="tips">
     <summary>Wat kun je proberen?</summary>
     <ol>
+      <li>Kies op het inlogscherm een <b>demo-dag</b>, bijvoorbeeld een zaterdag (zaterdagopvang en logeren) of een doordeweekse dag (naschoolse begeleiding en dagbesteding). De demo begint dan opnieuw op die dag.</li>
       <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld. Kies bij de begeleider wie inlogt: Sanne (De Schuur, De Deel en Ulft) of Ruben (De Schuur, Het Voorhuis en de twee Bemmelse locaties). Daarna kiest de begeleider een locatie. Liam zit in Didam – De Schuur.</li>
       <li><b>Beheerder:</b> Hanneke kiest geen locatie. Onder <b>Planning</b> ziet zij alle locaties met de kinderen, medewerkers en de planning van de komende weken. Onder <b>Administratie</b> ziet zij per locatie wat open en gesloten is, of het totaal.</li>
       <li><b>Beheer:</b> log bij de begeleider in als <b>Petra</b> (manager) of <b>Hanneke</b> (beheerder). Onder Beheer schrijf je locaties, medewerkers en ouders met kinderen in of uit, en maak je de koppelingen: medewerker ↔ locatie en ouder ↔ kind.</li>
@@ -385,7 +390,8 @@ document.getElementById('bar-logo').src = LOGO;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');
 const now = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
-const dayDate = off => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+off); return d; };
+let SHIFT = 0;   /* demo: aantal dagen vooruit t.o.v. echt vandaag */
+const dayDate = off => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+off+SHIFT); return d; };
 const fmtDay = (off, long) => {
   if (off === 0) return 'Vandaag';
   if (off === 1) return 'Morgen';
@@ -435,11 +441,13 @@ const mood = n => MOODS.find(m => m.n === n);
 const face = n => { const m = mood(n); return `<svg class="face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="${m.color}" opacity=".16"/><circle cx="12" cy="12" r="10" fill="none" stroke="${m.color}" stroke-width="1.6"/><circle cx="9" cy="10" r="1.2" fill="${m.color}"/><circle cx="15" cy="10" r="1.2" fill="${m.color}"/><path d="${m.mouth}" fill="none" stroke="${m.color}" stroke-width="1.8" stroke-linecap="round"/></svg>`; };
 
 /* ---------- Voorbeeldgegevens ---------- */
-const wd = new Date().getDay();
-const TODAY = wd === 6 ? {type:'Zaterdagopvang', time:'09:30 – 15:30'}
-            : wd === 0 ? {type:'Logeeropvang', time:'10:00 – 16:00'}
-            : {type:'Naschoolse begeleiding', time:'14:30 – 18:00'};
-const STATUS_LABEL = {verwacht:'Verwacht', aangekomen:'Aangekomen', opgehaald:'Opgehaald', afgemeld:'Afgemeld', aangevraagd:'Aangevraagd', gepland:'Gepland', afgewezen:'Niet mogelijk'};
+let wd, TODAY;
+function setDay(){ wd = dayDate(0).getDay();
+  TODAY = wd === 6 ? {type:'Zaterdagopvang', time:'09:30 – 15:30'} : wd === 0 ? {type:'Logeeropvang', time:'10:00 – 16:00'} : {type:'Naschoolse begeleiding', time:'14:30 – 18:00'}; }
+/* Welke opvang er vandaag op een locatie is (volgt LOCPLAN) */
+function todayType(l){ const P = LOCPLAN[l]; if (!P) return null;
+  return wd === 6 ? (P.sat || (P.we ? ['Logeeropvang','vr 16:00 – zo 14:00'] : null)) : wd === 0 ? (P.we ? ['Logeeropvang','vr 16:00 – zo 14:00'] : null) : wd === 5 ? (P.wk || P.we || null) : (P.wk || null); }
+const STATUS_LABEL = {geen:'Geen opvang', verwacht:'Verwacht', aangekomen:'Aangekomen', opgehaald:'Opgehaald', afgemeld:'Afgemeld', aangevraagd:'Aangevraagd', gepland:'Gepland', afgewezen:'Niet mogelijk'};
 const TYPES = ['Dagopvang','Logeeropvang','Naschoolse begeleiding','Zaterdagopvang','Vakantieopvang'];
 const HIGHLIGHTS = ['Buiten gespeeld','Samen gespeeld','Goed gegeten','Rustig moment nodig','Moe','Trots op zichzelf','Nieuwe vaardigheid'];
 
@@ -511,12 +519,11 @@ function genKids(){
 function genPlan(){
   const R = rng(99); let id = 500;
   Object.values(S.kids).forEach(k => {
-    if (k.id === 'liam') return;
     const P = LOCPLAN[k.loc]; if (!P) return;
     const has0 = S.plan.some(p => p.kid === k.id && p.off === 0);
     // vandaag
     if (!has0 && k.id.startsWith('g') && R() < 0.45) {
-      const t = wd === 6 ? (P.sat || P.we) : wd === 0 ? P.we : (P.wk || P.we);
+      const t = todayType(k.loc);
       if (t) { const st = R() < 0.55 ? 'aangekomen' : 'verwacht'; S.plan.push({id:++id, kid:k.id, off:0, type:t[0], time:t[1], status:st, at:st === 'aangekomen' ? ago(20 + Math.floor(R() * 90)) : undefined}); }
     }
     // komende 4 weken
@@ -529,7 +536,7 @@ function genPlan(){
       if (P.sat && d === 6 && R() < 0.7) t = P.sat;
       if (P.we && d === 5 && (week % logeerEvery) === logeerStart) t = P.we;
       if (!t || S.plan.some(p => p.kid === k.id && p.off === off)) continue;
-      const r = R(), status = r < 0.06 ? 'afgemeld' : r < 0.08 ? 'aangevraagd' : 'gepland';
+      const r = R(), status = r < 0.06 ? 'afgemeld' : (r < 0.075 && k.id.startsWith('g')) ? 'aangevraagd' : 'gepland';
       S.plan.push({id:++id, kid:k.id, off, type:t[0], time:t[1], status, reason:status === 'afgemeld' ? pick(R, ['Ziek','Familiebezoek','Afspraak']) : undefined});
     }
   });
@@ -590,9 +597,6 @@ function seed(){
       {id:24, kid:'jesse', off:0, type:TODAY.type, time:TODAY.time, status:'aangekomen', at:ago(20)},
       {id:25, kid:'isa',   off:0, type:TODAY.type, time:TODAY.time, status:'verwacht'},
       {id:23, kid:'lotte', off:4, type:'Dagopvang', time:'09:00 – 16:00', status:'aangevraagd', note:'Studiedag op school'},
-      {id:6, kid:'liam',  off:3,  type:'Naschoolse begeleiding', time:'14:30 – 18:00', status:'gepland'},
-      {id:7, kid:'liam',  off:6,  type:'Logeeropvang', time:'16:00 – zondag 14:00', status:'gepland'},
-      {id:8, kid:'liam',  off:10, type:'Zaterdagopvang', time:'09:30 – 15:30', status:'gepland'},
       {id:9, kid:'liam',  off:-4, type:'Dagopvang', time:'09:00 – 16:00', status:'opgehaald'}
     ],
     threads: {
@@ -620,6 +624,7 @@ function seed(){
   };
   Object.keys(LOCS).forEach(k => delete LOCS[k]); Object.assign(LOCS, JSON.parse(LOCS0));
   Object.keys(STAFF).forEach(k => delete STAFF[k]); Object.assign(STAFF, JSON.parse(STAFF0));
+  S.plan = S.plan.filter(p => { if (p.off !== 0 || p.extra) return true; const tt = todayType(planLoc(p)); if (!tt) return false; p.type = tt[0]; p.time = tt[1]; return true; });
   genKids(); genPlan();
   Object.keys(LOCS).forEach(l => { if (!S.groups[l]) S.groups[l] = [{sys:true, t:ago(30), text:`De groep van vandaag is aangemaakt voor de ouders van de kinderen die vandaag op ${LOCS[l].name} zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto's.`}]; if (S.unread.begGroup[l] == null) S.unread.begGroup[l] = 0; });
   seedParents();
@@ -709,6 +714,7 @@ function loginScreen(r){
     ${o ? `<div class="who"><div class="avatar c1">E</div><div>Demo: je logt in als <b>Eva, moeder van Liam</b>.</div></div>`
        : `<div class="field" style="margin-bottom:6px"><span>Demo: log in als</span></div><div class="choices">${['sanne','ruben','petra','hanneke'].filter(id => STAFF[id] && STAFF[id].active !== false).map(id => STAFF[id]).map(s => `<button class="choice" type="button" data-act="pickstaff" data-v="${s.id}" aria-pressed="${ME().id === s.id}">${s.name} · ${ROLES[s.role].toLowerCase()}</button>`).join('')}</div>
          <label class="field"><span>Of kies een andere medewerker</span><select class="input" data-staffselect="1">${['begeleider','manager','beheerder'].map(role => `<optgroup label="${ROLES[role]}s">${Object.values(STAFF).filter(s => s.active !== false && s.role === role).sort((a,b) => a.full.localeCompare(b.full)).map(s => `<option value="${s.id}" ${ME().id === s.id ? 'selected' : ''}>${s.full}${role === 'beheerder' ? '' : ' · ' + s.locs.map(l => LOCS[l] ? LOCS[l].name.split(' – ').pop() : '').join(', ')}</option>`).join('')}</optgroup>`).join('')}</select></label>`}
+    <label class="field demoday"><span>Demo: kies de dag</span><select class="input" data-dayselect="1">${[...Array(8).keys()].map(i => { const d = new Date(); d.setDate(d.getDate() + i); return `<option value="${i}" ${SHIFT === i ? 'selected' : ''}>${d.toLocaleDateString('nl-NL', {weekday:'long', day:'numeric', month:'long'})}${i === 0 ? ' (echt vandaag)' : ''}</option>`; }).join('')}</select></label>
     <form data-form="login">
       <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : ME().email}"></label>
       <label class="field"><span>Wachtwoord</span><input class="input" type="password" name="pw" autocomplete="current-password" value="demowachtwoord"></label>
@@ -736,8 +742,9 @@ function locationScreen(){
 /* ---------- Ouder ---------- */
 const O = {
   vandaag(){
-    const k = kid('liam'), t = todayOf('liam');
+    const k = kid('liam'), t = todayOf('liam') || {status:'geen', type:'', time:''};
     const line = {
+      geen:'Vandaag geen opvang. Fijne dag samen!',
       verwacht:`${t.type} · ${t.time}`,
       aangekomen:`Om ${t.at} aangekomen in ${LN()}`,
       opgehaald:`Om ${t.at} opgehaald. Tot de volgende keer!`,
@@ -821,11 +828,12 @@ const B = {
         ${p.note ? `<p class="small" style="margin:10px 0 0">“${esc(p.note)}”</p>` : ''}
         <div class="btns" style="margin-top:12px"><button class="btn sm" type="button" data-act="approve" data-id="${p.id}">${ic('check')} Inplannen</button><button class="btn ghost sm" type="button" data-act="decline" data-id="${p.id}">Niet mogelijk</button></div></div>`; }).join('')}` : ''}
       ${toCheck(loc).length ? `<button class="card" type="button" data-act="tab" data-v="acties" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer"><div class="avatar c1">${ic('task').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div style="font-weight:800">${toCheck(loc).length} ${toCheck(loc).length === 1 ? 'actie' : 'acties'} te controleren</div><div class="small muted">Ingevuld door ouders</div></div>${ic('chev').replace('<svg','<svg style="width:18px;height:18px"')}</button>` : ''}
-      <div class="eyebrow">${TODAY.type} · ${TODAY.time}</div>
+      <div class="eyebrow">Vandaag op ${LOCS[loc].name}${todayType(loc) ? ' · ' + todayType(loc)[0].toLowerCase() : ''}</div>
+      ${today.length ? '' : `<div class="card empty">Vandaag is er geen opvang gepland op ${LOCS[loc].name}.</div>`}
       <div class="list">${today.sort((a,b) => order[a.status] - order[b.status]).map(p => { const k = kid(p.kid);
         const action = p.status === 'verwacht' ? `<button class="btn sm" type="button" data-act="checkin" data-id="${p.id}">Aangekomen</button>`
                      : p.status === 'aangekomen' ? `<button class="btn ghost sm" type="button" data-act="checkout" data-id="${p.id}">Opgehaald</button>` : chip(p.status);
-        const sub = p.status === 'aangekomen' ? `Binnen sinds ${p.at}` : p.status === 'opgehaald' ? `Opgehaald om ${p.at}` : p.status === 'afgemeld' ? `Afgemeld${p.reason ? ' · ' + esc(p.reason) : ''}` : 'Nog niet binnen';
+        const sub = p.status === 'aangekomen' ? `Binnen sinds ${p.at}` : p.status === 'opgehaald' ? `Opgehaald om ${p.at}` : p.status === 'afgemeld' ? `Afgemeld${p.reason ? ' · ' + esc(p.reason) : ''}` : `${p.type} · ${p.time}`;
         return `<div class="item" style="cursor:default"><button class="avatar ${k.c}" style="border:0;cursor:pointer" type="button" data-act="open" data-v="kind" data-id="${k.id}" aria-label="${k.first} openen">${initials(k)}</button><button class="grow" type="button" data-act="open" data-v="kind" data-id="${k.id}" style="border:0;background:none;text-align:left;padding:0;cursor:pointer"><div class="t">${k.first} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${sub}${p.extra ? ` · <b style="color:var(--brand)">extra</b>${k.loc !== loc ? ' (vaste locatie ' + LOCS[k.loc].name + ')' : ''}` : ''}</div></button>${action}</div>`; }).join('')}</div>
       <button class="btn ghost block" type="button" data-act="open" data-v="kindtoevoegen" style="margin-bottom:10px">${ic('plus')} Kind toevoegen aan vandaag</button>
       <button class="btn block" type="button" data-act="open" data-v="groep">${ic('camera')} Groepschat${S.unread.begGroup[loc] ? ` <span class="chip" style="background:var(--accent);color:#fff;padding:2px 7px">${S.unread.begGroup[loc]}</span>` : ''}</button>
@@ -1799,6 +1807,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const i = e.target;
+  if (i.matches('[data-dayselect]')) { const role = i.closest('.phone').dataset.role; SHIFT = +i.value; const u = V.beg.user; setDay(); seed(); V.beg.user = u; renderAll(); updDay(); toast(role, 'Demo-dag gewijzigd', 'De demo begint opnieuw op ' + dayDate(0).toLocaleDateString('nl-NL', {weekday:'long', day:'numeric', month:'long'}) + '.'); return; }
   if (i.matches('[data-staffselect]')) { V.beg.user = i.value; render('beg'); return; }
   if (i.matches('[data-docfile]') && i.files.length) { const r = i.closest('.phone').dataset.role, k = i.dataset.docfile; syncInputs(r); const f = V[r].form; f[k] = f[k] || [];
     [...i.files].forEach(file => f[k].push({name:file.name, size:file.size, url:URL.createObjectURL(file)})); f.err = ''; rerender(r); return; }
@@ -1812,7 +1821,8 @@ document.getElementById('reset').addEventListener('click', () => { seed(); rende
 const tick = () => document.querySelectorAll('.clock').forEach(c => c.textContent = now());
 setInterval(tick, 15000); tick();
 if (matchMedia('(min-width: 820px)').matches) document.getElementById('tips').open = true;
-seed(); renderAll();
+function updDay(){ document.getElementById('demoday').textContent = 'Demo-dag: ' + dayDate(0).toLocaleDateString('nl-NL', {weekday:'long', day:'numeric', month:'long'}); }
+setDay(); seed(); renderAll(); updDay();
 if (matchMedia('(min-width: 1200px)').matches) setWeb(true);
 })();
 </script>

@@ -21,6 +21,8 @@ De eisen staan in `docs/eisen/`, de klikbare demo in `demo/`. Werkafspraken voor
 
 Eén los HTML-bestand, zonder backend: open `demo/Uniek-app-demo.html` in een browser. Links staat de telefoon van een ouder, rechts de begeleiderskant (als telefoon of als webbrowser). Wat je aan de ene kant doet, zie je meteen aan de andere kant. **Opnieuw beginnen** zet alles terug.
 
+**Demo-dag kiezen:** op het inlogscherm kies je een dag (vandaag en de 7 dagen daarna). Zo zie je hoe een zaterdag werkt (zaterdagopvang in De Schuur, logeren) of een doordeweekse dag (naschoolse begeleiding, dagbesteding in Oersterk). Op zondag is er alleen logeeropvang. De demo begint dan opnieuw op die dag; de gekozen dag staat bovenaan de pagina.
+
 ### Inloggen in de demo
 
 | Wie | Rol | Locaties |
