@@ -17,13 +17,13 @@
 | 17-10-2026 | De begeleider kan de app ook in de webbrowser gebruiken (zie NF-01). De demo laat beide weergaven zien. |
 | 17-10-2026 | Bij administratieacties kunnen documenten worden meegestuurd, door Uniek en door de ouder. Akkoord geven gaat met een vinkje (geen getypte naam); de app legt vast wie en wanneer. |
 | 17-10-2026 | Begeleiders hebben een persoonlijke inlog en kiezen daarna een locatie. Chats met ouders zijn teamgesprekken per locatie: alle begeleiders van die locatie zien alle berichten, met de naam van de afzender. |
+| 17-10-2026 | Binnen Uniek zijn er drie rollen: begeleider, manager en beheerder. Managers en beheerders beheren locaties, medewerkers, ouders en kinderen, en de koppelingen daartussen (F-07). |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen
 
 - Welke functies heeft de eerste versie? (zie `functioneel.md`)
 - Mag het kind of de jongere zelf inloggen?
-- Zijn er naast ouder en begeleider nog andere rollen, zoals een beheerder of planner?
 - Is er een koppeling met een bestaand cliëntsysteem nodig?
 - Welke bewaartermijn geldt voor de gegevens?
 - Groepschat: wordt de foto-toestemming bij de intake op papier vastgelegd en door de begeleiding ingevoerd, of geeft de ouder die alleen in de app? (In de demo doet de ouder het in de app.)
@@ -42,3 +42,6 @@
 - Akkoord met een vinkje: is dat juridisch voldoende voor bijvoorbeeld een zorgovereenkomst, of is een digitale handtekening nodig?
 - Teamgesprek: moet een begeleider een gesprek kunnen 'oppakken' of markeren als afgehandeld, zodat collega's weten dat iemand al reageert?
 - Teamgesprek: zijn berichten van ouders 'gelezen' als één begeleider ze heeft gelezen, of houdt elke begeleider een eigen leesstand bij?
+- Beheer: wat is het verschil tussen manager en beheerder? Bijvoorbeeld: een manager beheert alleen de eigen locaties, een beheerder alles. Of mag alleen de beheerder rollen toekennen?
+- Beheer: zien managers en beheerders de chats en medische gegevens van alle locaties, of alleen de locaties waaraan ze gekoppeld zijn?
+- Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)

@@ -30,7 +30,7 @@ Deze app volgt de opzet van de BPB-app in `C:\GIT\BPB app`: dezelfde techniek, m
 - **Taal:** alle teksten in de app en de ontwerpen zijn Nederlands. Namen in code en database zijn Engels. Houd een vertaaltabel bij in de README, zoals bij BPB.
 - **Toon:** warm, duidelijk en toegankelijk, op B1-niveau. Schrijf voor ouders, niet voor vakgenoten.
 - **Huisstijl:** herkenbaar Uniek (logo en hoofdkleuren), maar moderner en frisser dan de huidige website. Logo: `assets/brand/logo-opvang-uniek.png`, beeldmerk (de twee figuren): `assets/brand/beeldmerk-uniek.png`. Kleuren uit het logo: blauw `#0A62AB` en magenta `#D92A82`. Aanvullend: donkerblauw `#0B2F5B` voor tekst, en lichte tinten `#E4EFFA` (blauw) en `#FCE6F1` (roze). Kleuren en lettertypes staan op één plek in `app/src/lib/theme.ts` en worden in de demo gelijk gehouden.
-- **Rollen:** ouder en begeleider. Verdere rollen en rechten staan in `functioneel.md`.
+- **Rollen:** ouder, begeleider, manager en beheerder. De rechten per rol staan in `functioneel.md` (hoofdstuk 3).
 
 ## Privacy: altijd
 

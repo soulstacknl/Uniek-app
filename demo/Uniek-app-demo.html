@@ -306,6 +306,7 @@ label.btn{position:relative}
     <summary>Wat kun je proberen?</summary>
     <ol>
       <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld. Kies bij de begeleider wie inlogt: Sanne (Didam en Ulft) of Ruben (Didam en Bemmel). Daarna kiest de begeleider een locatie. Liam zit in Didam.</li>
+      <li><b>Beheer:</b> log bij de begeleider in als <b>Petra</b> (manager) of <b>Hanneke</b> (beheerder). Onder Beheer schrijf je locaties, medewerkers en ouders met kinderen in of uit, en maak je de koppelingen: medewerker ↔ locatie en ouder ↔ kind.</li>
       <li>Chats met ouders zijn teamgesprekken: alle begeleiders van een locatie zien ze. Log eens uit en in als Ruben: je ziet de berichten van Sanne, met haar naam erbij.</li>
       <li>Begeleider: tik bij Liam op <b>Aangekomen</b>. De ouder krijgt meteen een melding.</li>
       <li>Hoe de dag ging, deelt de begeleider met de ouder via de 1-op-1-chat (bij het kind: <b>Bericht aan Eva</b>).</li>
@@ -373,6 +374,7 @@ const ICONS = {
   task:'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',
   pill:'<path d="M10.6 3.6a5 5 0 0 1 7.1 7.1l-7 7a5 5 0 0 1-7.1-7.1z"/><path d="M7.1 7.1l7.1 7.1"/>',
   doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 6.5l2.2 1.6M17.6 15.9l2.2 1.6M2.5 12h3M18.5 12h3M4.2 17.5l2.2-1.6M17.6 8.1l2.2-1.6"/><circle cx="12" cy="12" r="7"/>',
   bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'
 };
 const ic = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
@@ -396,12 +398,16 @@ const STATUS_LABEL = {verwacht:'Verwacht', aangekomen:'Aangekomen', opgehaald:'O
 const TYPES = ['Dagopvang','Logeeropvang','Naschoolse begeleiding','Zaterdagopvang','Vakantieopvang'];
 const HIGHLIGHTS = ['Buiten gespeeld','Samen gespeeld','Goed gegeten','Rustig moment nodig','Moe','Trots op zichzelf','Nieuwe vaardigheid'];
 
-const LOCS = {ulft:{name:'Ulft'}, didam:{name:'Didam'}, bemmel:{name:'Bemmel'}};
+const LOCS = {ulft:{name:'Ulft', addr:'Emailleplein 13, Ulft', active:true}, didam:{name:'Didam', addr:'Locatie Didam', active:true}, bemmel:{name:'Bemmel', addr:'Locatie Bemmel', active:true}};
 /* Begeleiders met een eigen account; elk gekoppeld aan één of meer locaties */
 const STAFF = {
-  sanne:{id:'sanne', name:'Sanne', full:'Sanne Willemsen', email:'sanne@opvanguniek.nl', locs:['didam','ulft'], c:'c2'},
-  ruben:{id:'ruben', name:'Ruben', full:'Ruben Hendriksen', email:'ruben@opvanguniek.nl', locs:['didam','bemmel'], c:'c5'}
+  sanne:{id:'sanne', name:'Sanne', full:'Sanne Willemsen', email:'sanne@opvanguniek.nl', locs:['didam','ulft'], c:'c2', role:'begeleider', active:true},
+  ruben:{id:'ruben', name:'Ruben', full:'Ruben Hendriksen', email:'ruben@opvanguniek.nl', locs:['didam','bemmel'], c:'c5', role:'begeleider', active:true},
+  petra:{id:'petra', name:'Petra', full:'Petra Kok', email:'petra@opvanguniek.nl', locs:['ulft','didam','bemmel'], c:'c4', role:'manager', active:true},
+  hanneke:{id:'hanneke', name:'Hanneke', full:'Hanneke de Boer', email:'hanneke@opvanguniek.nl', locs:['ulft','didam','bemmel'], c:'c3', role:'beheerder', active:true}
 };
+const LOCS0 = JSON.stringify(LOCS), STAFF0 = JSON.stringify(STAFF);
+const myLocs = () => ME().locs.filter(l => LOCS[l] && LOCS[l].active !== false);
 const ME = () => STAFF[(V && V.beg.user) || 'sanne'];
 let S, V, idc = 100, WEB = false;
 function seed(){
@@ -462,6 +468,9 @@ function seed(){
     ]},
     unread: {ouderMsg:0, ouderGroup:2, begGroup:{didam:0, ulft:0, bemmel:0}, beg:{liam:1, mila:0, lotte:1}}
   };
+  Object.keys(LOCS).forEach(k => delete LOCS[k]); Object.assign(LOCS, JSON.parse(LOCS0));
+  Object.keys(STAFF).forEach(k => delete STAFF[k]); Object.assign(STAFF, JSON.parse(STAFF0));
+  seedParents();
   seedActions();
   V = {
     ouder:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false},
@@ -479,7 +488,7 @@ const myLoc = r => r === 'beg' ? V.beg.loc : 'didam';
 const locUnread = loc => Object.entries(S.unread.beg).filter(([id]) => kid(id).loc === loc).reduce((a,[,n]) => a+n, 0) + (S.unread.begGroup[loc] || 0);
 const begUnread = () => V.beg.loc ? locUnread(V.beg.loc) : 0;
 const planLoc = p => p.loc || kid(p.kid).loc;
-const groupKids = loc => S.plan.filter(p => p.off === 0 && p.status !== 'afgemeld' && planLoc(p) === loc).map(p => kid(p.kid));
+const groupKids = loc => S.plan.filter(p => p.off === 0 && p.status !== 'afgemeld' && planLoc(p) === loc && kid(p.kid).active !== false).map(p => kid(p.kid));
 const ouderInGroup = () => groupKids('didam').some(k => k.id === 'liam');
 const lastGroup = loc => S.groups[loc].filter(m => !m.sys).at(-1);
 const preview = m => m ? (m.who + ': ' + (m.photo || m.src ? '📷 Foto' + (m.text ? ' · ' + m.text : '') : m.text)) : '';
@@ -499,6 +508,10 @@ const TABS = {
   ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['acties','Administratie','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']],
   beg:[['vandaag','Vandaag','home'],['kinderen','Kinderen','users'],['acties','Administratie','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']]
 };
+function tabsFor(r){
+  if (r !== 'beg' || !isAdmin()) return TABS[r];
+  return WEB ? [...TABS.beg, ['beheer','Beheer','gear']] : [...TABS.beg.filter(x => x[0] !== 'profiel'), ['beheer','Beheer','gear']];
+}
 function tabbar(r){
   const badge = t => {
     let n = 0;
@@ -510,7 +523,7 @@ function tabbar(r){
     return n ? `<span class="badge" aria-label="${n} nieuw">${n}</span>` : '';
   };
   const web = r === 'beg' && WEB;
-  return `<nav class="tabbar" aria-label="Menu">${web ? `<img class="side-logo" src="${LOGO}" alt="Opvang Uniek">` : ''}${TABS[r].map(([id,label,icon]) =>
+  return `<nav class="tabbar" aria-label="Menu">${web ? `<img class="side-logo" src="${LOGO}" alt="Opvang Uniek">` : ''}${tabsFor(r).map(([id,label,icon]) =>
     `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}${web ? `<div class="side-foot"><b>${ME().full}</b>Locatie ${LOCS[V.beg.loc].name}<br><button class="linkbtn" type="button" data-act="chooseloc">Andere locatie</button> · <button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>` : ''}</nav>`;
 }
 const oHello = (small, title) => `<div class="hello"><small>${small}</small><h2>${title}</h2></div>`;
@@ -524,7 +537,7 @@ function loginScreen(r){
     <h2>${o ? 'Fijn dat je er bent' : 'Welkom terug'}</h2>
     <p class="lead">${o ? 'Zie hoe het met je kind gaat, wat er gepland staat en praat met de begeleiding.' : 'Je groep van vandaag, acties en contact met ouders op één plek.'}</p>
     ${o ? `<div class="who"><div class="avatar c1">E</div><div>Demo: je logt in als <b>Eva, moeder van Liam</b>.</div></div>`
-       : `<div class="field" style="margin-bottom:6px"><span>Demo: log in als</span></div><div class="choices">${Object.values(STAFF).map(s => `<button class="choice" type="button" data-act="pickstaff" data-v="${s.id}" aria-pressed="${ME().id === s.id}">${s.name} · ${s.locs.map(l => LOCS[l].name).join(' en ')}</button>`).join('')}</div>`}
+       : `<div class="field" style="margin-bottom:6px"><span>Demo: log in als</span></div><div class="choices">${Object.values(STAFF).filter(s => s.active !== false).map(s => `<button class="choice" type="button" data-act="pickstaff" data-v="${s.id}" aria-pressed="${ME().id === s.id}">${s.name} · ${ROLES[s.role].toLowerCase()}</button>`).join('')}</div>`}
     <form data-form="login">
       <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : ME().email}"></label>
       <label class="field"><span>Wachtwoord</span><input class="input" type="password" name="pw" autocomplete="current-password" value="demowachtwoord"></label>
@@ -541,10 +554,10 @@ function locationScreen(){
     <div class="brand" style="margin:18px 0 22px"><img src="${LOGO}" alt="Opvang Uniek" style="height:46px"></div>
     <h2>Waar werk je vandaag?</h2>
     <p class="lead">Kies de locatie. Je ziet dan alleen de kinderen, berichten en de groepschat van die locatie. Wisselen kan altijd.</p>
-    <div class="list">${ME().locs.map(l => { const today = S.plan.filter(p => p.off === 0 && planLoc(p) === l);
+    <div class="list">${myLocs().map(l => { const today = S.plan.filter(p => p.off === 0 && planLoc(p) === l && kid(p.kid).active !== false);
       const n = today.filter(p => p.status !== 'afgemeld').length, u = locUnread(l) + requests(l).length;
       return `<button class="item" type="button" data-act="setloc" data-v="${l}" style="min-height:76px"><div class="avatar c5">${ic('pin').replace('<svg','<svg style="width:22px;height:22px"')}</div><div class="grow"><div class="t" style="font-size:17px">${LOCS[l].name}</div><div class="s">${n} ${n === 1 ? 'kind' : 'kinderen'} vandaag · ${TODAY.type.toLowerCase()}</div></div>${u ? `<span class="chip st-afgemeld" style="padding:4px 8px">${u} nieuw</span>` : ''}${ic('chev')}</button>`; }).join('')}</div>
-    <p class="small muted" style="margin:6px 4px">Je bent gekoppeld aan ${ME().locs.map(l => LOCS[l].name).join(' en ')}. Klopt dat niet? Neem contact op met de planning.</p>
+    <p class="small muted" style="margin:6px 4px">Je bent gekoppeld aan ${myLocs().map(l => LOCS[l].name).join(', ')}. Klopt dat niet? Neem contact op met de planning.</p>
     <div class="foot"><button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>
   </div>`;
 }
@@ -617,13 +630,13 @@ const O = {
 const B = {
   vandaag(){
     const loc = V.beg.loc, L = LOCS[loc].name;
-    const today = S.plan.filter(p => p.off === 0 && planLoc(p) === loc);
+    const today = S.plan.filter(p => p.off === 0 && planLoc(p) === loc && kid(p.kid).active !== false);
     const cnt = st => today.filter(p => p.status === st).length;
     const order = {aangekomen:0, verwacht:1, opgehaald:2, afgemeld:3};
     const req = requests(loc);
     return `<div class="screen">
       <div class="hello"><small>${greeting()}, ${ME().name} · ${dayDate(0).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})}</small>
-        <button class="locbtn" type="button" data-act="chooseloc" aria-label="Locatie wisselen, nu ${L}">${ic('pin')}<span>${L}</span>${ME().locs.length > 1 ? `<em>Wissel</em>` : ''}</button></div>
+        <button class="locbtn" type="button" data-act="chooseloc" aria-label="Locatie wisselen, nu ${L}">${ic('pin')}<span>${L}</span>${myLocs().length > 1 ? `<em>Wissel</em>` : ''}</button></div>
       <div class="row" style="gap:8px;margin-bottom:14px">
         <div class="stat"><b>${cnt('aangekomen')}</b><span>Aanwezig</span></div>
         <div class="stat"><b>${cnt('verwacht')}</b><span>Verwacht</span></div>
@@ -647,7 +660,7 @@ const B = {
   kinderen(){
     return `<div class="screen">
       <div class="hello"><small>Locatie ${LOCS[V.beg.loc].name}</small><h2>Kinderen</h2></div>
-      <div class="list">${Object.values(S.kids).filter(k => k.loc === V.beg.loc).map(k => { const t = todayOf(k.id); return `<button class="item" type="button" data-act="open" data-v="kind" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.name}</div><div class="s">${k.age} jaar · ouder: ${k.parent}${k.photoOk ? '' : ' · <b style="color:#A0321F">geen foto\'s</b>'}</div></div>${t ? chip(t.status) : ''}${ic('chev')}</button>`; }).join('')}</div>
+      <div class="list">${Object.values(S.kids).filter(k => k.active !== false && k.loc === V.beg.loc).map(k => { const t = todayOf(k.id); return `<button class="item" type="button" data-act="open" data-v="kind" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.name}</div><div class="s">${k.age} jaar · ouder: ${k.parent}${k.photoOk ? '' : ' · <b style="color:#A0321F">geen foto\'s</b>'}</div></div>${t ? chip(t.status) : ''}${ic('chev')}</button>`; }).join('')}</div>
     </div>`;
   },
   berichten(){
@@ -664,8 +677,8 @@ const B = {
   profiel(){
     return `<div class="screen">
       <div class="hello"><small>Profiel</small><h2>${ME().full}</h2></div>
-      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>${ME().email}</dd><dt>Functie</dt><dd>Begeleider</dd><dt>Locaties</dt><dd>${ME().locs.map(l => LOCS[l].name).join(', ')}</dd><dt>Nu actief</dt><dd>${LOCS[V.beg.loc].name}</dd></dl></div>
-      ${ME().locs.length > 1 ? `<button class="btn ghost block" type="button" data-act="chooseloc" style="margin-bottom:12px">${ic('pin')} Andere locatie kiezen</button>` : ''}
+      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>${ME().email}</dd><dt>Rol</dt><dd>${ROLES[ME().role]}</dd><dt>Locaties</dt><dd>${ME().locs.map(l => LOCS[l].name).join(', ')}</dd><dt>Nu actief</dt><dd>${LOCS[V.beg.loc].name}</dd></dl></div>
+      ${myLocs().length > 1 ? `<button class="btn ghost block" type="button" data-act="chooseloc" style="margin-bottom:12px">${ic('pin')} Andere locatie kiezen</button>` : ''}
       <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Berichten en verzoeken van ouders</div></div><span class="chip st-aangekomen">Aan</span></div></div>
       <button class="btn ghost block" type="button" data-act="logout">Uitloggen</button>
     </div>`;
@@ -765,7 +778,7 @@ function render(r){
   const el = phone(r), app = el.querySelector('.app'), v = V[r];
   const keepScroll = app.querySelector('.screen:not([data-scroll])')?.scrollTop || 0;
   const web = r === 'beg' && WEB;
-  if (r === 'beg') document.getElementById('beglabel').textContent = `${ME().name}, locaties ${ME().locs.map(l => LOCS[l].name).join(' en ')}`;
+  if (r === 'beg') document.getElementById('beglabel').textContent = `${ME().name} (${ROLES[ME().role].toLowerCase()}), ${myLocs().length === activeLocs().length && myLocs().length > 2 ? 'alle locaties' : 'locaties ' + myLocs().map(l => LOCS[l].name).join(' en ')}`;
   app.classList.toggle('webapp', false);
   if (web) el.querySelector('.url').textContent = 'app.opvanguniek.nl/' + (!v.auth ? 'inloggen' : !v.loc ? 'locatie' : (v.stack.at(-1)?.v || v.tab));
   if (!v.auth) { app.innerHTML = loginScreen(r); return; }
@@ -839,7 +852,9 @@ function postGroup(r, extra){
 
 const FORM = {
   groupsend(r){ postGroup(r); },
-  login(r){ V[r].auth = true; V[r].tab = 'vandaag'; V[r].stack = []; if (r === 'beg') V.beg.loc = ME().locs.length === 1 ? ME().locs[0] : null; render(r); },
+  login(r){ if (r === 'ouder' && S.parents.eva && S.parents.eva.active === false) { toast('ouder', 'Account afgesloten', 'Dit account is afgesloten. Neem contact op met Opvang Uniek.'); return; }
+    if (r === 'beg' && ME().active === false) { V.beg.user = Object.values(STAFF).find(s => s.active !== false).id; render('beg'); return; }
+    V[r].auth = true; V[r].tab = 'vandaag'; V[r].stack = []; if (r === 'beg') V.beg.loc = myLocs().length === 1 ? myLocs()[0] : null; render(r); },
   send(r, fd, id){
     const text = (fd.get('msg') || '').trim(); if (!text) return;
     const who = r === 'ouder' ? 'Eva' : ME().name;
@@ -900,6 +915,12 @@ const ACT_ST = {
 };
 function makeDoc(title, html){
   try { return URL.createObjectURL(new Blob([`<!doctype html><meta charset="utf-8"><title>${title}</title><body style="font:16px/1.6 system-ui;max-width:680px;margin:40px auto;padding:0 20px;color:#0B2F5B"><p style="color:#C21F72;font-weight:700">VOORBEELD · demo Uniek-app</p>${html}</body>`], {type:'text/html'})); } catch (e) { return ''; }
+}
+function seedParents(){
+  S.parents = {}; S.log = [];
+  Object.values(S.kids).forEach(k => { const pid = k.id === 'liam' ? 'eva' : 'par_' + k.id;
+    S.parents[pid] = {id:pid, name:k.parent, email:k.parent.split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z]/g, '') + '@voorbeeld.nl', active:true};
+    k.parents = [pid]; k.active = true; });
 }
 function seedActions(){
   S.batches = [
@@ -986,7 +1007,7 @@ B.acties = function(){
 Object.assign(SCREENS, {
   kindtoevoegen(r){
     const loc = V.beg.loc, f = V[r].form; f.lf = f.lf || 'alle';
-    const kids = Object.values(S.kids).sort((a,b) => a.name.localeCompare(b.name, 'nl'));
+    const kids = Object.values(S.kids).filter(k => k.active !== false).sort((a,b) => a.name.localeCompare(b.name, 'nl'));
     const where = id => S.plan.find(p => p.kid === id && p.off === 0 && p.status !== 'afgemeld');
     return header('Kind toevoegen') + `<div class="screen">
       <p class="small muted" style="margin:2px 2px 12px">Alle kinderen van Opvang Uniek. Kies een kind om het vandaag toe te voegen aan ${LOCS[loc].name}.</p>
@@ -1049,7 +1070,7 @@ Object.assign(SCREENS, {
     </div>`;
   },
   nieuweactie(r){
-    const loc = V.beg.loc, f = V[r].form, kids = Object.values(S.kids).filter(k => k.loc === loc);
+    const loc = V.beg.loc, f = V[r].form, kids = Object.values(S.kids).filter(k => k.active !== false && k.loc === loc);
     f.to = f.to || 'all'; f.kids = f.kids || [];
     const t = f.type;
     return header('Nieuwe actie') + `<div class="screen"><form data-form="nieuweactie">
@@ -1173,7 +1194,7 @@ Object.assign(FORM, {
     const fail = m => { f.err = m; rerender(r); };
     if (!f.type) return fail('Kies wat ouders moeten doen.');
     if (f.type === 'vakantie' && !f.period) return fail('Kies de vakantie.');
-    const kids = f.to === 'all' ? Object.values(S.kids).filter(k => k.loc === loc).map(k => k.id) : f.kids;
+    const kids = f.to === 'all' ? Object.values(S.kids).filter(k => k.active !== false && k.loc === loc).map(k => k.id) : f.kids;
     if (!kids.length) return fail('Kies minstens één ouder.');
     const due = isoToOff(f.due || offToIso(14)); if (due < 1) return fail('Kies een datum vanaf morgen.');
     const title = (f.title || '').trim() || ACT_TYPES[f.type].label;
@@ -1192,6 +1213,216 @@ function setWeb(on){
   document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.view === 'web') === on));
   render('beg');
 }
+/* ---------- Beheer (manager en beheerder) ---------- */
+const ROLES = {begeleider:'Begeleider', manager:'Manager', beheerder:'Beheerder'};
+const isAdmin = () => ['manager','beheerder'].includes(ME().role);
+const logChange = text => S.log.unshift({t:now(), who:ME().name, text});
+const activeLocs = () => Object.keys(LOCS).filter(l => LOCS[l].active !== false);
+function syncParent(k){ const ps = (k.parents || []).map(id => S.parents[id]).filter(p => p && p.active !== false); k.parent = ps[0] ? ps[0].name : 'Geen ouder gekoppeld'; }
+const statusChip = on => on === false ? '<span class="chip st-afgemeld">Uitgeschreven</span>' : '<span class="chip st-aangekomen">Actief</span>';
+const roleChip = role => `<span class="chip ${role === 'begeleider' ? 'st-gepland' : role === 'manager' ? 'st-aangevraagd' : 'st-verwacht'}">${ROLES[role]}</span>`;
+
+B.beheer = function(){
+  const locs = Object.keys(LOCS), staff = Object.values(STAFF), kids = Object.values(S.kids), pars = Object.values(S.parents);
+  const row = (v, icon, title, sub) => `<button class="item" type="button" data-act="open" data-v="${v}"><div class="avatar c5">${ic(icon).replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${title}</div><div class="s">${sub}</div></div>${ic('chev')}</button>`;
+  return `<div class="screen">
+    <div class="hello"><small>${ROLES[ME().role]} · ${ME().full}</small><h2>Beheer</h2></div>
+    <div class="list">
+      ${row('locaties', 'pin', 'Locaties', `${locs.filter(l => LOCS[l].active !== false).length} actief${locs.some(l => LOCS[l].active === false) ? ' · ' + locs.filter(l => LOCS[l].active === false).length + ' uitgeschreven' : ''}`)}
+      ${row('medewerkers', 'users', 'Medewerkers', `${staff.filter(s => s.active !== false).length} actief · begeleiders, managers en beheerders`)}
+      ${row('gezinnen', 'user', 'Ouders en kinderen', `${kids.filter(k => k.active !== false).length} kinderen · ${pars.filter(p => p.active !== false).length} ouders`)}
+    </div>
+    ${WEB ? '' : `<button class="btn ghost block" type="button" data-act="tab" data-v="profiel" style="margin-bottom:6px">${ic('user')} Mijn profiel</button>`}
+    <div class="eyebrow">Laatste wijzigingen</div>
+    ${S.log.length ? `<div class="list">${S.log.slice(0, 6).map(x => `<div class="item" style="cursor:default;min-height:0"><div class="grow"><div class="s" style="color:var(--ink)">${esc(x.text)}</div><div class="s">${x.who} · ${x.t}</div></div></div>`).join('')}</div>` : '<div class="card empty">Nog geen wijzigingen vandaag.</div>'}
+    <p class="small muted" style="margin:4px">Alleen managers en beheerders zien Beheer. Elke wijziging wordt vastgelegd met naam en tijd.</p>
+  </div>`;
+};
+
+Object.assign(SCREENS, {
+  locaties(r){
+    return header('Locaties') + `<div class="screen">
+      <button class="btn block" type="button" data-act="open" data-v="locatienieuw" style="margin-bottom:12px">${ic('plus')} Locatie toevoegen</button>
+      <div class="list">${Object.entries(LOCS).map(([id, L]) => { const ns = Object.values(STAFF).filter(s => s.active !== false && s.locs.includes(id)).length, nk = Object.values(S.kids).filter(k => k.active !== false && k.loc === id).length;
+        return `<button class="item" type="button" data-act="open" data-v="locatie" data-id="${id}" ${L.active === false ? 'style="opacity:.6"' : ''}><div class="avatar c5">${ic('pin').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${esc(L.name)}</div><div class="s">${ns} medewerkers · ${nk} kinderen</div></div>${statusChip(L.active)}</button>`; }).join('')}</div>
+    </div>`;
+  },
+  locatie(r, id){
+    const L = LOCS[id], kids = Object.values(S.kids).filter(k => k.active !== false && k.loc === id);
+    return header(L.name) + `<div class="screen">
+      <div class="card"><div class="row"><div class="avatar lg c5">${ic('pin').replace('<svg','<svg style="width:26px;height:26px"')}</div><div class="grow"><h3 style="font-size:19px">${esc(L.name)}</h3><div class="small muted" style="margin-bottom:6px">${esc(L.addr || '')}</div>${statusChip(L.active)}</div></div></div>
+      <div class="eyebrow">Medewerkers op deze locatie</div>
+      <p class="small muted" style="margin:-4px 2px 8px">Vink aan wie hier werkt. Zij kunnen deze locatie kiezen na het inloggen.</p>
+      ${Object.values(STAFF).filter(s => s.active !== false).map(s => `<button class="check" type="button" data-act="linkstaffloc" data-s="${s.id}" data-l="${id}" aria-pressed="${s.locs.includes(id)}" style="margin-bottom:8px"><span class="box">${s.locs.includes(id) ? ic('check') : ''}</span><span class="grow">${s.full}</span>${roleChip(s.role)}</button>`).join('')}
+      <div class="eyebrow">Kinderen (${kids.length})</div>
+      <div class="card small">${kids.length ? kids.map(k => esc(k.first)).join(', ') : 'Nog geen kinderen.'}</div>
+      ${L.active === false ? `<button class="btn block" type="button" data-act="locactive" data-id="${id}">Locatie weer actief maken</button>`
+        : `<button class="btn ghost block" type="button" data-act="locactive" data-id="${id}" style="color:#A0321F">Locatie uitschrijven</button>${V[r].form.err ? `<div class="err" style="margin-top:10px">${V[r].form.err}</div>` : ''}`}
+    </div>`;
+  },
+  locatienieuw(r){
+    const f = V[r].form;
+    return header('Locatie toevoegen') + `<div class="screen"><form data-form="locatienieuw">
+      <label class="field"><span>Naam van de locatie</span><input class="input" name="lname" value="${esc(f.lname || '')}" placeholder="Bijvoorbeeld: Doetinchem"></label>
+      <label class="field"><span>Adres</span><input class="input" name="laddr" value="${esc(f.laddr || '')}" placeholder="Straat, huisnummer, plaats"></label>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">Locatie toevoegen</button>
+      <p class="small muted">Managers en beheerders worden automatisch aan de nieuwe locatie gekoppeld. Begeleiders koppel je daarna zelf.</p>
+    </form></div>`;
+  },
+  medewerkers(r){
+    const order = {beheerder:0, manager:1, begeleider:2};
+    return header('Medewerkers') + `<div class="screen">
+      <button class="btn block" type="button" data-act="open" data-v="medewerkernieuw" style="margin-bottom:12px">${ic('plus')} Medewerker toevoegen</button>
+      <div class="list">${Object.values(STAFF).sort((a,b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name)).map(s => `<button class="item" type="button" data-act="open" data-v="medewerker" data-id="${s.id}" ${s.active === false ? 'style="opacity:.6"' : ''}><div class="avatar ${s.c}">${s.name[0]}</div><div class="grow"><div class="t">${s.full}${s.id === ME().id ? ' <span class="muted" style="font-weight:500">(jij)</span>' : ''}</div><div class="s">${s.active === false ? 'Uitgeschreven' : s.locs.filter(l => LOCS[l]).map(l => LOCS[l].name).join(', ') || 'Geen locatie'}</div></div>${roleChip(s.role)}</button>`).join('')}</div>
+    </div>`;
+  },
+  medewerker(r, id){
+    const s = STAFF[id], self = id === ME().id;
+    return header(s.full) + `<div class="screen">
+      <div class="card"><div class="row"><div class="avatar lg ${s.c}">${s.name[0]}</div><div class="grow"><h3 style="font-size:19px">${s.full}</h3><div class="small muted" style="margin-bottom:6px">${s.email}</div>${statusChip(s.active)}</div></div></div>
+      <div class="field"><span>Rol</span></div>
+      <div class="choices">${Object.entries(ROLES).map(([k, l]) => `<button class="choice" type="button" ${self ? 'disabled style="opacity:.5"' : `data-act="setrole" data-s="${id}" data-v="${k}"`} aria-pressed="${s.role === k}">${l}</button>`).join('')}</div>
+      ${self ? '<p class="small muted" style="margin:-6px 2px 14px">Je eigen rol kun je niet wijzigen.</p>' : ''}
+      <div class="field"><span>Locaties</span></div>
+      ${activeLocs().map(l => `<button class="check" type="button" data-act="linkstaffloc" data-s="${id}" data-l="${l}" aria-pressed="${s.locs.includes(l)}" style="margin-bottom:8px"><span class="box">${s.locs.includes(l) ? ic('check') : ''}</span><span>${LOCS[l].name}</span></button>`).join('')}
+      <div style="height:8px"></div>
+      ${self ? '' : s.active === false ? `<button class="btn block" type="button" data-act="staffactive" data-id="${id}">Account weer openen</button>`
+        : `<button class="btn ghost block" type="button" data-act="staffactive" data-id="${id}" style="color:#A0321F">Uitschrijven (account afsluiten)</button>`}
+    </div>`;
+  },
+  medewerkernieuw(r){
+    const f = V[r].form; f.role = f.role || 'begeleider'; f.locs = f.locs || [];
+    return header('Medewerker toevoegen') + `<div class="screen"><form data-form="medewerkernieuw">
+      <label class="field"><span>Voor- en achternaam</span><input class="input" name="sname" value="${esc(f.sname || '')}"></label>
+      <label class="field"><span>E-mailadres</span><input class="input" type="email" name="smail" value="${esc(f.smail || '')}" placeholder="naam@opvanguniek.nl"></label>
+      <div class="field"><span>Rol</span></div>
+      <div class="choices">${Object.entries(ROLES).map(([k, l]) => `<button class="choice" type="button" data-act="actpick" data-k="role" data-v="${k}" aria-pressed="${f.role === k}">${l}</button>`).join('')}</div>
+      <div class="field"><span>Locaties</span></div>
+      <div class="choices">${activeLocs().map(l => `<button class="choice" type="button" data-act="actpick" data-k="locs" data-mode="multi" data-v="${l}" aria-pressed="${f.locs.includes(l)}">${LOCS[l].name}</button>`).join('')}</div>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">Uitnodiging versturen</button>
+      <p class="small muted">De medewerker krijgt een e-mail om een wachtwoord te kiezen.</p>
+    </form></div>`;
+  },
+  gezinnen(r){
+    const f = V[r].form;
+    return header('Ouders en kinderen') + `<div class="screen">
+      <button class="btn block" type="button" data-act="open" data-v="gezinnieuw" style="margin-bottom:12px">${ic('plus')} Kind en ouder inschrijven</button>
+      <input class="input" type="search" data-filter="kids" placeholder="Zoek op naam van kind of ouder" aria-label="Zoek" style="margin-bottom:10px" value="${esc(f.q || '')}">
+      <div class="list" id="kidlist">${Object.values(S.kids).sort((a,b) => a.name.localeCompare(b.name, 'nl')).map(k => { const ps = (k.parents || []).map(id => S.parents[id]).filter(Boolean);
+        return `<button class="item" type="button" data-act="open" data-v="kindbeheer" data-id="${k.id}" data-search="${esc((k.name + ' ' + ps.map(p => p.name).join(' ')).toLowerCase())}" ${k.active === false ? 'style="opacity:.6"' : ''}><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.name}</div><div class="s">${LOCS[k.loc] ? LOCS[k.loc].name : '—'} · ${ps.length ? ps.map(p => p.name + (p.active === false ? ' (afgesloten)' : '')).join(', ') : '<b style="color:#A0321F">geen ouder gekoppeld</b>'}</div></div>${k.active === false ? statusChip(false) : ic('chev')}</button>`; }).join('')}</div>
+      <div class="empty" id="kidnone" hidden>Niets gevonden.</div>
+    </div>`;
+  },
+  gezinnieuw(r){
+    const f = V[r].form; f.ploc = f.ploc || activeLocs()[0]; f.pmode = f.pmode || 'nieuw';
+    return header('Kind en ouder inschrijven') + `<div class="screen"><form data-form="gezinnieuw">
+      <div class="eyebrow" style="margin-top:4px">Kind</div>
+      <div class="grid2"><label class="field"><span>Voornaam</span><input class="input" name="kfirst" value="${esc(f.kfirst || '')}"></label>
+      <label class="field"><span>Achternaam</span><input class="input" name="klast" value="${esc(f.klast || '')}"></label></div>
+      <label class="field"><span>Leeftijd</span><input class="input" type="number" min="0" max="30" name="kage" value="${esc(f.kage || '')}"></label>
+      <div class="field"><span>Vaste locatie</span></div>
+      <div class="choices">${activeLocs().map(l => `<button class="choice" type="button" data-act="actpick" data-k="ploc" data-v="${l}" aria-pressed="${f.ploc === l}">${LOCS[l].name}</button>`).join('')}</div>
+      <div class="eyebrow">Ouder</div>
+      <div class="choices"><button class="choice" type="button" data-act="actpick" data-k="pmode" data-v="nieuw" aria-pressed="${f.pmode === 'nieuw'}">Nieuwe ouder uitnodigen</button><button class="choice" type="button" data-act="actpick" data-k="pmode" data-v="bestaand" aria-pressed="${f.pmode === 'bestaand'}">Bestaande ouder (broer of zus)</button></div>
+      ${f.pmode === 'nieuw' ? `<label class="field"><span>Naam ouder</span><input class="input" name="pname" value="${esc(f.pname || '')}"></label>
+        <label class="field"><span>E-mailadres ouder</span><input class="input" type="email" name="pmail" value="${esc(f.pmail || '')}"></label>`
+      : `<label class="field"><span>Kies de ouder</span><select class="input" name="pid">${Object.values(S.parents).filter(p => p.active !== false).sort((a,b) => a.name.localeCompare(b.name)).map(p => `<option value="${p.id}" ${f.pid === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>`}
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">Inschrijven</button>
+      <p class="small muted">Een nieuwe ouder krijgt een e-mail om de app te installeren en een wachtwoord te kiezen.</p>
+    </form></div>`;
+  },
+  kindbeheer(r, id){
+    const k = kid(id), f = V[r].form, linked = (k.parents || []).map(p => S.parents[p]).filter(Boolean);
+    const others = Object.values(S.parents).filter(p => p.active !== false && !k.parents.includes(p.id)).sort((a,b) => a.name.localeCompare(b.name));
+    return header(k.name) + `<div class="screen">
+      <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.name}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div>${statusChip(k.active)}</div></div></div>
+      <div class="field"><span>Vaste locatie</span></div>
+      <div class="choices">${activeLocs().map(l => `<button class="choice" type="button" data-act="setkidloc" data-id="${id}" data-v="${l}" aria-pressed="${k.loc === l}">${LOCS[l].name}</button>`).join('')}</div>
+      <div class="eyebrow">Gekoppelde ouders</div>
+      ${linked.length ? `<div class="list">${linked.map(p => `<div class="item" style="cursor:default;flex-wrap:wrap"><div class="avatar c1">${p.name[0]}</div><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${esc(p.email)} · ${Object.values(S.kids).filter(x => x.parents.includes(p.id)).map(x => x.first).join(', ')}</div></div>${statusChip(p.active)}
+        <div class="btns" style="width:100%;padding-left:54px"><button class="btn ghost sm" type="button" data-act="unlinkparent" data-id="${id}" data-p="${p.id}">Ontkoppelen</button><button class="btn ghost sm" type="button" data-act="parentactive" data-p="${p.id}" ${p.active === false ? '' : 'style="color:#A0321F"'}>${p.active === false ? 'Account heropenen' : 'Account afsluiten'}</button></div></div>`).join('')}</div>` : '<div class="remark">Er is nog geen ouder gekoppeld. Deze ouder krijgt dus geen berichten of meldingen.</div>'}
+      <div class="field"><span>Ouder koppelen</span></div>
+      ${others.length ? `<div class="row" style="gap:8px;margin-bottom:10px"><select class="input" name="pid" style="flex:1">${others.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn sm" type="button" data-act="linkparent" data-id="${id}">Koppelen</button></div>` : ''}
+      <details class="card" style="padding:12px 14px"><summary style="cursor:pointer;font-weight:700;font-size:14px">Nieuwe ouder uitnodigen voor ${k.first}</summary>
+        <div style="height:10px"></div>
+        <label class="field"><span>Naam</span><input class="input" name="pname" value="${esc(f.pname || '')}"></label>
+        <label class="field"><span>E-mailadres</span><input class="input" type="email" name="pmail" value="${esc(f.pmail || '')}"></label>
+        <button class="btn sm" type="button" data-act="newparent" data-id="${id}">Uitnodigen en koppelen</button></details>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      ${k.active === false ? `<button class="btn block" type="button" data-act="kidactive" data-id="${id}">${k.first} weer inschrijven</button>`
+        : `<button class="btn ghost block" type="button" data-act="kidactive" data-id="${id}" style="color:#A0321F">${k.first} uitschrijven</button>`}
+      <p class="small muted">Uitschrijven haalt ${k.first} van alle lijsten. Gegevens blijven bewaard volgens de bewaartermijn.</p>
+    </div>`;
+  }
+});
+
+Object.assign(ACT, {
+  linkstaffloc(r, d){ const s = STAFF[d.s], on = s.locs.includes(d.l);
+    s.locs = on ? s.locs.filter(x => x !== d.l) : [...s.locs, d.l];
+    logChange(`${s.name} ${on ? 'ontkoppeld van' : 'gekoppeld aan'} ${LOCS[d.l].name}`);
+    if (s.id === ME().id && on && V.beg.loc === d.l) { V.beg.loc = null; V.beg.stack = []; }
+    rerender('beg'); },
+  setrole(r, d){ const s = STAFF[d.s]; if (s.role === d.v) return; s.role = d.v; logChange(`${s.name} is nu ${ROLES[d.v].toLowerCase()}`); rerender('beg'); },
+  staffactive(r, d){ const s = STAFF[d.id]; s.active = s.active === false; logChange(`${s.name} ${s.active ? 'weer ingeschreven' : 'uitgeschreven'}`);
+    toast('beg', s.active ? 'Account heropend' : 'Uitgeschreven', s.active ? `${s.name} kan weer inloggen.` : `${s.name} kan niet meer inloggen.`); rerender('beg'); },
+  locactive(r, d){ const L = LOCS[d.id];
+    if (L.active !== false) { const n = Object.values(S.kids).filter(k => k.active !== false && k.loc === d.id).length;
+      if (n) { V[r].form.err = `Er staan nog ${n} ${n === 1 ? 'kind' : 'kinderen'} op ${L.name}. Geef ze eerst een andere vaste locatie of schrijf ze uit.`; return rerender(r); } }
+    L.active = L.active === false; V[r].form.err = '';
+    logChange(`Locatie ${L.name} ${L.active ? 'weer actief' : 'uitgeschreven'}`); rerender('beg'); },
+  setkidloc(r, d){ const k = kid(d.id); if (k.loc === d.v) return; k.loc = d.v; logChange(`${k.first} heeft nu vaste locatie ${LOCS[d.v].name}`); rerender('beg'); rerender('ouder'); },
+  linkparent(r, d){ syncInputs(r); const k = kid(d.id), pid = V[r].form.pid || phone(r).querySelector('select[name=pid]')?.value; if (!pid) return;
+    k.parents.push(pid); syncParent(k); logChange(`${S.parents[pid].name} gekoppeld aan ${k.first}`);
+    toast('beg', 'Ouder gekoppeld', `${S.parents[pid].name} ziet nu ook ${k.first} in de app.`); V[r].form = {}; rerender('beg'); },
+  unlinkparent(r, d){ const k = kid(d.id), p = S.parents[d.p]; k.parents = k.parents.filter(x => x !== d.p); syncParent(k);
+    logChange(`${p.name} ontkoppeld van ${k.first}`); rerender('beg'); },
+  newparent(r, d){ syncInputs(r); const f = V[r].form, k = kid(d.id), name = (f.pname || '').trim(), mail = (f.pmail || '').trim();
+    if (!name || !mail.includes('@')) { f.err = 'Vul de naam en een geldig e-mailadres van de ouder in.'; return rerender(r); }
+    const pid = 'par' + (++idc); S.parents[pid] = {id:pid, name, email:mail, active:true}; k.parents.push(pid); syncParent(k);
+    logChange(`${name} uitgenodigd als ouder van ${k.first}`); toast('beg', 'Uitnodiging verstuurd', `${name} krijgt een e-mail op ${mail}.`); V[r].form = {}; rerender('beg'); },
+  parentactive(r, d){ const p = S.parents[d.p]; p.active = p.active === false; Object.values(S.kids).filter(k => k.parents.includes(p.id)).forEach(syncParent);
+    logChange(`Account van ${p.name} ${p.active ? 'heropend' : 'afgesloten'}`);
+    if (p.id === 'eva' && !p.active) { V.ouder = {auth:false, tab:'vandaag', stack:[], form:{}}; render('ouder'); }
+    rerender('beg'); },
+  kidactive(r, d){ const k = kid(d.id); k.active = k.active === false; logChange(`${k.first} ${k.active ? 'weer ingeschreven' : 'uitgeschreven'}`); rerender('beg'); rerender('ouder'); }
+});
+
+Object.assign(FORM, {
+  locatienieuw(r){ syncInputs(r); const f = V[r].form, name = (f.lname || '').trim();
+    if (!name) { f.err = 'Vul de naam van de locatie in.'; return rerender(r); }
+    if (Object.values(LOCS).some(L => L.name.toLowerCase() === name.toLowerCase())) { f.err = 'Er is al een locatie met deze naam.'; return rerender(r); }
+    const id = 'loc' + (++idc); LOCS[id] = {name, addr:(f.laddr || '').trim(), active:true};
+    S.groups[id] = []; S.unread.begGroup[id] = 0;
+    Object.values(STAFF).filter(s => s.role !== 'begeleider').forEach(s => s.locs.push(id));
+    logChange(`Locatie ${name} toegevoegd`); V[r].form = {}; V[r].stack = [{v:'locaties'}, {v:'locatie', id}]; render(r);
+    toast('beg', 'Locatie toegevoegd', `Koppel nu de begeleiders van ${name}.`); },
+  medewerkernieuw(r){ syncInputs(r); const f = V[r].form, name = (f.sname || '').trim(), mail = (f.smail || '').trim();
+    if (!name) { f.err = 'Vul de naam in.'; return rerender(r); }
+    if (!mail.includes('@')) { f.err = 'Vul een geldig e-mailadres in.'; return rerender(r); }
+    if (!f.locs.length) { f.err = 'Kies minstens één locatie.'; return rerender(r); }
+    const id = 'st' + (++idc), first = name.split(' ')[0];
+    STAFF[id] = {id, name:first, full:name, email:mail, locs:f.locs.slice(), role:f.role, active:true, c:['c1','c2','c3','c4','c5'][idc % 5]};
+    logChange(`${first} toegevoegd als ${ROLES[f.role].toLowerCase()}`); V[r].form = {}; V[r].stack = [{v:'medewerkers'}]; render(r);
+    toast('beg', 'Uitnodiging verstuurd', `${first} krijgt een e-mail op ${mail}. Je kunt nu ook als ${first} inloggen in de demo.`); },
+  gezinnieuw(r){ syncInputs(r); const f = V[r].form, first = (f.kfirst || '').trim(), last = (f.klast || '').trim(), age = parseInt(f.kage, 10);
+    if (!first || !last) { f.err = 'Vul de voor- en achternaam van het kind in.'; return rerender(r); }
+    if (!(age >= 0)) { f.err = 'Vul de leeftijd in.'; return rerender(r); }
+    let pid;
+    if (f.pmode === 'nieuw') { const pn = (f.pname || '').trim(), pm = (f.pmail || '').trim();
+      if (!pn || !pm.includes('@')) { f.err = 'Vul de naam en een geldig e-mailadres van de ouder in.'; return rerender(r); }
+      pid = 'par' + (++idc); S.parents[pid] = {id:pid, name:pn, email:pm, active:true}; }
+    else pid = f.pid || phone(r).querySelector('select[name=pid]')?.value;
+    const id = 'k' + (++idc);
+    S.kids[id] = {id, loc:f.ploc, name:first + ' ' + last, first, age, parents:[pid], parent:'', c:['c1','c2','c3','c4','c5'][idc % 5], since:'oktober 2026', photoOk:false, notes:['Nog aan te vullen door de persoonlijk begeleider.'], active:true};
+    syncParent(S.kids[id]); S.threads[id] = [];
+    logChange(`${first} ingeschreven op ${LOCS[f.ploc].name}, ouder: ${S.parents[pid].name}`);
+    V[r].form = {}; V[r].stack = [{v:'gezinnen'}, {v:'kindbeheer', id}]; render(r);
+    toast('beg', 'Ingeschreven', f.pmode === 'nieuw' ? `${S.parents[pid].name} krijgt een uitnodiging per e-mail.` : `${first} is gekoppeld aan ${S.parents[pid].name}.`); }
+});
+
 /* Formulieren zonder submit-event: werkt ook in previews die formulieren blokkeren. */
 function runForm(f){ const r = f.closest('.phone').dataset.role; FORM[f.dataset.form](r, new FormData(f), f.dataset.id); }
 document.addEventListener('click', e => {
