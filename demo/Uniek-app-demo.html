@@ -179,6 +179,8 @@ textarea.input{min-height:110px;resize:vertical}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
 .kv dt{color:var(--ink-2);font-weight:600}.kv dd{margin:0;font-weight:600}
 ul.notes{margin:6px 0 0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+ul.notes li.med{list-style:none;margin:-4px 0 4px -18px;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:#FDE3DE;color:#7A2414;font-weight:600}
+ul.notes li.med svg{flex:none;width:18px;height:18px;margin-top:1px}
 
 .locbtn{display:inline-flex;align-items:center;gap:8px;margin-top:4px;padding:6px 12px 6px 10px;min-height:44px;border-radius:14px;border:1.5px solid var(--line-strong);background:var(--surface);cursor:pointer;color:var(--ink)}
 .locbtn svg{width:20px;height:20px;color:var(--brand)}
@@ -349,7 +351,7 @@ function seed(){
   S = {
     kids: {
       liam:  {id:'liam', loc:'didam',  name:'Liam de Vries',  first:'Liam',  age:9,  parent:'Eva de Vries',    c:'c1', since:'maart 2024', photoOk:true,
-              notes:['Vindt drukte en harde geluiden lastig. Zijn koptelefoon zit in zijn rugzak.','Kondig overgangen vooraf aan, het liefst met de dagplanner.','Houdt van Lego en buiten voetballen.']},
+              notes:[{med:true, text:'Bekend met epilepsie, noodmedicatie ligt in de koelkast.'},'Vindt drukte en harde geluiden lastig. Zijn koptelefoon zit in zijn rugzak.','Kondig overgangen vooraf aan, het liefst met de dagplanner.','Houdt van Lego en buiten voetballen.']},
       noor:  {id:'noor', loc:'didam',  name:'Noor Bakker',    first:'Noor',  age:11, parent:'Peter Bakker',    c:'c2', since:'januari 2025', photoOk:true, notes:['Heeft een vaste plek aan tafel nodig.','Tekent graag om tot rust te komen.']},
       yusuf: {id:'yusuf', loc:'didam', name:'Yusuf Demir',    first:'Yusuf', age:10, parent:'Aylin Demir',     c:'c3', since:'september 2023', photoOk:true, notes:['Werkt aan samen spelen en beurten afwachten.']},
       daan:  {id:'daan', loc:'didam',  name:'Daan Jansen',    first:'Daan',  age:7,  parent:'Mirjam Jansen',   c:'c5', since:'juni 2025', photoOk:false, notes:['Wil graag weten wie hem ophaalt.']},
@@ -673,7 +675,7 @@ const SCREENS = {
       <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div>${t ? chip(t.status) : ''}</div></div>
         <button class="btn sm block" style="margin-top:14px" type="button" data-act="open" data-v="chat" data-id="${id}">${ic('chat')} Bericht aan ${k.parent.split(' ')[0]}</button></div>
       <div class="eyebrow">Goed om te weten</div>
-      <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
+      <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => n.med ? `<li class="med">${ic('pill')}<span><b>Medisch:</b> ${esc(n.text)}</span></li>` : `<li>${esc(n)}</li>`).join('')}</ul></div>
       ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
       ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Administratie</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
       <div class="eyebrow">Ouder en toestemming</div>
