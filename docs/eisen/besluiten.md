@@ -26,6 +26,7 @@ Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname;
 | 17-10-2026 | Elk gebouw is een eigen locatie, zoals op de website: 7 locaties (Ulft 2, Didam 3, Bemmel 2). |
 | 17-10-2026 | Administratie is gegroepeerd per kind, niet per status. Statussen per actie: te controleren, klaargezet, goedgekeurd, afgekeurd. Bij lezen en akkoord kan een ouder ook niet akkoord geven. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
+| 17-10-2026 | Elke locatie heeft drie onderdelen: Ambulant, BSO en Dag/Weekend opvang. Na de locatie kiest de begeleider of manager een onderdeel. Alle overzichten, berichten, groepschats en administratie zijn per combinatie van locatie en onderdeel (F-16). |
 | 17-10-2026 | Er komt een algemene nieuwsbrief voor alle ouders, bij Berichten als derde onderdeel (Nieuws van Uniek). Ouders kunnen niet reageren (F-15). |
 
 ## Open vragen
@@ -44,6 +45,15 @@ Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname;
 - Locatie kiezen: krijgt een begeleider meldingen van een locatie waar hij of zij op dat moment niet werkt?
 - Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
 - Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?
+
+### Onderdelen (Ambulant, BSO, Dag/Weekend opvang)
+
+- Is een medewerker gekoppeld aan bepaalde onderdelen, of mag iedereen van de locatie elk onderdeel kiezen? (In de demo kan iedereen alle drie kiezen.)
+- Heeft Ambulant een groepschat nodig? Ambulante begeleiding is meestal één op één, thuis of op school. (In de demo heeft elk onderdeel een groepschat.)
+- Ambulant: passen *aangekomen* en *opgehaald* bij een afspraak, of zijn andere woorden beter (bijvoorbeeld *gestart* en *afgerond*)?
+- Vakantieopvang: hoort die bij BSO, bij Dag/Weekend opvang of bij allebei? (In de demo bij allebei; de vakantieplanning wordt per onderdeel klaargezet, maar een kind krijgt hem maar één keer.)
+- Moet een ouder met een kind in twee onderdelen twee teamgesprekken hebben, of liever één gesprek waarin alle betrokken begeleiders meelezen?
+- Moet de app het laatst gekozen onderdeel onthouden?
 
 ### Chat en groepschat
 
