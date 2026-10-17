@@ -12,6 +12,8 @@
 | 17-10-2026 | Groepschat van de dag is alleen die dag zichtbaar. |
 | 17-10-2026 | Er komt een aparte toestemming voor foto's in de groepschat, per kind. |
 | 17-10-2026 | Een begeleider kan op meerdere locaties werken en kiest na het inloggen een locatie. |
+| 17-10-2026 | Ouder en begeleider krijgen een tab Acties: Uniek zet een actie klaar, de ouder voert die uit, de begeleider ziet het resultaat en de status. |
+| 17-10-2026 | Aanname: bij de ouder zit Profiel achter de ronde knop rechtsboven, zodat er plek is voor de tab Acties (vijf tabs). |
 
 ## Open vragen
 
@@ -25,3 +27,7 @@
 - Locatie kiezen: moet de app de laatst gekozen locatie onthouden, of telkens opnieuw vragen? (In de demo wordt het na elk inloggen gevraagd.)
 - Locatie kiezen: wie koppelt een begeleider aan locaties: de planning of een beheerder?
 - Locatie kiezen: krijgt een begeleider meldingen van een locatie waar hij of zij op dat moment niet werkt?
+- Acties: wie mag acties klaarzetten: elke begeleider, of ook (alleen) kantoor of planning? Ziet een begeleider ook acties die kantoor heeft klaargezet?
+- Acties: moeten ingevulde gegevens, zoals medicatie of de indicatie, automatisch naar het dossier of ECD van het kind?
+- Acties: zijn er nog andere soorten acties nodig, zoals een vragenlijst of het doorgeven van een adreswijziging?
+- Acties: medicatie is gevoelige informatie. Wie bij Uniek mag die antwoorden zien?
