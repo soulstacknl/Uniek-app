@@ -147,6 +147,7 @@ textarea.input{min-height:110px;resize:vertical}
 .bubble{max-width:82%;padding:10px 13px;border-radius:18px;font-size:15px;line-height:1.4}
 .bubble small{display:block;font-size:11px;margin-top:4px;opacity:.7}
 .bubble.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.bubble.them.colleague{background:var(--brand-tint);border-color:#CFE0F2}
 .bubble.me{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:6px}
 .daysep{align-self:center;font-size:12px;font-weight:700;color:var(--ink-2);padding:6px 0}
 .composer{flex:none;display:flex;gap:8px;padding:10px 12px;background:var(--surface);border-top:1px solid var(--line)}
@@ -304,7 +305,8 @@ label.btn{position:relative}
   <details class="tips" id="tips">
     <summary>Wat kun je proberen?</summary>
     <ol>
-      <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld. De begeleider kiest daarna een locatie: Sanne werkt in Didam en Ulft. Liam zit in Didam.</li>
+      <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld. Kies bij de begeleider wie inlogt: Sanne (Didam en Ulft) of Ruben (Didam en Bemmel). Daarna kiest de begeleider een locatie. Liam zit in Didam.</li>
+      <li>Chats met ouders zijn teamgesprekken: alle begeleiders van een locatie zien ze. Log eens uit en in als Ruben: je ziet de berichten van Sanne, met haar naam erbij.</li>
       <li>Begeleider: tik bij Liam op <b>Aangekomen</b>. De ouder krijgt meteen een melding.</li>
       <li>Hoe de dag ging, deelt de begeleider met de ouder via de 1-op-1-chat (bij het kind: <b>Bericht aan Eva</b>).</li>
       <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
@@ -324,7 +326,7 @@ label.btn{position:relative}
       <div class="phone" data-role="ouder"><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
     </section>
     <section class="device" data-device="beg">
-      <div class="device-label"><b>Begeleider</b> · Sanne, locaties Didam en Ulft
+      <div class="device-label"><b>Begeleider</b> · <span id="beglabel">Sanne, locaties Didam en Ulft</span>
         <span class="viewsw" role="group" aria-label="Weergave begeleider"><button type="button" data-view="phone" aria-pressed="true">Telefoon</button><button type="button" data-view="web" aria-pressed="false">Webbrowser</button></span></div>
       <div class="phone" data-role="beg"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">app.opvanguniek.nl</span></div><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
     </section>
@@ -395,7 +397,12 @@ const TYPES = ['Dagopvang','Logeeropvang','Naschoolse begeleiding','Zaterdagopva
 const HIGHLIGHTS = ['Buiten gespeeld','Samen gespeeld','Goed gegeten','Rustig moment nodig','Moe','Trots op zichzelf','Nieuwe vaardigheid'];
 
 const LOCS = {ulft:{name:'Ulft'}, didam:{name:'Didam'}, bemmel:{name:'Bemmel'}};
-const BEG_LOCS = ['didam','ulft'];   /* Sanne werkt op twee locaties */
+/* Begeleiders met een eigen account; elk gekoppeld aan één of meer locaties */
+const STAFF = {
+  sanne:{id:'sanne', name:'Sanne', full:'Sanne Willemsen', email:'sanne@opvanguniek.nl', locs:['didam','ulft'], c:'c2'},
+  ruben:{id:'ruben', name:'Ruben', full:'Ruben Hendriksen', email:'ruben@opvanguniek.nl', locs:['didam','bemmel'], c:'c5'}
+};
+const ME = () => STAFF[(V && V.beg.user) || 'sanne'];
 let S, V, idc = 100, WEB = false;
 function seed(){
   S = {
@@ -424,6 +431,8 @@ function seed(){
       {id:20, kid:'sem',   off:0, type:TODAY.type, time:TODAY.time, status:'aangekomen', at:ago(30)},
       {id:21, kid:'lotte', off:0, type:TODAY.type, time:TODAY.time, status:'verwacht'},
       {id:22, kid:'finn',  off:0, type:TODAY.type, time:TODAY.time, status:'verwacht'},
+      {id:24, kid:'jesse', off:0, type:TODAY.type, time:TODAY.time, status:'aangekomen', at:ago(20)},
+      {id:25, kid:'isa',   off:0, type:TODAY.type, time:TODAY.time, status:'verwacht'},
       {id:23, kid:'lotte', off:4, type:'Dagopvang', time:'09:00 – 16:00', status:'aangevraagd', note:'Studiedag op school'},
       {id:6, kid:'liam',  off:3,  type:'Naschoolse begeleiding', time:'14:30 – 18:00', status:'gepland'},
       {id:7, kid:'liam',  off:6,  type:'Logeeropvang', time:'16:00 – zondag 14:00', status:'gepland'},
@@ -436,6 +445,7 @@ function seed(){
         {from:'ouder', who:'Eva', off:-4, t:'18:30', text:'Wat leuk om te horen, dank je wel! Thuis vertelde hij er ook al over.'},
         {from:'beg', who:'Sanne', off:-1, t:'16:40', text:'Hoi Eva, de spullen voor het logeren mogen vrijdag gewoon in zijn eigen tas mee. Een knuffel van thuis is altijd welkom.'},
         {from:'ouder', who:'Eva', off:-1, t:'17:02', text:'Top, dank je! Dan doe ik zijn konijn erbij.'},
+        {from:'beg', who:'Ruben', off:-1, t:'17:40', text:'Hoi Eva, Liam heeft zijn gymtas hier laten liggen. Die geven we vrijdag met hem mee.'},
         {from:'ouder', who:'Eva', off:0, t:ago(52), text:'Goedemorgen! Liam heeft vannacht slecht geslapen. Misschien is hij vandaag wat sneller moe.'}
       ],
       noor: [{from:'beg', who:'Sanne', off:-2, t:'15:10', text:'Hoi Peter, Noor mag volgende week haar eigen tekenspullen meenemen.'}],
@@ -445,15 +455,17 @@ function seed(){
       {sys:true, t:ago(50), text:'Sanne heeft de groep van vandaag aangemaakt voor de ouders van de kinderen die vandaag op locatie Didam zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto\'s.'},
       {who:'Sanne', role:'beg', t:ago(45), text:'Goedemorgen allemaal! Noor en Yusuf zijn al binnen. Vanochtend gaan we naar het bos om hutten te bouwen 🌳'},
       {who:'Ruben', role:'beg', t:ago(18), photo:'bos', text:'De eerste hut staat al!'}
+    ], bemmel: [
+      {sys:true, t:ago(30), text:'De groep van vandaag is aangemaakt voor de ouders van de kinderen die vandaag op locatie Bemmel zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto\'s.'}
     ], ulft: [
       {sys:true, t:ago(40), text:'De groep van vandaag is aangemaakt voor de ouders van de kinderen die vandaag op locatie Ulft zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto\'s.'}
     ]},
-    unread: {ouderMsg:0, ouderGroup:2, begGroup:{didam:0, ulft:0}, beg:{liam:1, mila:0, lotte:1}}
+    unread: {ouderMsg:0, ouderGroup:2, begGroup:{didam:0, ulft:0, bemmel:0}, beg:{liam:1, mila:0, lotte:1}}
   };
   seedActions();
   V = {
     ouder:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false},
-    beg:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false, loc:null}
+    beg:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false, loc:null, user:'sanne'}
   };
 }
 
@@ -471,7 +483,7 @@ const groupKids = loc => S.plan.filter(p => p.off === 0 && p.status !== 'afgemel
 const ouderInGroup = () => groupKids('didam').some(k => k.id === 'liam');
 const lastGroup = loc => S.groups[loc].filter(m => !m.sys).at(-1);
 const preview = m => m ? (m.who + ': ' + (m.photo || m.src ? '📷 Foto' + (m.text ? ' · ' + m.text : '') : m.text)) : '';
-const SENDER_COLORS = {Sanne:'#1D6B50', Ruben:'#24508A', Eva:'#B0461F', Peter:'#4B3F9E', Aylin:'#9B2E6E', Mirjam:'#7A5300', Ilse:'#5B6478'};
+const SENDER_COLORS = {Sanne:'#1D6B50', Ruben:'#24508A', Marco:'#4B3F9E', Linda:'#7A5300', Sara:'#9B2E6E', Eva:'#B0461F', Peter:'#4B3F9E', Aylin:'#9B2E6E', Mirjam:'#7A5300', Ilse:'#5B6478'};
 function scene(kind){
   const s = {
     bos:'<rect width="240" height="160" fill="#CDE7F0"/><circle cx="196" cy="34" r="16" fill="#FFD66B"/><rect y="118" width="240" height="42" fill="#7DB36A"/><path d="M20 120l22-62 22 62zM60 124l26-74 26 74zM170 122l24-66 24 66z" fill="#2F7A4E"/><path d="M118 124l30-46 30 46z" fill="#A7774A"/><path d="M118 124l30-46M178 124l-30-46M132 124l16-30 16 30" stroke="#6E4B2A" stroke-width="4" fill="none"/>',
@@ -499,7 +511,7 @@ function tabbar(r){
   };
   const web = r === 'beg' && WEB;
   return `<nav class="tabbar" aria-label="Menu">${web ? `<img class="side-logo" src="${LOGO}" alt="Opvang Uniek">` : ''}${TABS[r].map(([id,label,icon]) =>
-    `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}${web ? `<div class="side-foot"><b>Sanne Willemsen</b>Locatie ${LOCS[V.beg.loc].name}<br><button class="linkbtn" type="button" data-act="chooseloc">Andere locatie</button> · <button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>` : ''}</nav>`;
+    `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}${web ? `<div class="side-foot"><b>${ME().full}</b>Locatie ${LOCS[V.beg.loc].name}<br><button class="linkbtn" type="button" data-act="chooseloc">Andere locatie</button> · <button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>` : ''}</nav>`;
 }
 const oHello = (small, title) => `<div class="hello"><small>${small}</small><h2>${title}</h2></div>`;
 const header = (title, extra='') => `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><h2>${esc(title)}</h2>${extra}</div>`;
@@ -511,9 +523,10 @@ function loginScreen(r){
     <div class="brand"><img src="${LOGO}" alt="Opvang Uniek"></div>
     <h2>${o ? 'Fijn dat je er bent' : 'Welkom terug'}</h2>
     <p class="lead">${o ? 'Zie hoe het met je kind gaat, wat er gepland staat en praat met de begeleiding.' : 'Je groep van vandaag, acties en contact met ouders op één plek.'}</p>
-    <div class="who"><div class="avatar ${o?'c1':'c2'}">${o?'E':'S'}</div><div>Demo: je logt in als <b>${o ? 'Eva, moeder van Liam' : 'Sanne, begeleider in Didam en Ulft'}</b>.</div></div>
+    ${o ? `<div class="who"><div class="avatar c1">E</div><div>Demo: je logt in als <b>Eva, moeder van Liam</b>.</div></div>`
+       : `<div class="field" style="margin-bottom:6px"><span>Demo: log in als</span></div><div class="choices">${Object.values(STAFF).map(s => `<button class="choice" type="button" data-act="pickstaff" data-v="${s.id}" aria-pressed="${ME().id === s.id}">${s.name} · ${s.locs.map(l => LOCS[l].name).join(' en ')}</button>`).join('')}</div>`}
     <form data-form="login">
-      <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : 'sanne@opvanguniek.nl'}"></label>
+      <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : ME().email}"></label>
       <label class="field"><span>Wachtwoord</span><input class="input" type="password" name="pw" autocomplete="current-password" value="demowachtwoord"></label>
       <button class="btn block" type="submit">Inloggen</button>
     </form>
@@ -528,10 +541,10 @@ function locationScreen(){
     <div class="brand" style="margin:18px 0 22px"><img src="${LOGO}" alt="Opvang Uniek" style="height:46px"></div>
     <h2>Waar werk je vandaag?</h2>
     <p class="lead">Kies de locatie. Je ziet dan alleen de kinderen, berichten en de groepschat van die locatie. Wisselen kan altijd.</p>
-    <div class="list">${BEG_LOCS.map(l => { const today = S.plan.filter(p => p.off === 0 && planLoc(p) === l);
+    <div class="list">${ME().locs.map(l => { const today = S.plan.filter(p => p.off === 0 && planLoc(p) === l);
       const n = today.filter(p => p.status !== 'afgemeld').length, u = locUnread(l) + requests(l).length;
       return `<button class="item" type="button" data-act="setloc" data-v="${l}" style="min-height:76px"><div class="avatar c5">${ic('pin').replace('<svg','<svg style="width:22px;height:22px"')}</div><div class="grow"><div class="t" style="font-size:17px">${LOCS[l].name}</div><div class="s">${n} ${n === 1 ? 'kind' : 'kinderen'} vandaag · ${TODAY.type.toLowerCase()}</div></div>${u ? `<span class="chip st-afgemeld" style="padding:4px 8px">${u} nieuw</span>` : ''}${ic('chev')}</button>`; }).join('')}</div>
-    <p class="small muted" style="margin:6px 4px">Je bent gekoppeld aan ${BEG_LOCS.map(l => LOCS[l].name).join(' en ')}. Klopt dat niet? Neem contact op met de planning.</p>
+    <p class="small muted" style="margin:6px 4px">Je bent gekoppeld aan ${ME().locs.map(l => LOCS[l].name).join(' en ')}. Klopt dat niet? Neem contact op met de planning.</p>
     <div class="foot"><button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>
   </div>`;
 }
@@ -552,7 +565,7 @@ const O = {
       <div class="card hero">
         <div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="muted small" style="margin-bottom:6px">Didam · vandaag</div>${chip(t.status)}</div></div>
         <p style="margin:14px 0 14px;font-weight:600">${line}</p>
-        <div class="btns">${ouderInGroup() ? `<button class="btn soft sm" type="button" data-act="open" data-v="groep">${ic('users')} Groep vandaag${S.unread.ouderGroup ? ` <span class="chip st-afgemeld" style="padding:2px 7px">${S.unread.ouderGroup}</span>` : ''}</button>` : ''}<button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="liam">${ic('chat')} Sanne</button>${t.status === 'verwacht' ? `<button class="btn ghost sm" type="button" data-act="open" data-v="afmelden" data-id="${t.id}">Afmelden</button>` : ''}</div>
+        <div class="btns">${ouderInGroup() ? `<button class="btn soft sm" type="button" data-act="open" data-v="groep">${ic('users')} Groep vandaag${S.unread.ouderGroup ? ` <span class="chip st-afgemeld" style="padding:2px 7px">${S.unread.ouderGroup}</span>` : ''}</button>` : ''}<button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="liam">${ic('chat')} Team Didam</button>${t.status === 'verwacht' ? `<button class="btn ghost sm" type="button" data-act="open" data-v="afmelden" data-id="${t.id}">Afmelden</button>` : ''}</div>
       </div>
       ${(() => { const o = ouderOpen(); if (!o.length) return ''; const b = batchOf(o[0]); return `<button class="card" type="button" data-act="tab" data-v="acties" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;background:var(--pink-tint);border-color:#F4C6DD"><div class="avatar" style="background:#fff;color:var(--pink-strong)">${ic('task').replace('<svg','<svg style="width:22px;height:22px"')}</div><div class="grow"><div style="font-weight:800">${o.length === 1 ? '1 actie' : o.length + ' acties'} te doen</div><div class="small" style="color:#7A1446">${esc(b.title)} · ${dueText(b.due).toLowerCase()}</div></div>${ic('chev').replace('<svg','<svg style="width:18px;height:18px"')}</button>`; })()}
       ${next ? `<div class="eyebrow">Volgende keer</div>
@@ -609,8 +622,8 @@ const B = {
     const order = {aangekomen:0, verwacht:1, opgehaald:2, afgemeld:3};
     const req = requests(loc);
     return `<div class="screen">
-      <div class="hello"><small>${greeting()}, Sanne · ${dayDate(0).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})}</small>
-        <button class="locbtn" type="button" data-act="chooseloc" aria-label="Locatie wisselen, nu ${L}">${ic('pin')}<span>${L}</span>${BEG_LOCS.length > 1 ? `<em>Wissel</em>` : ''}</button></div>
+      <div class="hello"><small>${greeting()}, ${ME().name} · ${dayDate(0).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})}</small>
+        <button class="locbtn" type="button" data-act="chooseloc" aria-label="Locatie wisselen, nu ${L}">${ic('pin')}<span>${L}</span>${ME().locs.length > 1 ? `<em>Wissel</em>` : ''}</button></div>
       <div class="row" style="gap:8px;margin-bottom:14px">
         <div class="stat"><b>${cnt('aangekomen')}</b><span>Aanwezig</span></div>
         <div class="stat"><b>${cnt('verwacht')}</b><span>Verwacht</span></div>
@@ -645,14 +658,14 @@ const B = {
       <div class="eyebrow">Groep van vandaag</div>
       <div class="list"><button class="item" type="button" data-act="open" data-v="groep"><div class="avatar grp">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${LOCS[loc].name} vandaag <span class="muted" style="font-weight:500">· ${groupKids(loc).length} ouders</span></div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${S.unread.begGroup[loc] ? 'color:var(--ink);font-weight:700' : ''}">${esc(preview(lastGroup(loc)) || 'Nog geen berichten')}</div></div>${S.unread.begGroup[loc] ? `<span class="chip st-afgemeld" style="padding:4px 8px">${S.unread.begGroup[loc]}</span>` : ic('chev')}</button></div>
       <div class="eyebrow">Eén op één</div>
-      <div class="list">${list.map(({id,last}) => { const k = kid(id), n = S.unread.beg[id] || 0; return `<button class="item" type="button" data-act="open" data-v="chat" data-id="${id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.parent} <span class="muted" style="font-weight:500">· ${k.first}</span></div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${n ? 'color:var(--ink);font-weight:700' : ''}">${last ? esc(last.text) : 'Nog geen berichten'}</div></div>${n ? `<span class="chip st-afgemeld" style="padding:4px 8px">${n}</span>` : ic('chev')}</button>`; }).join('')}</div>
+      <div class="list">${list.map(({id,last}) => { const k = kid(id), n = S.unread.beg[id] || 0; return `<button class="item" type="button" data-act="open" data-v="chat" data-id="${id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.parent} <span class="muted" style="font-weight:500">· ${k.first}</span></div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${n ? 'color:var(--ink);font-weight:700' : ''}">${last ? esc((last.from === 'beg' ? (last.who === ME().name ? 'Jij' : last.who) + ': ' : '') + last.text) : 'Nog geen berichten'}</div></div>${n ? `<span class="chip st-afgemeld" style="padding:4px 8px">${n}</span>` : ic('chev')}</button>`; }).join('')}</div>
     </div>`;
   },
   profiel(){
     return `<div class="screen">
-      <div class="hello"><small>Profiel</small><h2>Sanne Willemsen</h2></div>
-      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>sanne@opvanguniek.nl</dd><dt>Functie</dt><dd>Begeleider</dd><dt>Locaties</dt><dd>${BEG_LOCS.map(l => LOCS[l].name).join(', ')}</dd><dt>Nu actief</dt><dd>${LOCS[V.beg.loc].name}</dd></dl></div>
-      ${BEG_LOCS.length > 1 ? `<button class="btn ghost block" type="button" data-act="chooseloc" style="margin-bottom:12px">${ic('pin')} Andere locatie kiezen</button>` : ''}
+      <div class="hello"><small>Profiel</small><h2>${ME().full}</h2></div>
+      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>${ME().email}</dd><dt>Functie</dt><dd>Begeleider</dd><dt>Locaties</dt><dd>${ME().locs.map(l => LOCS[l].name).join(', ')}</dd><dt>Nu actief</dt><dd>${LOCS[V.beg.loc].name}</dd></dl></div>
+      ${ME().locs.length > 1 ? `<button class="btn ghost block" type="button" data-act="chooseloc" style="margin-bottom:12px">${ic('pin')} Andere locatie kiezen</button>` : ''}
       <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Berichten en verzoeken van ouders</div></div><span class="chip st-aangekomen">Aan</span></div></div>
       <button class="btn ghost block" type="button" data-act="logout">Uitloggen</button>
     </div>`;
@@ -665,13 +678,17 @@ function chat(r, id){
   if (r === 'beg') S.unread.beg[id] = 0; else S.unread.ouderMsg = 0;
   let lastOff = null;
   const body = msgs.map(m => { const sep = m.off !== lastOff ? `<div class="daysep">${fmtDay(m.off)}</div>` : ''; lastOff = m.off;
-    const mine = m.from === r; return sep + `<div class="bubble ${mine ? 'me' : 'them'}">${mine ? '' : `<b style="font-size:12px;display:block;margin-bottom:2px">${esc(m.who)}</b>`}${esc(m.text)}<small>${m.t}</small></div>`; }).join('');
+    const mine = r === 'beg' ? (m.from === 'beg' && m.who === ME().name) : m.from === 'ouder';
+    const colleague = r === 'beg' && m.from === 'beg' && !mine;
+    const label = m.from === 'beg' ? `${esc(m.who)} · begeleider` : esc(m.who) + (r === 'beg' ? ' · ouder' : '');
+    return sep + `<div class="bubble ${mine ? 'me' : 'them'}${colleague ? ' colleague' : ''}">${mine ? (r === 'beg' ? '' : '') : `<b style="font-size:12px;display:block;margin-bottom:2px;color:${SENDER_COLORS[m.who] || 'inherit'}">${label}</b>`}${esc(m.text)}<small>${mine && r === 'beg' ? 'Jij · ' : ''}${m.t}</small></div>`; }).join('');
   const title = r === 'ouder' ? 'Team Didam' : k.parent;
   const sub = r === 'ouder' ? 'Sanne, Ruben en de groepsbegeleiding' : `Ouder van ${k.first}`;
   const head = r === 'ouder'
     ? `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><div class="avatar c2">D</div><div class="grow"><h2>${title}</h2><div class="small muted">${sub}</div></div></div>`
     : `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><h2>${esc(title)}</h2><div class="small muted">${sub}</div></div></div>`;
-  return head + `<div class="screen chatbody" data-scroll="end">${body || '<div class="empty">Nog geen berichten. Stuur het eerste bericht.</div>'}</div>
+  const team = r === 'beg' ? `<div class="sys" style="background:var(--brand-tint);color:var(--ink)">${ic('users').replace('<svg','<svg style="width:14px;height:14px;vertical-align:-2px"')} Teamgesprek: alle begeleiders van ${LOCS[k.loc].name} zien dit gesprek. Jouw berichten staan op naam van ${ME().name}.</div>` : '';
+  return head + `<div class="screen chatbody" data-scroll="end">${team}${body || '<div class="empty">Nog geen berichten. Stuur het eerste bericht.</div>'}</div>
     <form class="composer" data-form="send" data-id="${id}"><input class="input" name="msg" placeholder="Schrijf een bericht" aria-label="Bericht" autocomplete="off" value="${esc(V[r].form['msg-'+id] || '')}"><button class="btn" type="submit" aria-label="Versturen">${ic('send')}</button></form>`;
 }
 
@@ -680,8 +697,8 @@ function groupScreen(r){
   const inG = r === 'beg' || ouderInGroup();
   if (r === 'beg') S.unread.begGroup[loc] = 0; else S.unread.ouderGroup = 0;
   const kids = groupKids(loc);
-  const members = ['Sanne','Ruben', ...kids.map(k => k.parent.split(' ')[0])];
-  const me = r === 'beg' ? 'Sanne' : 'Eva';
+  const members = [...Object.values(STAFF).filter(s => s.locs.includes(loc)).map(s => s.name), ...kids.map(k => k.parent.split(' ')[0])];
+  const me = r === 'beg' ? ME().name : 'Eva';
   const body = S.groups[loc].map(m => {
     if (m.sys) return `<div class="sys">${esc(m.text)}</div>`;
     const mine = m.who === me;
@@ -748,6 +765,7 @@ function render(r){
   const el = phone(r), app = el.querySelector('.app'), v = V[r];
   const keepScroll = app.querySelector('.screen:not([data-scroll])')?.scrollTop || 0;
   const web = r === 'beg' && WEB;
+  if (r === 'beg') document.getElementById('beglabel').textContent = `${ME().name}, locaties ${ME().locs.map(l => LOCS[l].name).join(' en ')}`;
   app.classList.toggle('webapp', false);
   if (web) el.querySelector('.url').textContent = 'app.opvanguniek.nl/' + (!v.auth ? 'inloggen' : !v.loc ? 'locatie' : (v.stack.at(-1)?.v || v.tab));
   if (!v.auth) { app.innerHTML = loginScreen(r); return; }
@@ -779,7 +797,8 @@ const ACT = {
   open(r, d){ go(r, d.v, d.id); },
   back,
   forgot(r){ toast(r, 'Wachtwoord vergeten', 'In de echte app krijg je een e-mail om een nieuw wachtwoord te kiezen.'); },
-  logout(r){ V[r] = {auth:false, tab:'vandaag', stack:[], form:{}, tray:false, loc:null}; render(r); },
+  logout(r){ const u = V[r].user; V[r] = {auth:false, tab:'vandaag', stack:[], form:{}, tray:false, loc:null, user:u}; render(r); },
+  pickstaff(r, d){ V.beg.user = d.v; render('beg'); },
   chooseloc(){ V.beg.loc = null; V.beg.stack = []; V.beg.form = {}; V.beg.tab = 'vandaag'; render('beg'); },
   setloc(r, d){ V.beg.loc = d.v; V.beg.tab = 'vandaag'; V.beg.stack = []; render('beg'); },
   pick(r, d){ V[r].form[d.k] = d.k === 'mood' ? +d.v : d.v; V[r].form.err = ''; syncInputs(r); rerender(r); },
@@ -796,7 +815,7 @@ const ACT = {
   approve(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'gepland'; rerender('beg'); rerender('ouder');
     toast('ouder', 'Aanvraag ingepland', `${p.type} op ${fmtDay(p.off).toLowerCase()} gaat door.`); },
   decline(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'afgewezen'; rerender('beg'); rerender('ouder');
-    toast('ouder', 'Aanvraag niet mogelijk', `${p.type} op ${fmtDay(p.off).toLowerCase()} past helaas niet. Sanne neemt contact op.`); }
+    toast('ouder', 'Aanvraag niet mogelijk', `${p.type} op ${fmtDay(p.off).toLowerCase()} past helaas niet. ${ME().name} neemt contact op.`); }
 };
 function syncInputs(r){
   phone(r).querySelectorAll('.app [name]').forEach(i => { if (i.name !== 'email' && i.name !== 'pw' && i.type !== 'file') V[r].form[i.name] = i.value; });
@@ -806,7 +825,7 @@ function postGroup(r, extra){
   const inp = phone(r).querySelector('[data-form="groupsend"] .input');
   const text = (inp?.value || '').trim();
   if (!extra && !text) return;
-  const who = r === 'beg' ? 'Sanne' : 'Eva';
+  const who = r === 'beg' ? ME().name : 'Eva';
   const loc = myLoc(r), G = S.groups[loc];
   G.push({who, role:r, t:now(), text, ...(extra || {})});
   V[r].form['msg-groep'] = ''; V[r].tray = false;
@@ -820,14 +839,14 @@ function postGroup(r, extra){
 
 const FORM = {
   groupsend(r){ postGroup(r); },
-  login(r){ V[r].auth = true; V[r].tab = 'vandaag'; V[r].stack = []; if (r === 'beg') V.beg.loc = BEG_LOCS.length === 1 ? BEG_LOCS[0] : null; render(r); },
+  login(r){ V[r].auth = true; V[r].tab = 'vandaag'; V[r].stack = []; if (r === 'beg') V.beg.loc = ME().locs.length === 1 ? ME().locs[0] : null; render(r); },
   send(r, fd, id){
     const text = (fd.get('msg') || '').trim(); if (!text) return;
-    const who = r === 'ouder' ? 'Eva' : 'Sanne';
+    const who = r === 'ouder' ? 'Eva' : ME().name;
     S.threads[id].push({from:r, who, off:0, t:now(), text});
     V[r].form['msg-'+id] = '';
     if (r === 'ouder') { S.unread.beg[id] = (S.unread.beg[id]||0) + 1; toast('beg', 'Nieuw bericht van Eva', 'Over Liam'); }
-    else if (id === 'liam') { S.unread.ouderMsg++; toast('ouder', 'Nieuw bericht van Sanne', 'Tik om te lezen'); }
+    else if (id === 'liam') { S.unread.ouderMsg++; toast('ouder', 'Nieuw bericht van ' + ME().name, 'Tik om te lezen'); }
     render(r); rerender(r === 'ouder' ? 'beg' : 'ouder');
     phone(r).querySelector('.composer .input')?.focus();
   },
@@ -1108,8 +1127,8 @@ Object.assign(ACT, {
   rmdoc(r, d){ syncInputs(r); V[r].form[d.k].splice(+d.i, 1); rerender(r); },
   demodoc(r){ toast(r, 'Voorbeelddocument', 'In de demo is dit bestand niet echt aanwezig. In de app opent het document hier.'); },
   addmed(r){ syncInputs(r); const f = V[r].form; f.meds.push({name:'', dose:'', time:'', care:'nee'}); rerender(r); },
-  actdone(r, d){ const a = actOf(d.id), b = batchOf(a); a.status = 'afgerond'; a.doneBy = 'Sanne'; a.remark = '';
-    back(r); if (a.kid === 'liam') { rerender('ouder'); toast('ouder', 'Actie afgerond', `Sanne heeft “${b.title}” verwerkt. Dank je!`); } },
+  actdone(r, d){ const a = actOf(d.id), b = batchOf(a); a.status = 'afgerond'; a.doneBy = ME().name; a.remark = '';
+    back(r); if (a.kid === 'liam') { rerender('ouder'); toast('ouder', 'Actie afgerond', `${ME().name} heeft “${b.title}” verwerkt. Dank je!`); } },
   actreturn(r, d){ syncInputs(r); const a = actOf(d.id), b = batchOf(a), txt = (V[r].form.remark || '').trim();
     if (!txt) { V[r].form.err = 'Schrijf wat de ouder moet aanpassen.'; return rerender(r); }
     a.status = 'open'; a.remark = txt; back(r);
@@ -1158,7 +1177,7 @@ Object.assign(FORM, {
     if (!kids.length) return fail('Kies minstens één ouder.');
     const due = isoToOff(f.due || offToIso(14)); if (due < 1) return fail('Kies een datum vanaf morgen.');
     const title = (f.title || '').trim() || ACT_TYPES[f.type].label;
-    const b = {id:++idc, loc, type:f.type, title, period:f.period, due, made:0, by:'Sanne', info:(f.info || '').trim() || ACT_TYPES[f.type].info, doc:f.type === 'akkoord' ? (f.doc || HUISREGELS) : undefined, docs:(f.docs || []).slice()};
+    const b = {id:++idc, loc, type:f.type, title, period:f.period, due, made:0, by:ME().name, info:(f.info || '').trim() || ACT_TYPES[f.type].info, doc:f.type === 'akkoord' ? (f.doc || HUISREGELS) : undefined, docs:(f.docs || []).slice()};
     S.batches.push(b);
     kids.forEach(id => S.actions.push({id:++idc, batch:b.id, kid:id, status:'open', current:id === 'liam' && f.type === 'medicatie' ? [{name:'Methylfenidaat', dose:'10 mg', time:'08:00', care:'nee'}] : undefined}));
     V[r].form = {}; V[r].stack = [{v:'batch', id:b.id}]; render(r);

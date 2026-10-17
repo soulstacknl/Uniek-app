@@ -16,6 +16,7 @@
 | 17-10-2026 | Een begeleider kan op Vandaag een kind toevoegen; de keuzelijst bevat alle kinderen van de hele organisatie. |
 | 17-10-2026 | De begeleider kan de app ook in de webbrowser gebruiken (zie NF-01). De demo laat beide weergaven zien. |
 | 17-10-2026 | Bij administratieacties kunnen documenten worden meegestuurd, door Uniek en door de ouder. Akkoord geven gaat met een vinkje (geen getypte naam); de app legt vast wie en wanneer. |
+| 17-10-2026 | Begeleiders hebben een persoonlijke inlog en kiezen daarna een locatie. Chats met ouders zijn teamgesprekken per locatie: alle begeleiders van die locatie zien alle berichten, met de naam van de afzender. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen
@@ -39,3 +40,5 @@
 - Kind toevoegen: wordt een toegevoegd kind ook in de planning en de facturatie verwerkt?
 - Documenten: welke bestandstypen en welke maximale grootte zijn toegestaan? Hoe lang bewaren we documenten die ouders meesturen?
 - Akkoord met een vinkje: is dat juridisch voldoende voor bijvoorbeeld een zorgovereenkomst, of is een digitale handtekening nodig?
+- Teamgesprek: moet een begeleider een gesprek kunnen 'oppakken' of markeren als afgehandeld, zodat collega's weten dat iemand al reageert?
+- Teamgesprek: zijn berichten van ouders 'gelezen' als één begeleider ze heeft gelezen, of houdt elke begeleider een eigen leesstand bij?
