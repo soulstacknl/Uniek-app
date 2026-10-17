@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uniek-app demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Demo-opzet: een smalle balk bovenaan, daaronder twee telefoons naast elkaar (ouder en begeleider).
+   Onder 820px: één telefoon tegelijk met een schakelaar. De telefoons houden in beide thema's hun lichte app-look. */
+:root{
+  --page:#E9EFF6; --page-fg:#0B2F5B; --page-muted:#55657D; --page-line:#CBD6E3; --page-panel:#FFFFFF; --shadow:rgba(11,47,91,.16);
+  /* App-huisstijl: blauw en magenta uit het logo van Opvang Uniek, fris aangevuld */
+  --ink:#0B2F5B; --ink-2:#55657D; --on-ink:#FFFFFF;
+  --brand:#0A62AB; --brand-tint:#E4EFFA; --pink:#D92A82; --pink-strong:#C21F72; --pink-tint:#FCE6F1;
+  --ground:#F5F7FA; --surface:#FFFFFF; --line:#E2E8F0; --line-strong:#C5CFDC;
+  --accent:#C21F72; --accent-tint:#FCE5DF;
+  --sun:#F6B93B; --sun-tint:#FFF1CF;
+  --mint:#1D6B50; --mint-tint:#DCF1E8;
+  --lilac:#4B3F9E; --lilac-tint:#ECE8FB;
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page:#0B1626; --page-fg:#EAF1F9; --page-muted:#A3B3C7; --page-line:#24364F; --page-panel:#13233A; --shadow:rgba(0,0,0,.5); color-scheme:dark } }
+:root[data-theme="dark"]{ --page:#0B1626; --page-fg:#EAF1F9; --page-muted:#A3B3C7; --page-line:#24364F; --page-panel:#13233A; --shadow:rgba(0,0,0,.5); color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--page);color:var(--page-fg);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+
+.shell{max-width:1180px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;min-height:100%}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.bar h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.pill{padding:4px 10px;border:1px solid var(--page-line);border-radius:999px;color:var(--page-muted);font-size:13px;font-weight:600;white-space:nowrap}
+.bar p{flex:1 1 280px;margin:0;color:var(--page-muted);font-size:14px}
+.reset{min-height:44px;padding:0 16px;border:1px solid var(--page-line);border-radius:12px;background:var(--page-panel);font-weight:600;cursor:pointer}
+.reset:hover{border-color:var(--page-muted)}
+.tips{margin:0;padding:12px 16px;border:1px solid var(--page-line);border-radius:16px;background:var(--page-panel);font-size:14px}
+.tips summary{cursor:pointer;font-weight:700}
+.tips ol{margin:8px 0 2px;padding-left:20px;color:var(--page-muted);display:grid;gap:4px}
+.switch{display:none;align-self:center;padding:4px;border-radius:14px;background:var(--page-panel);border:1px solid var(--page-line)}
+.switch button{min-height:40px;padding:0 18px;border:0;border-radius:10px;background:transparent;font-weight:700;cursor:pointer;color:var(--page-muted)}
+.switch button[aria-pressed="true"]{background:var(--brand);color:#fff}
+.stage{display:flex;justify-content:center;gap:56px;flex-wrap:wrap;padding-bottom:16px}
+.device{display:flex;flex-direction:column;align-items:center;gap:10px}
+.device-label{font-size:14px;font-weight:700;color:var(--page-muted)}
+.device-label b{color:var(--page-fg)}
+
+/* Telefoon */
+.phone{position:relative;width:min(372px, calc(100vw - 32px));height:min(780px, calc(100vh - 150px));min-height:620px;border-radius:44px;border:10px solid #0B1A2E;background:var(--ground);color:var(--ink);overflow:hidden;box-shadow:0 24px 60px var(--shadow);display:flex;flex-direction:column;color-scheme:light}
+.statusbar{flex:none;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:700;background:transparent}
+.statusbar i{display:inline-block;width:22px;height:11px;border:1.5px solid var(--ink);border-radius:3px;position:relative}
+.statusbar i::after{content:"";position:absolute;inset:1.5px 5px 1.5px 1.5px;background:var(--ink);border-radius:1px}
+.app{flex:1;min-height:0;display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;overflow-y:auto;padding:4px 18px 24px;scrollbar-width:thin}
+.screen.chatbody{display:flex;flex-direction:column;gap:8px;padding-bottom:12px}
+
+/* Tabbalk */
+.tabbar{flex:none;display:flex;justify-content:space-around;padding:8px 6px 14px;background:var(--surface);border-top:1px solid var(--line)}
+.tab{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;padding:4px 0;border:0;background:none;color:var(--ink-2);font-size:11px;font-weight:600;cursor:pointer}
+.tab svg{width:24px;height:24px}
+.tab[aria-current="page"]{color:var(--brand)}
+.tab[aria-current="page"] .tab-ico{background:var(--brand-tint)}
+.tab-ico{display:grid;place-items:center;width:52px;height:30px;border-radius:999px;transition:background .2s}
+.badge{position:absolute;top:0;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+
+/* Kop */
+.top{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;min-height:52px;flex:none}
+.top h2{margin:0;font-size:17px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:14px;background:transparent;cursor:pointer;color:var(--ink)}
+.iconbtn:hover{background:var(--line)}
+.iconbtn svg{width:22px;height:22px}
+.hello{padding:10px 0 14px}
+.hello small{display:block;color:var(--ink-2);font-size:14px;font-weight:600}
+.hello h2{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+
+/* Bouwstenen */
+.card{background:var(--surface);border-radius:22px;padding:16px;border:1px solid var(--line);margin-bottom:12px}
+.card.hero{background:linear-gradient(140deg,var(--brand) 0%,var(--ink) 100%);color:#fff;border:0;position:relative;overflow:hidden}
+.card.hero::after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:var(--pink);opacity:.22;pointer-events:none}
+.card.hero>*{position:relative}
+.card.hero .muted{color:#CFE0F2}
+.card h3{margin:0 0 4px;font-size:16px;font-weight:800}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:18px 2px 8px}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;margin-bottom:12px}
+.item{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer;min-height:60px}
+.item:first-child{border-top:0}
+button.item:hover{background:var(--ground)}
+.item .t{font-weight:700;font-size:15px}
+.item .s{font-size:13px;color:var(--ink-2)}
+.item>svg{width:18px;height:18px;color:var(--ink-2);flex:none}
+.avatar{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px}
+.avatar.lg{width:56px;height:56px;border-radius:18px;font-size:21px}
+.c1{background:var(--pink-tint);color:var(--pink-strong)}.c2{background:var(--mint-tint);color:var(--mint)}.c3{background:var(--lilac-tint);color:var(--lilac)}.c4{background:var(--accent-tint);color:#9B2E1C}.c5{background:var(--brand-tint);color:var(--brand)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-verwacht{background:var(--lilac-tint);color:var(--lilac)}
+.st-aangekomen{background:var(--mint-tint);color:var(--mint)}
+.st-opgehaald{background:#EDEBE6;color:#5B6478}
+.st-afgemeld{background:var(--accent-tint);color:#A0321F}
+.st-aangevraagd{background:var(--sun-tint);color:#7A5300}
+.st-gepland{background:#E3EEF9;color:#24508A}
+.st-afgewezen{background:#EDEBE6;color:#5B6478}
+.hero .chip{background:rgba(255,255,255,.14);color:#fff}
+.hero .chip.st-aangekomen{background:#7BD3AE;color:#0D3B2B}
+.hero .chip.st-opgehaald{background:#E6E8EF;color:#1E2A4A}
+.hero .chip.st-afgemeld{background:#FFB4A6;color:#5A1609}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:16px;border:0;background:var(--brand);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.btn:hover{filter:brightness(1.15)}
+.btn.block{width:100%}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line-strong)}
+.btn.ghost:hover{filter:none;border-color:var(--brand)}
+.btn.soft{background:var(--pink-tint);color:var(--pink-strong)}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px;border-radius:12px}
+.btn.danger{background:#B83A26}
+.btn svg{width:18px;height:18px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+
+.field{display:block;margin-bottom:14px}
+.field>span{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.input{width:100%;min-height:50px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:16px}
+textarea.input{min-height:110px;resize:vertical}
+.input:focus,.btn:focus-visible,.item:focus-visible,.tab:focus-visible,.iconbtn:focus-visible,.choice:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.err{color:#A0321F;font-size:14px;font-weight:600;margin:-4px 0 12px}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.choice{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);font-weight:600;font-size:14px;cursor:pointer}
+.choice[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
+.mood{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);font-size:11px;font-weight:700;cursor:pointer}
+.mood[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint)}
+.face{width:30px;height:30px}
+
+.report-mood{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{padding:4px 10px;border-radius:999px;background:var(--brand-tint);font-size:12px;font-weight:600;color:var(--ink-2);border:1px solid var(--line)}
+.photo{height:120px;border-radius:16px;margin-top:12px;background:linear-gradient(135deg,var(--brand-tint),var(--pink-tint));display:grid;place-items:center;color:var(--ink-2);font-size:13px;font-weight:600}
+
+/* Berichten */
+.bubble{max-width:82%;padding:10px 13px;border-radius:18px;font-size:15px;line-height:1.4}
+.bubble small{display:block;font-size:11px;margin-top:4px;opacity:.7}
+.bubble.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.bubble.me{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:6px}
+.daysep{align-self:center;font-size:12px;font-weight:700;color:var(--ink-2);padding:6px 0}
+.composer{flex:none;display:flex;gap:8px;padding:10px 12px;background:var(--surface);border-top:1px solid var(--line)}
+.composer .input{min-height:46px;border-radius:999px;padding:10px 16px}
+.composer .btn{width:46px;min-height:46px;padding:0;border-radius:50%}
+
+/* Inloggen */
+.login{flex:1;display:flex;flex-direction:column;padding:10px 24px 24px;overflow-y:auto;background:radial-gradient(120% 55% at 100% 0%, var(--pink-tint) 0%, transparent 60%), radial-gradient(100% 50% at 0% 35%, var(--brand-tint) 0%, transparent 65%), var(--ground)}
+.brand{margin:26px 0 30px}
+.brand img{display:block;height:58px;width:auto}
+.mark{width:34px;height:34px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none}
+.mark img{height:26px;width:auto}
+.bar .logo{height:40px;width:auto;flex:none;background:#fff;border-radius:10px;padding:4px 8px;box-sizing:content-box}
+.login h2{margin:0;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.login p.lead{margin:8px 0 24px;color:var(--ink-2)}
+.who{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.7);border:1px solid var(--line);margin-bottom:18px;font-size:14px}
+.linkbtn{border:0;background:none;color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px;padding:0}
+.login .foot{margin-top:auto;padding-top:20px;font-size:12px;color:var(--ink-2);text-align:center}
+
+/* Melding in de telefoon */
+.toast{position:absolute;left:12px;right:12px;top:42px;z-index:5;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:18px;background:rgba(11,47,91,.96);color:#fff;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);transform:translateY(-20px);opacity:0;visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s .35s}
+.toast.show{transform:none;opacity:1;visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .25s}
+
+.toast b{display:block;font-size:13px}
+
+.stat{flex:1;padding:12px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.stat b{display:block;font-size:24px;font-weight:800;line-height:1.1}
+.stat span{font-size:12px;font-weight:700;color:var(--ink-2)}
+.empty{padding:20px;text-align:center;color:var(--ink-2);font-size:14px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--ink-2);font-weight:600}.kv dd{margin:0;font-weight:600}
+ul.notes{margin:6px 0 0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+
+/* Groepsgesprek */
+.wa{background-color:#EAF0F6;background-image:radial-gradient(rgba(11,47,91,.06) 1.2px, transparent 1.3px);background-size:16px 16px}
+.wa .bubble.them{border:0;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.bubble .sender{display:block;font-size:12px;font-weight:800;margin-bottom:2px}
+.bubble .pic{display:block;width:230px;max-width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:12px;margin:-3px -5px 6px;overflow:hidden}
+.bubble .pic svg{display:block;width:100%;height:100%}
+.bubble.me .pic{margin:-3px -5px 6px}
+.bubble .meta{display:flex;justify-content:flex-end;align-items:center;gap:3px;font-size:11px;opacity:.75;margin-top:3px}
+.bubble .meta svg{width:15px;height:15px}
+.sys{align-self:center;max-width:88%;padding:6px 12px;border-radius:10px;background:#FFF4D2;color:#5B4A1A;font-size:12px;font-weight:600;text-align:center}
+.tray{flex:none;display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;background:var(--surface);border-top:1px solid var(--line);overflow-x:auto;align-items:center}
+.tray button,.tray label{flex:none;width:76px;height:64px;border-radius:12px;overflow:hidden;border:0;padding:0;cursor:pointer;background:var(--ground)}
+.tray button svg{display:block;width:100%;height:100%}
+.tray label{display:grid;place-items:center;text-align:center;font-size:11px;font-weight:700;color:var(--ink-2);border:1.5px dashed var(--line-strong)}
+.tray label input{position:absolute;width:1px;height:1px;opacity:0}
+.tray .hint{flex:1 0 100%;font-size:12px;color:var(--ink-2);line-height:1.3}
+.composer .iconbtn{width:46px;height:46px;flex:none}
+.composer .iconbtn[aria-pressed="true"]{background:var(--pink-tint);color:var(--pink-strong)}
+.grp{background:var(--pink);color:#fff}
+.notice{margin:2px 0 12px;padding:10px 12px;border-radius:14px;background:var(--mint-tint);color:#14513C;font-size:13px}
+@media (max-width: 819px){
+  .switch{display:flex}
+  .stage{gap:0}
+  .device:not(.is-active){display:none}
+  .phone{height:calc(100dvh - 190px)}
+}
+@media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="bar">
+    <img class="logo" id="bar-logo" alt="Opvang Uniek">
+    <h1>Uniek-app</h1>
+    <span class="pill">Demo · voorbeeldgegevens</span>
+    <p>Eerste ontwerp voor ouders en begeleiders van Opvang Uniek. Wat je op de ene telefoon doet, zie je meteen op de andere.</p>
+    <button class="reset" id="reset" type="button">Opnieuw beginnen</button>
+  </header>
+  <details class="tips" id="tips">
+    <summary>Wat kun je proberen?</summary>
+    <ol>
+      <li>Log op beide telefoons in. De demo-gegevens staan al ingevuld.</li>
+      <li>Begeleider: tik bij Liam op <b>Aangekomen</b>. De ouder krijgt meteen een melding.</li>
+      <li>Begeleider: schrijf een dagverslag voor Liam. Het verschijnt bij de ouder onder <b>Verslagen</b>.</li>
+      <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
+      <li>Begeleider: open <b>Groep vandaag</b> en deel een foto of tekst. Alle ouders van kinderen die er vandaag zijn, zien het, alleen vandaag. Ouders kunnen niet reageren. Bij Daan staat geen toestemming voor foto's; dat ziet de begeleider bij het delen.</li>
+      <li>Stuur ook 1-op-1-berichten heen en weer.</li>
+    </ol>
+  </details>
+  <div class="switch" role="group" aria-label="Kies telefoon">
+    <button type="button" data-switch="ouder" aria-pressed="true">Ouder</button>
+    <button type="button" data-switch="beg" aria-pressed="false">Begeleider</button>
+  </div>
+  <main class="stage">
+    <section class="device is-active" data-device="ouder">
+      <div class="device-label"><b>Ouder</b> · Eva, moeder van Liam</div>
+      <div class="phone" data-role="ouder"><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
+    </section>
+    <section class="device" data-device="beg">
+      <div class="device-label"><b>Begeleider</b> · Sanne, locatie Didam</div>
+      <div class="phone" data-role="beg"><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+const LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABWCAYAAADboOrOAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjBlOTNkNmU1LTZjMmEtNDRlYS1iMDQzLWU4YTRmNDJlZmU2NwAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNokN0Z/qNk0Soom17ohyIifgAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6MmQ3NDljNzgtMWZjYy00MTY3LWI1NGMtYzk5YjkzNzMzMTc1bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaOL85qgWs1axT1FkFi+Jn/oAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIBrZZlhTMAsMZtlHxR1xC0poss/TUzkItJpnYENYP8fhpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2hBsFJdJRXtZsYXZKSsSefUAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFgg4XUtEf9DidNfltdvhrtrD12u6FPmnnTM+tuulBp/PlZkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTowZTkzZDZlNS02YzJhLTQ0ZWEtYjA0My1lOGE0ZjQyZWZlNjcvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyODRmZmQyMS0yYjVhLTQxYzctYjJlZS1mYjRhM2I2MDRjOTZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggGtlmWFMwCwxm2UfFHXELSmiyz9NTOQi0mmdgQ1g/x+GiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIAq3JBZnJnvZXsq8jKiaMMp5KvoE4Ie0curaz/m85B6XomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYILZyEFmywkm+W3ZZsuJ8qBYUJRZz22K9c8KcvIOt7QExdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2WECcFLJdnPsAPT/vzWrpZVKqsaafKNcQGCRzKJxUgbhdCeKjEHXr2qRrrsmp8DypMLO90NxencVJkMbFECi8scPSJzumdAAAAAlwSFlzAAALEwAACxMBAJqcGAAABfFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ4IDc5LjE2NDAzNiwgMjAxOS8wOC8xMy0wMTowNjo1NyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjEgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyMC0wOS0wNVQxNzoxNzoxOSswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6Mjk2Y2Y1NTktM2Q0MC02YjRlLTk0OTYtZjlhOTgyMWViNjRiIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjlkNDBlMWQtYzViOS1kYzQ0LWFhZWEtNjVkZTAwZmY1Y2U2Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2OWQ0MGUxZC1jNWI5LWRjNDQtYWFlYS02NWRlMDBmZjVjZTYiIHN0RXZ0OndoZW49IjIwMjAtMDktMDVUMTc6MTc6MTkrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4xIChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiBzdEV2dDp3aGVuPSIyMDIwLTA5LTA1VDE3OjQyOjE2KzAyOjAwIiBzdEV2dDpzb2Z0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';
+const MARK = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAABRCAYAAAC+GtTXAAAFnElEQVR4nMWaPXLbSBCFP7M2YQafYLnFAxA+gaETmCoewGTEUFLIyFLEUFLIiNQBWOaeYOHMmcEqR65iGUdAxnA3mIYMgvPTECDvS1Saacw89vR09/TMGxqgP9/GQAwMpCkHsuNqkjUZR4M3SkJT4FOFUB05cHdcTTZdkIIAsf58GwGfgUQ5XgpcHleTog0p8BATUv9glq4JMuCiLbmep29Nc1LIN59fQqYKK7H+fJsA4xbjJv35ts33/OFov2ozaGWMXZMP+vPtAKPx2Gpj/fn237asBG99tibuJwHey9+o7DvTmCxjV4gxO7U6/hj4gDGVCAdcS/maUG2M/4NYCDmwsxHLO5ykaCC3AZ7K8OYy/p+4w4+a1HE1eVsbN8E47RI5cAfs6pvEtZRPmNjYBjtLW1wl5IutLs//gH4ZbCgwmqjjg7S/CwV8X6ycYsLSS3BzXE0eLGMOjqtJrhkglF1MaU5uc1xNZk0+OIyWSeXfbLhfFMF8TBziGo8zFBQYTW2UZAYYO55aulNtohjJAB84z80yzGbZaFOdw2g5Be7x/FgVsS4hpILm8VuJHUbLCPhJ2Cy8ieJr4BoFKQjEyv58e40x6jPP/EJ81Ar6/FjCr/BRYNKXLxhjryIGouNqchua7DBaqvM8q8ZkF1YNNMLkT2PHOO+0E2rhsrFr9EH85jUOvGfEJO/WBvDUFno8yLSCNo1pSRVAo9AD/K0VPCEmh4Op8ttHbUCu4AFl1lLXmPbYlsskjTDcLwrgUiP7TExsa6qc4+6lfm24X6TABQHNVTWmJZW3reoIub8wSWNe6y6AzbODbZDnW5PAtpCcLJPlNp5fjP6bcgzv6dozcYSJJAUwG+4XuU++9PyJcvwXxcwKqViavh1Gyx3GfaSllmzE3ivneGpKSlAvaUUYm54CHEbLHGNrz5osjX+gnCBtyugwWq4Jl7Qi4LG6vKXGYsUcWdNlPIyWY8K7vQAuhvtFVm3sieFrkDYkNUB3wprVSYFZykg5117NysB72BDMhvvFztbRJLXOtYLik8YBsc1wv9i4OnsoXcVxNUlVrAxCMTcHbnwCnR9GxLbGAbGZzXdVoSXmHaSGaaA/lVjphZZYppQDc1r3wbuEJXp0WEGUZYw9IqnNNdjQKTHCG0kd0rRLGSvlRp6+wuce6uihs59IOV7s6dspxwCg19HRv0Ti6fvSZKByKdOQYIOY6kLWRLgkpvko8nXKjnRCuxtLlMQ0AToJ9A88fali/BOolxL/juscPQA5UWcB2bjFPI0MH079WBqQHcih2IW86eQ+VIlpvHLi6ggdx5rimZjUuLKAfChAd4Z6SHoMyI+l2uhC2opNBXViO8K519TTlzvaG+/oE2ISnkJa86XNrt0X6SkZ2LKLB/xaG3jeVKSO9lhLqMQZMdGa7a6xCqvWZGdmlq4oFLKCxACkzGSboITvJYrL7SRaUuBPFEOF33tH+87Rri3cAB5i4td85Ab9+fa23ijLubHIjzshBiAlTdskJT458rQ7zjdQJEWW9sQA5Bp54xFZ152uaM3mdtSPmbSHkRvcmyHGUtUZ7he3lm+S2v13O2LiQi5wa27cn29tm2HG+ZKqbl4a3/D259s17rA0q5faHVfNl67yU4nGRRWxOZcDXsuTiGfIWfKhJncvBePuiAm5W8zVS+Egd1sjd8OpGQwIVBtbXdZLRrvG7tXPHoZIoXhaaZq5TuedvCIQDdmMOqX2LrZGrsBSGO6MmJCLMWEqqXXlQu55cg25zt9deJ4/31Uv9A+j5TW/4m0m5IpXIybkIsy9+hWnSWKOcSmpkEswNjqgprlXfakiBMecazDFPPvbiNu4xyxtAdwN94uH3/aERt5xfOT0mWmBSZMev3/9EWF+QIL2NVTXqDzM/ZNfaXcEPH3/+mMHXP0HC1vu4T8R4vcAAAAASUVORK5CYII=';
+document.getElementById('bar-logo').src = LOGO;
+/* ---------- Hulpjes ---------- */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const now = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const dayDate = off => { const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+off); return d; };
+const fmtDay = (off, long) => {
+  if (off === 0) return 'Vandaag';
+  if (off === 1) return 'Morgen';
+  if (off === -1) return 'Gisteren';
+  return dayDate(off).toLocaleDateString('nl-NL', long ? {weekday:'long', day:'numeric', month:'long'} : {weekday:'short', day:'numeric', month:'short'});
+};
+const isoToOff = iso => { const a = new Date(iso + 'T12:00:00'); const b = dayDate(0); return Math.round((a - b) / 864e5); };
+const offToIso = off => { const d = dayDate(off); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); };
+const ago = min => { const d = new Date(Date.now() - min*60000); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const greeting = () => { const h = new Date().getHours(); return h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond'; };
+
+const ICONS = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  book:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>',
+  chat:'<path d="M5 5h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H10l-5 4V6a1 1 0 0 1 1-1z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5c2.2 0 3.8 1.5 4.5 4"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  chev:'<path d="M9 5l7 7-7 7"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  send:'<path d="M4 12l16-8-6 16-2.5-6.5z"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  pin:'<path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  pen:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  camera:'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  ticks:'<path d="M2 12.5l4 4L14 8"/><path d="M10 15l1.5 1.5L20 8"/>',
+  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'
+};
+const ic = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+const MOODS = [
+  {n:5, label:'Heel goed', color:'#1D6B50', mouth:'M8 13.5c1.2 2 6.8 2 8 0'},
+  {n:4, label:'Goed', color:'#3E8E6A', mouth:'M8.5 14c1.2 1.2 5.8 1.2 7 0'},
+  {n:3, label:'Wisselend', color:'#B07A00', mouth:'M8.5 14.5h7'},
+  {n:2, label:'Lastig', color:'#C25A2B', mouth:'M8.5 15.5c1.2-1.2 5.8-1.2 7 0'},
+  {n:1, label:'Moeilijk', color:'#A0321F', mouth:'M8 16c1.2-2 6.8-2 8 0'}
+];
+const mood = n => MOODS.find(m => m.n === n);
+const face = n => { const m = mood(n); return `<svg class="face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="${m.color}" opacity=".16"/><circle cx="12" cy="12" r="10" fill="none" stroke="${m.color}" stroke-width="1.6"/><circle cx="9" cy="10" r="1.2" fill="${m.color}"/><circle cx="15" cy="10" r="1.2" fill="${m.color}"/><path d="${m.mouth}" fill="none" stroke="${m.color}" stroke-width="1.8" stroke-linecap="round"/></svg>`; };
+
+/* ---------- Voorbeeldgegevens ---------- */
+const wd = new Date().getDay();
+const TODAY = wd === 6 ? {type:'Zaterdagopvang', time:'09:30 – 15:30'}
+            : wd === 0 ? {type:'Logeeropvang', time:'10:00 – 16:00'}
+            : {type:'Naschoolse begeleiding', time:'14:30 – 18:00'};
+const STATUS_LABEL = {verwacht:'Verwacht', aangekomen:'Aangekomen', opgehaald:'Opgehaald', afgemeld:'Afgemeld', aangevraagd:'Aangevraagd', gepland:'Gepland', afgewezen:'Niet mogelijk'};
+const TYPES = ['Dagopvang','Logeeropvang','Naschoolse begeleiding','Zaterdagopvang','Vakantieopvang'];
+const HIGHLIGHTS = ['Buiten gespeeld','Samen gespeeld','Goed gegeten','Rustig moment nodig','Moe','Trots op zichzelf','Nieuwe vaardigheid'];
+
+let S, V, idc = 100;
+function seed(){
+  S = {
+    kids: {
+      liam:  {id:'liam',  name:'Liam de Vries',  first:'Liam',  age:9,  parent:'Eva de Vries',    c:'c1', since:'maart 2024', photoOk:true,
+              notes:['Vindt drukte en harde geluiden lastig. Zijn koptelefoon zit in zijn rugzak.','Kondig overgangen vooraf aan, het liefst met de dagplanner.','Houdt van Lego en buiten voetballen.']},
+      noor:  {id:'noor',  name:'Noor Bakker',    first:'Noor',  age:11, parent:'Peter Bakker',    c:'c2', since:'januari 2025', photoOk:true, notes:['Heeft een vaste plek aan tafel nodig.','Tekent graag om tot rust te komen.']},
+      yusuf: {id:'yusuf', name:'Yusuf Demir',    first:'Yusuf', age:10, parent:'Aylin Demir',     c:'c3', since:'september 2023', photoOk:true, notes:['Werkt aan samen spelen en beurten afwachten.']},
+      daan:  {id:'daan',  name:'Daan Jansen',    first:'Daan',  age:7,  parent:'Mirjam Jansen',   c:'c5', since:'juni 2025', photoOk:false, notes:['Wil graag weten wie hem ophaalt.']},
+      mila:  {id:'mila',  name:'Mila Hendriks',  first:'Mila',  age:13, parent:'Ilse Hendriks',   c:'c4', since:'februari 2024', photoOk:true, notes:['Geeft zelf aan wanneer ze even alleen wil zijn.']}
+    },
+    plan: [
+      {id:1, kid:'liam',  off:0,  type:TODAY.type, time:TODAY.time, status:'verwacht'},
+      {id:2, kid:'noor',  off:0,  type:TODAY.type, time:TODAY.time, status:'aangekomen', at:ago(38)},
+      {id:3, kid:'yusuf', off:0,  type:TODAY.type, time:TODAY.time, status:'aangekomen', at:ago(46)},
+      {id:4, kid:'daan',  off:0,  type:TODAY.type, time:TODAY.time, status:'verwacht'},
+      {id:5, kid:'mila',  off:0,  type:TODAY.type, time:TODAY.time, status:'afgemeld', reason:'Ziek'},
+      {id:6, kid:'liam',  off:3,  type:'Naschoolse begeleiding', time:'14:30 – 18:00', status:'gepland'},
+      {id:7, kid:'liam',  off:6,  type:'Logeeropvang', time:'16:00 – zondag 14:00', status:'gepland'},
+      {id:8, kid:'liam',  off:10, type:'Zaterdagopvang', time:'09:30 – 15:30', status:'gepland'},
+      {id:9, kid:'liam',  off:-4, type:'Dagopvang', time:'09:00 – 16:00', status:'opgehaald'}
+    ],
+    reports: [
+      {id:1, kid:'liam', off:-4, author:'Sanne', mood:4, tags:['Samen gespeeld','Goed gegeten','Rustig moment nodig'], photo:true,
+       text:'Liam heeft samen met Yusuf een hele lange Lego-brug gebouwd. Bij het opruimen werd het even druk; met zijn koptelefoon op de bank was hij snel weer rustig. Aan tafel heeft hij goed gegeten.'},
+      {id:2, kid:'liam', off:-11, author:'Ruben', mood:5, tags:['Buiten gespeeld','Trots op zichzelf'], photo:false,
+       text:'Wat een fijne dag! Liam heeft de hele middag buiten gevoetbald en zelf de teams verdeeld. Hij was trots dat dat zo goed ging.'},
+      {id:3, kid:'noor', off:-2, author:'Sanne', mood:3, tags:['Moe'], photo:false, text:'Noor was moe en wilde vooral tekenen. Na het eten ging het beter.'}
+    ],
+    threads: {
+      liam: [
+        {from:'beg', who:'Sanne', off:-1, t:'16:40', text:'Hoi Eva, de spullen voor het logeren mogen vrijdag gewoon in zijn eigen tas mee. Een knuffel van thuis is altijd welkom.'},
+        {from:'ouder', who:'Eva', off:-1, t:'17:02', text:'Top, dank je! Dan doe ik zijn konijn erbij.'},
+        {from:'ouder', who:'Eva', off:0, t:ago(52), text:'Goedemorgen! Liam heeft vannacht slecht geslapen. Misschien is hij vandaag wat sneller moe.'}
+      ],
+      noor: [{from:'beg', who:'Sanne', off:-2, t:'15:10', text:'Hoi Peter, Noor mag volgende week haar eigen tekenspullen meenemen.'}],
+      yusuf: [], daan: [], mila: [{from:'ouder', who:'Ilse', off:0, t:ago(70), text:'Mila is ziek, ze komt vandaag niet. Sorry voor het late bericht.'}]
+    },
+    group: [
+      {sys:true, t:ago(50), text:'Sanne heeft de groep van vandaag aangemaakt voor de ouders van de kinderen die vandaag op locatie Didam zijn. Alleen de begeleiding kan berichten plaatsen. Vannacht om 0:00 verdwijnen de berichten en foto\'s.'},
+      {who:'Sanne', role:'beg', t:ago(45), text:'Goedemorgen allemaal! Noor en Yusuf zijn al binnen. Vanochtend gaan we naar het bos om hutten te bouwen 🌳'},
+      {who:'Ruben', role:'beg', t:ago(18), photo:'bos', text:'De eerste hut staat al!'}
+    ],
+    unread: {ouderMsg:0, ouderRep:0, ouderGroup:2, begGroup:0, beg:{liam:1, mila:0}}
+  };
+  V = {
+    ouder:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false},
+    beg:{auth:false, tab:'vandaag', stack:[], form:{}, tray:false}
+  };
+}
+
+/* ---------- Opbouw ---------- */
+const phone = r => document.querySelector(`.phone[data-role="${r}"]`);
+const kid = id => S.kids[id];
+const initials = k => k.first[0];
+const chip = st => `<span class="chip st-${st}">${STATUS_LABEL[st]}</span>`;
+const todayOf = id => S.plan.find(p => p.kid === id && p.off === 0);
+const begUnread = () => Object.values(S.unread.beg).reduce((a,b) => a+b, 0) + S.unread.begGroup;
+const groupKids = () => S.plan.filter(p => p.off === 0 && p.status !== 'afgemeld').map(p => kid(p.kid));
+const ouderInGroup = () => groupKids().some(k => k.id === 'liam');
+const lastGroup = () => S.group.filter(m => !m.sys).at(-1);
+const preview = m => m ? (m.who + ': ' + (m.photo || m.src ? '📷 Foto' + (m.text ? ' · ' + m.text : '') : m.text)) : '';
+const SENDER_COLORS = {Sanne:'#1D6B50', Ruben:'#24508A', Eva:'#B0461F', Peter:'#4B3F9E', Aylin:'#9B2E6E', Mirjam:'#7A5300', Ilse:'#5B6478'};
+function scene(kind){
+  const s = {
+    bos:'<rect width="240" height="160" fill="#CDE7F0"/><circle cx="196" cy="34" r="16" fill="#FFD66B"/><rect y="118" width="240" height="42" fill="#7DB36A"/><path d="M20 120l22-62 22 62zM60 124l26-74 26 74zM170 122l24-66 24 66z" fill="#2F7A4E"/><path d="M118 124l30-46 30 46z" fill="#A7774A"/><path d="M118 124l30-46M178 124l-30-46M132 124l16-30 16 30" stroke="#6E4B2A" stroke-width="4" fill="none"/>',
+    knutsel:'<rect width="240" height="160" fill="#FCE5DF"/><rect x="20" y="70" width="200" height="90" rx="8" fill="#E8C9A0"/><rect x="50" y="84" width="70" height="52" rx="4" fill="#fff" transform="rotate(-6 85 110)"/><circle cx="78" cy="104" r="12" fill="#F6B93B"/><path d="M62 126c10-10 26-10 36 0" stroke="#D9472F" stroke-width="5" fill="none"/><rect x="140" y="92" width="58" height="10" rx="5" fill="#4B3F9E" transform="rotate(20 169 97)"/><rect x="138" y="114" width="58" height="10" rx="5" fill="#1D6B50" transform="rotate(-12 167 119)"/><rect x="150" y="132" width="50" height="10" rx="5" fill="#D9472F"/>',
+    lunch:'<rect width="240" height="160" fill="#FFF1CF"/><ellipse cx="120" cy="96" rx="78" ry="44" fill="#fff" stroke="#E8E3D8" stroke-width="4"/><circle cx="96" cy="90" r="18" fill="#D9472F"/><circle cx="140" cy="84" r="14" fill="#7DB36A"/><rect x="112" y="98" width="42" height="18" rx="6" fill="#E8B04B"/><circle cx="104" cy="112" r="8" fill="#F6B93B"/>'
+  }[kind];
+  return `<svg viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${s}</svg>`;
+}
+const PHOTO_LABEL = {bos:'Hutten bouwen in het bos', knutsel:'Knutselen aan tafel', lunch:'Samen lunchen'};
+const requests = () => S.plan.filter(p => p.status === 'aangevraagd');
+
+const TABS = {
+  ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['verslagen','Verslagen','book'],['berichten','Berichten','chat'],['profiel','Profiel','user']],
+  beg:[['vandaag','Vandaag','home'],['kinderen','Kinderen','users'],['berichten','Berichten','chat'],['profiel','Profiel','user']]
+};
+function tabbar(r){
+  const badge = t => {
+    let n = 0;
+    if (r === 'ouder' && t === 'berichten') n = S.unread.ouderMsg + (ouderInGroup() ? S.unread.ouderGroup : 0);
+    if (r === 'ouder' && t === 'verslagen') n = S.unread.ouderRep;
+    if (r === 'beg' && t === 'berichten') n = begUnread();
+    if (r === 'beg' && t === 'vandaag') n = requests().length;
+    return n ? `<span class="badge" aria-label="${n} nieuw">${n}</span>` : '';
+  };
+  return `<nav class="tabbar" aria-label="Menu">${TABS[r].map(([id,label,icon]) =>
+    `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}</nav>`;
+}
+const header = (title, extra='') => `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><h2>${esc(title)}</h2>${extra}</div>`;
+
+/* ---------- Inloggen ---------- */
+function loginScreen(r){
+  const o = r === 'ouder';
+  return `<div class="login">
+    <div class="brand"><img src="${LOGO}" alt="Opvang Uniek"></div>
+    <h2>${o ? 'Fijn dat je er bent' : 'Welkom terug'}</h2>
+    <p class="lead">${o ? 'Zie hoe het met je kind gaat, wat er gepland staat en praat met de begeleiding.' : 'Je groep van vandaag, verslagen en contact met ouders op één plek.'}</p>
+    <div class="who"><div class="avatar ${o?'c1':'c2'}">${o?'E':'S'}</div><div>Demo: je logt in als <b>${o ? 'Eva, moeder van Liam' : 'Sanne, begeleider in Didam'}</b>.</div></div>
+    <form data-form="login">
+      <label class="field"><span>E-mailadres</span><input class="input" type="email" name="email" autocomplete="username" value="${o ? 'eva@voorbeeld.nl' : 'sanne@opvanguniek.nl'}"></label>
+      <label class="field"><span>Wachtwoord</span><input class="input" type="password" name="pw" autocomplete="current-password" value="demowachtwoord"></label>
+      <button class="btn block" type="submit">Inloggen</button>
+    </form>
+    <div style="text-align:center;margin-top:8px"><button class="linkbtn" type="button" data-act="forgot">Wachtwoord vergeten?</button></div>
+    <div class="foot">Je account krijg je via een uitnodiging van Opvang Uniek.</div>
+  </div>`;
+}
+
+/* ---------- Ouder ---------- */
+const O = {
+  vandaag(){
+    const k = kid('liam'), t = todayOf('liam');
+    const line = {
+      verwacht:`${t.type} · ${t.time}`,
+      aangekomen:`Om ${t.at} aangekomen in Didam`,
+      opgehaald:`Om ${t.at} opgehaald. Tot de volgende keer!`,
+      afgemeld:`Afgemeld${t.reason ? ' · ' + esc(t.reason) : ''}`
+    }[t.status];
+    const last = S.reports.filter(x => x.kid === 'liam').sort((a,b) => b.off - a.off)[0];
+    const next = S.plan.filter(p => p.kid === 'liam' && p.off > 0 && p.status !== 'afgemeld' && p.status !== 'afgewezen').sort((a,b) => a.off - b.off)[0];
+    return `<div class="screen">
+      <div class="hello"><small>${greeting()}, Eva</small><h2>Zo gaat het met ${k.first}</h2></div>
+      <div class="card hero">
+        <div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="muted small" style="margin-bottom:6px">Didam · vandaag</div>${chip(t.status)}</div></div>
+        <p style="margin:14px 0 14px;font-weight:600">${line}</p>
+        <div class="btns">${ouderInGroup() ? `<button class="btn soft sm" type="button" data-act="open" data-v="groep">${ic('users')} Groep vandaag${S.unread.ouderGroup ? ` <span class="chip st-afgemeld" style="padding:2px 7px">${S.unread.ouderGroup}</span>` : ''}</button>` : ''}<button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="liam">${ic('chat')} Sanne</button>${t.status === 'verwacht' ? `<button class="btn ghost sm" type="button" data-act="open" data-v="afmelden" data-id="${t.id}">Afmelden</button>` : ''}</div>
+      </div>
+      ${last ? `<div class="eyebrow">Laatste verslag</div>
+      <button class="card item" style="display:block;border:1px solid var(--line);border-radius:22px;padding:16px" type="button" data-act="open" data-v="verslag" data-id="${last.id}">
+        <div class="row"><span class="report-mood">${face(last.mood)} ${mood(last.mood).label}</span><span class="grow"></span><span class="small muted">${fmtDay(last.off)} · ${last.author}</span></div>
+        <p style="margin:10px 0 0;font-size:15px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${esc(last.text)}</p>
+      </button>` : ''}
+      ${next ? `<div class="eyebrow">Volgende keer</div>
+      <div class="list"><button class="item" type="button" data-act="tab" data-v="planning"><div class="avatar c5">${ic('cal').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">${next.type}</div><div class="s">${fmtDay(next.off)} · ${next.time}</div></div>${chip(next.status)}</button></div>` : ''}
+      <div class="eyebrow">Vandaag op de groep</div>
+      <div class="card"><div class="row"><div class="avatar c2">S</div><div class="grow"><div style="font-weight:700">Sanne en Ruben</div><div class="small muted">Begeleiders · Didam</div></div></div></div>
+    </div>`;
+  },
+  planning(){
+    const items = S.plan.filter(p => p.kid === 'liam' && p.off >= 0).sort((a,b) => a.off - b.off);
+    return `<div class="screen">
+      <div class="hello"><small>Liam</small><h2>Planning</h2></div>
+      <button class="btn block" type="button" data-act="open" data-v="aanvragen" style="margin-bottom:16px">${ic('plus')} Opvang aanvragen</button>
+      <div class="list">${items.map(p => `<div class="item" style="cursor:default;align-items:flex-start">
+        <div class="avatar c5" style="flex-direction:column;gap:0;line-height:1"><span style="font-size:15px">${dayDate(p.off).getDate()}</span><span style="font-size:10px;font-weight:700">${dayDate(p.off).toLocaleDateString('nl-NL',{month:'short'}).replace('.','')}</span></div>
+        <div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div>${p.note ? `<div class="s">“${esc(p.note)}”</div>` : ''}
+        ${(p.status === 'gepland' || (p.status === 'verwacht')) ? `<button class="linkbtn small" type="button" data-act="open" data-v="afmelden" data-id="${p.id}" style="min-height:36px">Afmelden</button>` : ''}</div>
+        ${chip(p.status)}</div>`).join('')}</div>
+      <p class="small muted" style="margin:4px 4px 0">Afmelden kan tot 24 uur van tevoren zonder kosten. Bij ziekte kan het altijd. <i>(voorbeeldregel)</i></p>
+    </div>`;
+  },
+  verslagen(){
+    S.unread.ouderRep = 0;
+    const list = S.reports.filter(x => x.kid === 'liam').sort((a,b) => b.off - a.off || b.id - a.id);
+    return `<div class="screen">
+      <div class="hello"><small>Liam</small><h2>Verslagen</h2></div>
+      <div class="list">${list.map(x => `<button class="item" type="button" data-act="open" data-v="verslag" data-id="${x.id}">${face(x.mood)}<div class="grow"><div class="t">${fmtDay(x.off)} · ${mood(x.mood).label}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.text)}</div></div>${ic('chev')}</button>`).join('')}</div>
+    </div>`;
+  },
+  berichten(){
+    const inG = ouderInGroup(), lg = lastGroup(), lt = S.threads.liam.at(-1);
+    return `<div class="screen">
+      <div class="hello"><small>Liam</small><h2>Berichten</h2></div>
+      <div class="eyebrow">Groep van vandaag</div>
+      <div class="list">${inG ? `<button class="item" type="button" data-act="open" data-v="groep"><div class="avatar grp">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Didam vandaag</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${S.unread.ouderGroup ? 'color:var(--ink);font-weight:700' : ''}">${esc(preview(lg))}</div></div>${S.unread.ouderGroup ? `<span class="chip st-afgemeld" style="padding:4px 8px">${S.unread.ouderGroup}</span>` : ic('chev')}</button>`
+        : `<div class="item" style="cursor:default"><div class="avatar" style="background:#EDEBE6;color:#5B6478">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Geen groep vandaag</div><div class="s">Liam is vandaag niet op de locatie.</div></div></div>`}</div>
+      <div class="eyebrow">Met de begeleiding</div>
+      <div class="list"><button class="item" type="button" data-act="open" data-v="chat" data-id="liam"><div class="avatar c2">D</div><div class="grow"><div class="t">Team Didam</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${S.unread.ouderMsg ? 'color:var(--ink);font-weight:700' : ''}">${lt ? esc(lt.text) : ''}</div></div>${S.unread.ouderMsg ? `<span class="chip st-afgemeld" style="padding:4px 8px">${S.unread.ouderMsg}</span>` : ic('chev')}</button></div>
+      <p class="small muted" style="margin:4px">In de groep deelt de begeleiding foto's en nieuwtjes van de dag met alle ouders van kinderen die er vandaag zijn. De groep is alleen vandaag zichtbaar. Iets persoonlijks over Liam? Gebruik dan Team Didam.</p>
+    </div>`;
+  },
+  profiel(){
+    return `<div class="screen">
+      <div class="hello"><small>Profiel</small><h2>Eva de Vries</h2></div>
+      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>eva@voorbeeld.nl</dd><dt>Kind</dt><dd>Liam de Vries, 9 jaar</dd><dt>Locatie</dt><dd>Didam</dd><dt>Bij Uniek sinds</dt><dd>maart 2024</dd></dl></div>
+      <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Aankomst, ophalen, verslagen en berichten</div></div><span class="chip st-aangekomen">Aan</span></div></div>
+      <div class="eyebrow">Toestemming</div>
+      <div class="list"><div class="item" style="cursor:default;align-items:flex-start"><div class="avatar c1">${ic('camera').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Foto's van Liam in de groepschat</div><div class="s">De begeleiding mag foto's waarop Liam herkenbaar is delen in de groep van de dag. Andere ouders zien die foto's alleen die dag.</div></div>
+        <button class="btn sm ${kid('liam').photoOk ? '' : 'ghost'}" type="button" data-act="consent" role="switch" aria-checked="${kid('liam').photoOk}" style="min-width:64px">${kid('liam').photoOk ? 'Ja' : 'Nee'}</button></div></div>
+      <div class="card"><h3>Contact met Uniek</h3><p class="small muted" style="margin:0">085-7604421 · info@opvanguniek.nl</p></div>
+      <button class="btn ghost block" type="button" data-act="logout">Uitloggen</button>
+    </div>`;
+  }
+};
+
+/* ---------- Begeleider ---------- */
+const B = {
+  vandaag(){
+    const today = S.plan.filter(p => p.off === 0);
+    const cnt = st => today.filter(p => p.status === st).length;
+    const order = {aangekomen:0, verwacht:1, opgehaald:2, afgemeld:3};
+    const req = requests();
+    return `<div class="screen">
+      <div class="hello"><small>${greeting()}, Sanne</small><h2>Didam, ${dayDate(0).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})}</h2></div>
+      <div class="row" style="gap:8px;margin-bottom:14px">
+        <div class="stat"><b>${cnt('aangekomen')}</b><span>Aanwezig</span></div>
+        <div class="stat"><b>${cnt('verwacht')}</b><span>Verwacht</span></div>
+        <div class="stat"><b>${cnt('afgemeld')}</b><span>Afgemeld</span></div>
+      </div>
+      ${req.length ? `<div class="eyebrow">Verzoeken van ouders</div>${req.map(p => { const k = kid(p.kid); return `<div class="card" style="border-color:var(--sun)">
+        <div class="row"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div style="font-weight:700">${p.type} voor ${k.first}</div><div class="small muted">${fmtDay(p.off)} · aangevraagd door ${k.parent.split(' ')[0]}</div></div></div>
+        ${p.note ? `<p class="small" style="margin:10px 0 0">“${esc(p.note)}”</p>` : ''}
+        <div class="btns" style="margin-top:12px"><button class="btn sm" type="button" data-act="approve" data-id="${p.id}">${ic('check')} Inplannen</button><button class="btn ghost sm" type="button" data-act="decline" data-id="${p.id}">Niet mogelijk</button></div></div>`; }).join('')}` : ''}
+      <div class="eyebrow">${TODAY.type} · ${TODAY.time}</div>
+      <div class="list">${today.sort((a,b) => order[a.status] - order[b.status]).map(p => { const k = kid(p.kid);
+        const action = p.status === 'verwacht' ? `<button class="btn sm" type="button" data-act="checkin" data-id="${p.id}">Aangekomen</button>`
+                     : p.status === 'aangekomen' ? `<button class="btn ghost sm" type="button" data-act="checkout" data-id="${p.id}">Opgehaald</button>` : chip(p.status);
+        const sub = p.status === 'aangekomen' ? `Binnen sinds ${p.at}` : p.status === 'opgehaald' ? `Opgehaald om ${p.at}` : p.status === 'afgemeld' ? `Afgemeld${p.reason ? ' · ' + esc(p.reason) : ''}` : 'Nog niet binnen';
+        return `<div class="item" style="cursor:default"><button class="avatar ${k.c}" style="border:0;cursor:pointer" type="button" data-act="open" data-v="kind" data-id="${k.id}" aria-label="${k.first} openen">${initials(k)}</button><button class="grow" type="button" data-act="open" data-v="kind" data-id="${k.id}" style="border:0;background:none;text-align:left;padding:0;cursor:pointer"><div class="t">${k.first} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${sub}</div></button>${action}</div>`; }).join('')}</div>
+      <div class="btns" style="flex-wrap:nowrap"><button class="btn block" type="button" data-act="open" data-v="groep" style="flex:1">${ic('camera')} Groepschat${S.unread.begGroup ? ` <span class="chip" style="background:var(--accent);color:#fff;padding:2px 7px">${S.unread.begGroup}</span>` : ''}</button><button class="btn ghost block" type="button" data-act="open" data-v="kiesverslag" style="flex:1">${ic('pen')} Verslag</button></div>
+    </div>`;
+  },
+  kinderen(){
+    return `<div class="screen">
+      <div class="hello"><small>Locatie Didam</small><h2>Kinderen</h2></div>
+      <div class="list">${Object.values(S.kids).map(k => { const t = todayOf(k.id); return `<button class="item" type="button" data-act="open" data-v="kind" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.name}</div><div class="s">${k.age} jaar · ouder: ${k.parent}${k.photoOk ? '' : ' · <b style="color:#A0321F">geen foto\'s</b>'}</div></div>${t ? chip(t.status) : ''}${ic('chev')}</button>`; }).join('')}</div>
+    </div>`;
+  },
+  berichten(){
+    const list = Object.keys(S.threads).map(id => ({id, last:S.threads[id].at(-1)})).sort((a,b) => (b.last ? b.last.off*1e4 + parseInt(b.last.t.replace(':','')) : -1e9) - (a.last ? a.last.off*1e4 + parseInt(a.last.t.replace(':','')) : -1e9));
+    return `<div class="screen">
+      <div class="hello"><small>Met ouders</small><h2>Berichten</h2></div>
+      <div class="eyebrow">Groep van vandaag</div>
+      <div class="list"><button class="item" type="button" data-act="open" data-v="groep"><div class="avatar grp">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Didam vandaag <span class="muted" style="font-weight:500">· ${groupKids().length} ouders</span></div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${S.unread.begGroup ? 'color:var(--ink);font-weight:700' : ''}">${esc(preview(lastGroup()))}</div></div>${S.unread.begGroup ? `<span class="chip st-afgemeld" style="padding:4px 8px">${S.unread.begGroup}</span>` : ic('chev')}</button></div>
+      <div class="eyebrow">Eén op één</div>
+      <div class="list">${list.map(({id,last}) => { const k = kid(id), n = S.unread.beg[id] || 0; return `<button class="item" type="button" data-act="open" data-v="chat" data-id="${id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.parent} <span class="muted" style="font-weight:500">· ${k.first}</span></div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${n ? 'color:var(--ink);font-weight:700' : ''}">${last ? esc(last.text) : 'Nog geen berichten'}</div></div>${n ? `<span class="chip st-afgemeld" style="padding:4px 8px">${n}</span>` : ic('chev')}</button>`; }).join('')}</div>
+    </div>`;
+  },
+  profiel(){
+    return `<div class="screen">
+      <div class="hello"><small>Profiel</small><h2>Sanne Willemsen</h2></div>
+      <div class="card"><dl class="kv"><dt>E-mail</dt><dd>sanne@opvanguniek.nl</dd><dt>Functie</dt><dd>Begeleider</dd><dt>Locatie</dt><dd>Didam</dd><dt>Kinderen</dt><dd>${Object.keys(S.kids).length}</dd></dl></div>
+      <div class="list"><div class="item" style="cursor:default"><div class="avatar c3">${ic('bell').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><div class="t">Meldingen</div><div class="s">Berichten en verzoeken van ouders</div></div><span class="chip st-aangekomen">Aan</span></div></div>
+      <button class="btn ghost block" type="button" data-act="logout">Uitloggen</button>
+    </div>`;
+  }
+};
+
+/* ---------- Gedeelde schermen ---------- */
+function chat(r, id){
+  const k = kid(id), msgs = S.threads[id];
+  if (r === 'beg') S.unread.beg[id] = 0; else S.unread.ouderMsg = 0;
+  let lastOff = null;
+  const body = msgs.map(m => { const sep = m.off !== lastOff ? `<div class="daysep">${fmtDay(m.off)}</div>` : ''; lastOff = m.off;
+    const mine = m.from === r; return sep + `<div class="bubble ${mine ? 'me' : 'them'}">${mine ? '' : `<b style="font-size:12px;display:block;margin-bottom:2px">${esc(m.who)}</b>`}${esc(m.text)}<small>${m.t}</small></div>`; }).join('');
+  const title = r === 'ouder' ? 'Team Didam' : k.parent;
+  const sub = r === 'ouder' ? 'Sanne, Ruben en de groepsbegeleiding' : `Ouder van ${k.first}`;
+  const head = r === 'ouder'
+    ? `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><div class="avatar c2">D</div><div class="grow"><h2>${title}</h2><div class="small muted">${sub}</div></div></div>`
+    : `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><h2>${esc(title)}</h2><div class="small muted">${sub}</div></div></div>`;
+  return head + `<div class="screen chatbody" data-scroll="end">${body || '<div class="empty">Nog geen berichten. Stuur het eerste bericht.</div>'}</div>
+    <form class="composer" data-form="send" data-id="${id}"><input class="input" name="msg" placeholder="Schrijf een bericht" aria-label="Bericht" autocomplete="off" value="${esc(V[r].form['msg-'+id] || '')}"><button class="btn" type="submit" aria-label="Versturen">${ic('send')}</button></form>`;
+}
+
+function groupScreen(r){
+  const inG = r === 'beg' || ouderInGroup();
+  if (r === 'beg') S.unread.begGroup = 0; else S.unread.ouderGroup = 0;
+  const kids = groupKids();
+  const members = ['Sanne','Ruben', ...kids.map(k => k.parent.split(' ')[0])];
+  const me = r === 'beg' ? 'Sanne' : 'Eva';
+  const body = S.group.map(m => {
+    if (m.sys) return `<div class="sys">${esc(m.text)}</div>`;
+    const mine = m.who === me;
+    const pic = m.photo ? `<div class="pic">${scene(m.photo)}</div>` : m.src ? `<img class="pic" src="${m.src}" alt="Gedeelde foto">` : '';
+    return `<div class="bubble ${mine ? 'me' : 'them'}">${mine ? '' : `<span class="sender" style="color:${SENDER_COLORS[m.who] || '#5B6478'}">${esc(m.who)}${m.role === 'beg' ? ' · begeleider' : ''}</span>`}${pic}${m.text ? esc(m.text) : ''}<span class="meta">${m.t}${mine ? ic('ticks') : ''}</span></div>`;
+  }).join('');
+  const noOk = kids.filter(k => !k.photoOk);
+  const tray = r === 'beg' && V[r].tray ? `<div class="tray"><div class="hint">${noOk.length ? `<b style="color:#A0321F">Geen toestemming voor foto's in de groepschat: ${noOk.map(k => k.first).join(', ')}.</b> Zorg dat ${noOk.length > 1 ? 'zij' : 'dit kind'} niet herkenbaar op de foto ${noOk.length > 1 ? 'staan' : 'staat'}.` : 'Alle kinderen van vandaag hebben toestemming voor foto\'s in de groepschat.'}</div>
+      ${['bos','knutsel','lunch'].map(k => `<button type="button" data-act="photo" data-v="${k}" aria-label="Deel foto: ${PHOTO_LABEL[k]}">${scene(k)}</button>`).join('')}
+      <label>Uit galerij<input type="file" accept="image/*" data-upload="1"></label>
+    </div>` : '';
+  return `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><div class="avatar grp">${ic('users').replace('<svg','<svg style="width:20px;height:20px"')}</div><div class="grow"><h2>Didam vandaag</h2><div class="small muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${members.join(', ')}</div></div></div>
+    ${r === 'beg' && noOk.length ? `<div style="flex:none;padding:8px 16px;background:var(--accent-tint);color:#7A2414;font-size:13px;font-weight:600">${ic('camera').replace('<svg','<svg style="width:15px;height:15px;vertical-align:-3px"')} Geen foto-toestemming: ${noOk.map(k => k.first).join(', ')}</div>` : ''}
+    <div class="screen chatbody wa" data-scroll="end">${body}${inG ? '' : '<div class="sys">Je zit vandaag niet in deze groep.</div>'}</div>
+    ${tray}
+    ${r === 'ouder' && inG ? `<div class="composer" style="justify-content:center;font-size:13px;color:var(--ink-2);text-align:center">Alleen de begeleiding kan in deze groep berichten plaatsen. Een vraag? Stuur Team Didam een bericht.</div>` : ''}
+    ${r === 'beg' ? `<form class="composer" data-form="groupsend">${r === 'beg' ? `<button class="iconbtn" type="button" data-act="tray" aria-pressed="${V[r].tray}" aria-label="Foto delen">${ic('camera')}</button>` : ''}<input class="input" name="msg" placeholder="${r === 'beg' ? 'Deel iets met de ouders' : 'Reageer in de groep'}" aria-label="Bericht" autocomplete="off" value="${esc(V[r].form['msg-groep'] || '')}"><button class="btn" type="submit" aria-label="Versturen">${ic('send')}</button></form>` : ''}`;
+}
+
+const SCREENS = {
+  groep(r){ return groupScreen(r); },
+  verslag(r, id){
+    const x = S.reports.find(y => y.id == id), k = kid(x.kid);
+    return header('Verslag van ' + fmtDay(x.off).toLowerCase()) + `<div class="screen">
+      <div class="card">
+        <div class="row"><span class="report-mood" style="font-size:16px">${face(x.mood).replace('class="face"','class="face" style="width:40px;height:40px"')} ${mood(x.mood).label}</span></div>
+        <p style="margin:14px 0 0;font-size:16px">${esc(x.text)}</p>
+        ${x.photo ? `<div class="photo">Foto van de Lego-brug</div>` : ''}
+        ${x.tags.length ? `<div class="tags">${x.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+      </div>
+      <div class="row small muted" style="padding:0 4px"><div class="avatar c2" style="width:32px;height:32px;border-radius:10px;font-size:13px">${x.author[0]}</div>Geschreven door ${x.author} · ${fmtDay(x.off,true)} · over ${k.first}</div>
+      ${r === 'ouder' ? `<button class="btn soft block" type="button" data-act="open" data-v="chat" data-id="liam" style="margin-top:16px">${ic('chat')} Reageren</button>` : ''}
+    </div>`;
+  },
+  afmelden(r, id){
+    const p = S.plan.find(y => y.id == id), f = V[r].form;
+    return header('Afmelden') + `<div class="screen"><form data-form="afmelden" data-id="${id}">
+      <div class="card"><div class="t" style="font-weight:800">${p.type}</div><div class="small muted">${fmtDay(p.off,true)} · ${p.time}</div></div>
+      <div class="field"><span>Waarom meld je Liam af?</span></div>
+      <div class="choices">${['Ziek','Afspraak','Familiebezoek','Anders'].map(c => `<button class="choice" type="button" data-act="pick" data-k="reason" data-v="${c}" aria-pressed="${f.reason===c}">${c}</button>`).join('')}</div>
+      <label class="field"><span>Toelichting (mag leeg blijven)</span><textarea class="input" name="note" placeholder="Bijvoorbeeld: hij heeft koorts">${esc(f.note||'')}</textarea></label>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn danger block" type="submit">Liam afmelden</button>
+    </form></div>`;
+  },
+  aanvragen(r){
+    const f = V[r].form;
+    return header('Opvang aanvragen') + `<div class="screen"><form data-form="aanvragen">
+      <div class="field"><span>Soort opvang</span></div>
+      <div class="choices">${TYPES.map(c => `<button class="choice" type="button" data-act="pick" data-k="type" data-v="${c}" aria-pressed="${f.type===c}">${c}</button>`).join('')}</div>
+      <label class="field"><span>Datum</span><input class="input" type="date" name="date" min="${offToIso(1)}" value="${f.date || offToIso(14)}"></label>
+      <label class="field"><span>Opmerking voor de begeleiding</span><textarea class="input" name="note" placeholder="Bijvoorbeeld: ik moet die dag werken">${esc(f.note||'')}</textarea></label>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">Aanvraag versturen</button>
+      <p class="small muted">De begeleiding laat zo snel mogelijk weten of het past.</p>
+    </form></div>`;
+  },
+  kind(r, id){
+    const k = kid(id), t = todayOf(id);
+    const reps = S.reports.filter(x => x.kid === id).sort((a,b) => b.off - a.off);
+    const plan = S.plan.filter(p => p.kid === id && p.off > 0).sort((a,b) => a.off - b.off);
+    return header(k.name) + `<div class="screen">
+      <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div>${t ? chip(t.status) : ''}</div></div>
+        <div class="btns" style="margin-top:14px"><button class="btn sm" type="button" data-act="open" data-v="schrijf" data-id="${id}">${ic('pen')} Verslag</button><button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="${id}">${ic('chat')} ${k.parent.split(' ')[0]}</button></div></div>
+      <div class="eyebrow">Goed om te weten</div>
+      <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
+      ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
+      <div class="eyebrow">Verslagen</div>
+      ${reps.length ? `<div class="list">${reps.map(x => `<button class="item" type="button" data-act="open" data-v="verslag" data-id="${x.id}">${face(x.mood)}<div class="grow"><div class="t">${fmtDay(x.off)} · ${x.author}</div><div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.text)}</div></div>${ic('chev')}</button>`).join('')}</div>` : '<div class="card empty">Nog geen verslagen.</div>'}
+      <div class="eyebrow">Ouder en toestemming</div>
+      <div class="card"><dl class="kv"><dt>Naam</dt><dd>${k.parent}</dd><dt>Telefoon</dt><dd>06-12345678</dd><dt>Foto's in groepschat</dt><dd>${k.photoOk ? '<span class="chip st-aangekomen">Toestemming</span>' : '<span class="chip st-afgemeld">Geen toestemming</span>'}</dd></dl></div>
+    </div>`;
+  },
+  kiesverslag(){
+    const here = S.plan.filter(p => p.off === 0 && (p.status === 'aangekomen' || p.status === 'opgehaald'));
+    return header('Verslag schrijven') + `<div class="screen"><p class="muted" style="margin:4px 4px 12px">Over wie wil je schrijven?</p>
+      ${here.length ? `<div class="list">${here.map(p => { const k = kid(p.kid); return `<button class="item" type="button" data-act="open" data-v="schrijf" data-id="${k.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.first}</div><div class="s">${STATUS_LABEL[p.status]}</div></div>${ic('chev')}</button>`; }).join('')}</div>` : '<div class="card empty">Er is nog niemand binnen.</div>'}
+    </div>`;
+  },
+  schrijf(r, id){
+    const k = kid(id), f = V[r].form; f.tags = f.tags || [];
+    return header('Verslag over ' + k.first) + `<div class="screen"><form data-form="schrijf" data-id="${id}">
+      <div class="field"><span>Hoe ging het vandaag?</span></div>
+      <div class="moods">${MOODS.map(m => `<button class="mood" type="button" data-act="pick" data-k="mood" data-v="${m.n}" aria-pressed="${f.mood==m.n}">${face(m.n)}${m.label}</button>`).join('')}</div>
+      <div class="field"><span>Wat viel op?</span></div>
+      <div class="choices">${HIGHLIGHTS.map(h => `<button class="choice" type="button" data-act="tag" data-v="${h}" aria-pressed="${f.tags.includes(h)}">${h}</button>`).join('')}</div>
+      <label class="field"><span>Verslag voor ${k.parent.split(' ')[0]}</span><textarea class="input" name="text" placeholder="Wat heeft ${k.first} gedaan, wat ging goed, wat was lastig?">${esc(f.text||'')}</textarea></label>
+      ${f.err ? `<div class="err">${f.err}</div>` : ''}
+      <button class="btn block" type="submit">Delen met ${k.parent.split(' ')[0]}</button>
+      <p class="small muted">${k.parent.split(' ')[0]} krijgt een melding. In de melding staat niet wat je schrijft.</p>
+    </form></div>`;
+  },
+  chat(r, id){ return chat(r, id); }
+};
+
+/* ---------- Tekenen ---------- */
+function render(r){
+  const el = phone(r), app = el.querySelector('.app'), v = V[r];
+  const keepScroll = app.querySelector('.screen:not([data-scroll])')?.scrollTop || 0;
+  if (!v.auth) { app.innerHTML = loginScreen(r); return; }
+  const top = v.stack.at(-1);
+  app.innerHTML = (top ? SCREENS[top.v](r, top.id) : (r === 'ouder' ? O : B)[v.tab](r)) + tabbar(r);
+  const sc = app.querySelector('.screen');
+  if (sc) { if (sc.dataset.scroll === 'end') sc.scrollTop = sc.scrollHeight; else if (v.keep) sc.scrollTop = keepScroll; }
+  v.keep = false;
+}
+const renderAll = () => { render('ouder'); render('beg'); };
+const rerender = (r, keep=true) => { V[r].keep = keep; render(r); };
+
+const toasts = {};
+function toast(r, title, text){
+  const t = phone(r).querySelector('.toast');
+  t.innerHTML = `<div class="mark"><img src="${MARK}" alt=""></div><div><b>${esc(title)}</b>${esc(text)}</div>`;
+  t.classList.add('show'); clearTimeout(toasts[r]); toasts[r] = setTimeout(() => t.classList.remove('show'), 3600);
+}
+
+/* ---------- Acties ---------- */
+const go = (r, v, id) => { V[r].form = {}; V[r].tray = false; V[r].stack.push({v, id}); render(r); };
+const back = r => { V[r].form = {}; V[r].stack.pop(); render(r); };
+
+const ACT = {
+  tab(r, d){ V[r].stack = []; V[r].form = {}; V[r].tab = d.v; render(r); },
+  open(r, d){ go(r, d.v, d.id); },
+  back,
+  forgot(r){ toast(r, 'Wachtwoord vergeten', 'In de echte app krijg je een e-mail om een nieuw wachtwoord te kiezen.'); },
+  logout(r){ V[r] = {auth:false, tab:'vandaag', stack:[], form:{}}; render(r); },
+  pick(r, d){ V[r].form[d.k] = d.k === 'mood' ? +d.v : d.v; V[r].form.err = ''; syncInputs(r); rerender(r); },
+  tag(r, d){ const f = V[r].form; f.tags = f.tags || []; f.tags = f.tags.includes(d.v) ? f.tags.filter(x => x !== d.v) : [...f.tags, d.v]; syncInputs(r); rerender(r); },
+  consent(r){ const k = kid('liam'); k.photoOk = !k.photoOk; rerender('ouder'); rerender('beg');
+    toast('ouder', 'Toestemming aangepast', k.photoOk ? 'Foto\'s van Liam mogen in de groepschat.' : 'Er komen geen herkenbare foto\'s van Liam meer in de groepschat.');
+    toast('beg', 'Toestemming gewijzigd', `Eva heeft toestemming voor foto's van Liam in de groepschat ${k.photoOk ? 'gegeven' : 'ingetrokken'}.`); },
+  tray(r){ V[r].tray = !V[r].tray; render(r); },
+  photo(r, d){ postGroup(r, {photo:d.v}); },
+  checkin(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'aangekomen'; p.at = now(); const k = kid(p.kid);
+    rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is aangekomen', `Om ${p.at} bij locatie Didam.`); } },
+  checkout(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'opgehaald'; p.at = now();
+    rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is opgehaald', `Om ${p.at}. Het verslag volgt.`); } },
+  approve(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'gepland'; rerender('beg'); rerender('ouder');
+    toast('ouder', 'Aanvraag ingepland', `${p.type} op ${fmtDay(p.off).toLowerCase()} gaat door.`); },
+  decline(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'afgewezen'; rerender('beg'); rerender('ouder');
+    toast('ouder', 'Aanvraag niet mogelijk', `${p.type} op ${fmtDay(p.off).toLowerCase()} past helaas niet. Sanne neemt contact op.`); }
+};
+function syncInputs(r){
+  phone(r).querySelectorAll('.app [name]').forEach(i => { if (i.name !== 'email' && i.name !== 'pw') V[r].form[i.name] = i.value; });
+}
+
+function postGroup(r, extra){
+  const inp = phone(r).querySelector('[data-form="groupsend"] .input');
+  const text = (inp?.value || '').trim();
+  if (!extra && !text) return;
+  const who = r === 'beg' ? 'Sanne' : 'Eva';
+  S.group.push({who, role:r, t:now(), text, ...(extra || {})});
+  V[r].form['msg-groep'] = ''; V[r].tray = false;
+  const viewing = x => V[x].stack.at(-1)?.v === 'groep';
+  if (r === 'beg') {
+    if (ouderInGroup() && !viewing('ouder')) { S.unread.ouderGroup++; toast('ouder', 'Didam vandaag', preview(S.group.at(-1))); }
+  } else if (!viewing('beg')) { S.unread.begGroup++; toast('beg', 'Didam vandaag', preview(S.group.at(-1))); }
+  render(r); rerender(r === 'beg' ? 'ouder' : 'beg');
+  if (!extra) phone(r).querySelector('[data-form="groupsend"] .input')?.focus();
+}
+
+const FORM = {
+  groupsend(r){ postGroup(r); },
+  login(r){ V[r].auth = true; V[r].tab = 'vandaag'; V[r].stack = []; render(r); },
+  send(r, fd, id){
+    const text = (fd.get('msg') || '').trim(); if (!text) return;
+    const who = r === 'ouder' ? 'Eva' : 'Sanne';
+    S.threads[id].push({from:r, who, off:0, t:now(), text});
+    V[r].form['msg-'+id] = '';
+    if (r === 'ouder') { S.unread.beg[id] = (S.unread.beg[id]||0) + 1; toast('beg', 'Nieuw bericht van Eva', 'Over Liam'); }
+    else if (id === 'liam') { S.unread.ouderMsg++; toast('ouder', 'Nieuw bericht van Sanne', 'Tik om te lezen'); }
+    render(r); rerender(r === 'ouder' ? 'beg' : 'ouder');
+    phone(r).querySelector('.composer .input')?.focus();
+  },
+  afmelden(r, fd, id){
+    const f = V[r].form; if (!f.reason) { f.note = fd.get('note'); f.err = 'Kies een reden.'; return rerender(r); }
+    const p = S.plan.find(x => x.id == id); p.status = 'afgemeld'; p.reason = f.reason + ((fd.get('note')||'').trim() ? ': ' + fd.get('note').trim() : '');
+    if (p.off === 0) S.group.push({sys:true, t:now(), text:'Eva heeft de groep verlaten: Liam is vandaag afgemeld.'});
+    back(r); toast('ouder', 'Liam is afgemeld', `${p.type}, ${fmtDay(p.off).toLowerCase()}.`);
+    rerender('beg'); toast('beg', 'Afmelding van Eva', `Liam komt ${fmtDay(p.off).toLowerCase()} niet (${f.reason.toLowerCase()}).`);
+  },
+  aanvragen(r, fd){
+    const f = V[r].form, date = fd.get('date');
+    if (!f.type) { f.date = date; f.note = fd.get('note'); f.err = 'Kies de soort opvang.'; return rerender(r); }
+    const off = isoToOff(date);
+    if (!date || off < 1) { f.date = date; f.note = fd.get('note'); f.err = 'Kies een datum vanaf morgen.'; return rerender(r); }
+    const time = {Dagopvang:'09:00 – 16:00', Logeeropvang:'16:00 – volgende dag 14:00', 'Naschoolse begeleiding':'14:30 – 18:00', Zaterdagopvang:'09:30 – 15:30', Vakantieopvang:'09:00 – 16:00'}[f.type];
+    S.plan.push({id:++idc, kid:'liam', off, type:f.type, time, status:'aangevraagd', note:(fd.get('note')||'').trim()});
+    V[r].stack = []; V[r].form = {}; V[r].tab = 'planning'; render(r);
+    toast('ouder', 'Aanvraag verstuurd', 'Je hoort zo snel mogelijk of het past.');
+    rerender('beg'); toast('beg', 'Nieuw verzoek van Eva', `${f.type} voor Liam, ${fmtDay(off).toLowerCase()}.`);
+  },
+  schrijf(r, fd, id){
+    const f = V[r].form, text = (fd.get('text')||'').trim();
+    if (!f.mood || !text) { f.text = fd.get('text'); f.err = !f.mood ? 'Kies hoe het vandaag ging.' : 'Schrijf een paar zinnen voor de ouder.'; return rerender(r); }
+    S.reports.push({id:++idc, kid:id, off:0, author:'Sanne', mood:f.mood, tags:f.tags||[], photo:false, text});
+    V[r].stack = []; V[r].form = {}; render(r);
+    const k = kid(id); toast('beg', 'Verslag gedeeld', `${k.parent.split(' ')[0]} kan het nu lezen.`);
+    if (id === 'liam') { S.unread.ouderRep++; rerender('ouder'); toast('ouder', 'Nieuw verslag over Liam', `Sanne heeft geschreven hoe het vandaag ging.`); }
+  }
+};
+
+/* Formulieren zonder submit-event: werkt ook in previews die formulieren blokkeren. */
+function runForm(f){ const r = f.closest('.phone').dataset.role; FORM[f.dataset.form](r, new FormData(f), f.dataset.id); }
+document.addEventListener('click', e => {
+  const sub = e.target.closest('button[type="submit"]');
+  if (sub) { const f = sub.closest('[data-form]'); if (f) { e.preventDefault(); runForm(f); return; } }
+  const sw = e.target.closest('[data-switch]');
+  if (sw) { document.querySelectorAll('[data-switch]').forEach(b => b.setAttribute('aria-pressed', b === sw)); document.querySelectorAll('.device').forEach(d => d.classList.toggle('is-active', d.dataset.device === sw.dataset.switch)); return; }
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const r = b.closest('.phone')?.dataset.role; if (!r) return;
+  e.preventDefault(); ACT[b.dataset.act](r, b.dataset);
+});
+document.addEventListener('submit', e => { e.preventDefault(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+  const f = e.target.closest('[data-form]'); if (!f) return;
+  e.preventDefault(); runForm(f);
+});
+document.addEventListener('input', e => {
+  const i = e.target; const ph = i.closest('.phone'); if (!ph || !i.name) return;
+  const r = ph.dataset.role, f = i.closest('[data-form]');
+  if (f?.dataset.form === 'send') V[r].form['msg-' + f.dataset.id] = i.value;
+  if (f?.dataset.form === 'groupsend') V[r].form['msg-groep'] = i.value;
+});
+document.addEventListener('change', e => {
+  const i = e.target; if (!i.matches('[data-upload]') || !i.files[0]) return;
+  const r = i.closest('.phone').dataset.role, rd = new FileReader();
+  rd.onload = () => postGroup(r, {src: rd.result}); rd.readAsDataURL(i.files[0]);
+});
+document.getElementById('reset').addEventListener('click', () => { seed(); renderAll(); });
+
+const tick = () => document.querySelectorAll('.clock').forEach(c => c.textContent = now());
+setInterval(tick, 15000); tick();
+if (matchMedia('(min-width: 820px)').matches) document.getElementById('tips').open = true;
+seed(); renderAll();
+})();
+</script>
+</body>
+</html>
