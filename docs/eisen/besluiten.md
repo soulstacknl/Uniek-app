@@ -13,6 +13,7 @@
 | 17-10-2026 | Er komt een aparte toestemming voor foto's in de groepschat, per kind. |
 | 17-10-2026 | Een begeleider kan op meerdere locaties werken en kiest na het inloggen een locatie. |
 | 17-10-2026 | Ouder en begeleider krijgen een tab Administratie (eerst 'Acties' genoemd): Uniek zet een actie klaar, de ouder voert die uit, de begeleider ziet het resultaat en de status. |
+| 17-10-2026 | Een begeleider kan op Vandaag een kind toevoegen; de keuzelijst bevat alle kinderen van de hele organisatie. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen
@@ -31,3 +32,6 @@
 - Administratie: moeten ingevulde gegevens, zoals medicatie of de indicatie, automatisch naar het dossier of ECD van het kind?
 - Administratie: zijn er nog andere soorten acties nodig, zoals een vragenlijst of het doorgeven van een adreswijziging?
 - Administratie: medicatie is gevoelige informatie. Wie bij Uniek mag die antwoorden zien?
+- Kind toevoegen: de keuzelijst laat begeleiders kinderen van alle locaties zien. Dat wijkt af van de privacyregel 'alleen eigen kinderen'. Voorstel: in de lijst alleen naam, leeftijd, vaste locatie en naam van de ouder; de rest pas na toevoegen. Akkoord?
+- Kind toevoegen: moet de ouder (of de planning) het toevoegen eerst goedkeuren, of alleen een melding krijgen?
+- Kind toevoegen: wordt een toegevoegd kind ook in de planning en de facturatie verwerkt?

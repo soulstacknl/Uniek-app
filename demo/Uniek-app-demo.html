@@ -358,7 +358,12 @@ function seed(){
       mila:  {id:'mila', loc:'didam',  name:'Mila Hendriks',  first:'Mila',  age:13, parent:'Ilse Hendriks',   c:'c4', since:'februari 2024', photoOk:true, notes:['Geeft zelf aan wanneer ze even alleen wil zijn.']},
       sem:   {id:'sem', loc:'ulft',  name:'Sem Koster',     first:'Sem',   age:8,  parent:'Linda Koster',    c:'c3', since:'april 2025', photoOk:true, notes:['Heeft moeite met wachten; een zandloper helpt.']},
       lotte: {id:'lotte', loc:'ulft', name:'Lotte Smit',    first:'Lotte', age:12, parent:'Marco Smit',      c:'c1', since:'oktober 2024', photoOk:true, notes:['Wil graag helpen met de jongere kinderen.']},
-      finn:  {id:'finn', loc:'ulft',  name:'Finn de Wit',    first:'Finn',  age:6,  parent:'Sara de Wit',     c:'c2', since:'augustus 2025', photoOk:false, notes:['Neemt zijn eigen knuffel mee; die mag altijd bij hem blijven.']}
+      finn:  {id:'finn', loc:'ulft',  name:'Finn de Wit',    first:'Finn',  age:6,  parent:'Sara de Wit',     c:'c2', since:'augustus 2025', photoOk:false, notes:['Neemt zijn eigen knuffel mee; die mag altijd bij hem blijven.']},
+      emma:  {id:'emma', loc:'ulft',  name:'Emma Bos',       first:'Emma',  age:8,  parent:'Rick Bos',        c:'c4', since:'mei 2025', photoOk:true, notes:['Vindt het fijn om te helpen met koken.']},
+      bram:  {id:'bram', loc:'didam', name:'Bram Visser',    first:'Bram',  age:11, parent:'Joyce Visser',    c:'c5', since:'november 2024', photoOk:true, notes:['Heeft na school eerst even tijd voor zichzelf nodig.']},
+      jesse: {id:'jesse', loc:'bemmel', name:'Jesse Peters', first:'Jesse', age:9,  parent:'Kim Peters',      c:'c2', since:'mei 2024', photoOk:true, notes:['Werkt met een beloningskaart; die zit in zijn tas.']},
+      isa:   {id:'isa', loc:'bemmel', name:'Isa van Dijk',   first:'Isa',   age:10, parent:'Tom van Dijk',    c:'c1', since:'september 2024', photoOk:false, notes:['Houdt van paarden en tekenen.']},
+      zoe:   {id:'zoe', loc:'bemmel', name:'Zoë Mulder',     first:'Zoë',   age:7,  parent:'Anouk Mulder',    c:'c3', since:'februari 2025', photoOk:true, notes:['Wil graag weten wie haar ophaalt.']}
     },
     plan: [
       {id:1, kid:'liam',  off:0,  type:TODAY.type, time:TODAY.time, status:'verwacht'},
@@ -411,7 +416,8 @@ const todayOf = id => S.plan.find(p => p.kid === id && p.off === 0);
 const myLoc = r => r === 'beg' ? V.beg.loc : 'didam';
 const locUnread = loc => Object.entries(S.unread.beg).filter(([id]) => kid(id).loc === loc).reduce((a,[,n]) => a+n, 0) + (S.unread.begGroup[loc] || 0);
 const begUnread = () => V.beg.loc ? locUnread(V.beg.loc) : 0;
-const groupKids = loc => S.plan.filter(p => p.off === 0 && p.status !== 'afgemeld' && kid(p.kid).loc === loc).map(p => kid(p.kid));
+const planLoc = p => p.loc || kid(p.kid).loc;
+const groupKids = loc => S.plan.filter(p => p.off === 0 && p.status !== 'afgemeld' && planLoc(p) === loc).map(p => kid(p.kid));
 const ouderInGroup = () => groupKids('didam').some(k => k.id === 'liam');
 const lastGroup = loc => S.groups[loc].filter(m => !m.sys).at(-1);
 const preview = m => m ? (m.who + ': ' + (m.photo || m.src ? '📷 Foto' + (m.text ? ' · ' + m.text : '') : m.text)) : '';
@@ -471,7 +477,7 @@ function locationScreen(){
     <div class="brand" style="margin:18px 0 22px"><img src="${LOGO}" alt="Opvang Uniek" style="height:46px"></div>
     <h2>Waar werk je vandaag?</h2>
     <p class="lead">Kies de locatie. Je ziet dan alleen de kinderen, berichten en de groepschat van die locatie. Wisselen kan altijd.</p>
-    <div class="list">${BEG_LOCS.map(l => { const today = S.plan.filter(p => p.off === 0 && kid(p.kid).loc === l);
+    <div class="list">${BEG_LOCS.map(l => { const today = S.plan.filter(p => p.off === 0 && planLoc(p) === l);
       const n = today.filter(p => p.status !== 'afgemeld').length, u = locUnread(l) + requests(l).length;
       return `<button class="item" type="button" data-act="setloc" data-v="${l}" style="min-height:76px"><div class="avatar c5">${ic('pin').replace('<svg','<svg style="width:22px;height:22px"')}</div><div class="grow"><div class="t" style="font-size:17px">${LOCS[l].name}</div><div class="s">${n} ${n === 1 ? 'kind' : 'kinderen'} vandaag · ${TODAY.type.toLowerCase()}</div></div>${u ? `<span class="chip st-afgemeld" style="padding:4px 8px">${u} nieuw</span>` : ''}${ic('chev')}</button>`; }).join('')}</div>
     <p class="small muted" style="margin:6px 4px">Je bent gekoppeld aan ${BEG_LOCS.map(l => LOCS[l].name).join(' en ')}. Klopt dat niet? Neem contact op met de planning.</p>
@@ -547,7 +553,7 @@ const O = {
 const B = {
   vandaag(){
     const loc = V.beg.loc, L = LOCS[loc].name;
-    const today = S.plan.filter(p => p.off === 0 && kid(p.kid).loc === loc);
+    const today = S.plan.filter(p => p.off === 0 && planLoc(p) === loc);
     const cnt = st => today.filter(p => p.status === st).length;
     const order = {aangekomen:0, verwacht:1, opgehaald:2, afgemeld:3};
     const req = requests(loc);
@@ -569,7 +575,8 @@ const B = {
         const action = p.status === 'verwacht' ? `<button class="btn sm" type="button" data-act="checkin" data-id="${p.id}">Aangekomen</button>`
                      : p.status === 'aangekomen' ? `<button class="btn ghost sm" type="button" data-act="checkout" data-id="${p.id}">Opgehaald</button>` : chip(p.status);
         const sub = p.status === 'aangekomen' ? `Binnen sinds ${p.at}` : p.status === 'opgehaald' ? `Opgehaald om ${p.at}` : p.status === 'afgemeld' ? `Afgemeld${p.reason ? ' · ' + esc(p.reason) : ''}` : 'Nog niet binnen';
-        return `<div class="item" style="cursor:default"><button class="avatar ${k.c}" style="border:0;cursor:pointer" type="button" data-act="open" data-v="kind" data-id="${k.id}" aria-label="${k.first} openen">${initials(k)}</button><button class="grow" type="button" data-act="open" data-v="kind" data-id="${k.id}" style="border:0;background:none;text-align:left;padding:0;cursor:pointer"><div class="t">${k.first} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${sub}</div></button>${action}</div>`; }).join('')}</div>
+        return `<div class="item" style="cursor:default"><button class="avatar ${k.c}" style="border:0;cursor:pointer" type="button" data-act="open" data-v="kind" data-id="${k.id}" aria-label="${k.first} openen">${initials(k)}</button><button class="grow" type="button" data-act="open" data-v="kind" data-id="${k.id}" style="border:0;background:none;text-align:left;padding:0;cursor:pointer"><div class="t">${k.first} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${sub}${p.extra ? ` · <b style="color:var(--brand)">extra</b>${k.loc !== loc ? ' (vaste locatie ' + LOCS[k.loc].name + ')' : ''}` : ''}</div></button>${action}</div>`; }).join('')}</div>
+      <button class="btn ghost block" type="button" data-act="open" data-v="kindtoevoegen" style="margin-bottom:10px">${ic('plus')} Kind toevoegen aan vandaag</button>
       <button class="btn block" type="button" data-act="open" data-v="groep">${ic('camera')} Groepschat${S.unread.begGroup[loc] ? ` <span class="chip" style="background:var(--accent);color:#fff;padding:2px 7px">${S.unread.begGroup[loc]}</span>` : ''}</button>
     </div>`;
   },
@@ -603,7 +610,7 @@ const B = {
 
 /* ---------- Gedeelde schermen ---------- */
 function chat(r, id){
-  const k = kid(id), msgs = S.threads[id];
+  const k = kid(id), msgs = (S.threads[id] = S.threads[id] || []);
   if (r === 'beg') S.unread.beg[id] = 0; else S.unread.ouderMsg = 0;
   let lastOff = null;
   const body = msgs.map(m => { const sep = m.off !== lastOff ? `<div class="daysep">${fmtDay(m.off)}</div>` : ''; lastOff = m.off;
@@ -888,6 +895,35 @@ B.acties = function(){
 };
 
 Object.assign(SCREENS, {
+  kindtoevoegen(r){
+    const loc = V.beg.loc, f = V[r].form; f.lf = f.lf || 'alle';
+    const kids = Object.values(S.kids).sort((a,b) => a.name.localeCompare(b.name, 'nl'));
+    const where = id => S.plan.find(p => p.kid === id && p.off === 0 && p.status !== 'afgemeld');
+    return header('Kind toevoegen') + `<div class="screen">
+      <p class="small muted" style="margin:2px 2px 12px">Alle kinderen van Opvang Uniek. Kies een kind om het vandaag toe te voegen aan ${LOCS[loc].name}.</p>
+      <input class="input" type="search" data-filter="kids" placeholder="Zoek op naam van kind of ouder" aria-label="Zoek kind" style="margin-bottom:10px" value="${esc(f.q || '')}">
+      <div class="choices" style="margin-bottom:10px">${['alle', ...Object.keys(LOCS)].map(l => `<button class="choice" type="button" data-act="actpick" data-k="lf" data-v="${l}" aria-pressed="${f.lf === l}">${l === 'alle' ? 'Alle locaties' : LOCS[l].name}</button>`).join('')}</div>
+      <div class="list" id="kidlist">${kids.filter(k => f.lf === 'alle' || k.loc === f.lf).map(k => { const w = where(k.id);
+        const busy = w ? `Vandaag al in ${LOCS[planLoc(w)].name}` : '';
+        return `<button class="item" type="button" ${busy ? 'disabled style="opacity:.55;cursor:default"' : `data-act="open" data-v="kindbevestig" data-id="${k.id}"`} data-search="${esc((k.name + ' ' + k.parent).toLowerCase())}" ${f.q && !(k.name + ' ' + k.parent).toLowerCase().includes(f.q.trim().toLowerCase()) ? 'hidden' : ''}><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.name} <span class="muted" style="font-weight:500">${k.age}</span></div><div class="s">${LOCS[k.loc].name} · ouder: ${k.parent}${busy ? ' · <b>' + busy + '</b>' : ''}</div></div>${busy ? '' : ic('plus')}</button>`; }).join('')}</div>
+      <div class="empty" id="kidnone" hidden>Geen kind gevonden.</div>
+    </div>`;
+  },
+  kindbevestig(r, id){
+    const loc = V.beg.loc, k = kid(id), f = V[r].form; f.type = f.type || TODAY.type; f.why = f.why || 'Extra opvang';
+    return header('Toevoegen aan vandaag') + `<div class="screen"><form data-form="kindtoevoegen" data-id="${id}">
+      <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.name}</h3><div class="small muted">${k.age} jaar · vaste locatie ${LOCS[k.loc].name} · ouder: ${k.parent}</div></div></div></div>
+      ${k.notes.some(n => n.med) ? `<div class="remark" style="background:#FDE3DE;color:#7A2414"><b>Medisch:</b> ${k.notes.filter(n => n.med).map(n => esc(n.text)).join(' ')}</div>` : ''}
+      ${k.loc !== loc ? `<div class="remark" style="background:var(--brand-tint);color:var(--ink)">${k.first} komt normaal naar ${LOCS[k.loc].name}. Vandaag is ${k.first} in ${LOCS[loc].name}.</div>` : ''}
+      <div class="field"><span>Soort opvang</span></div>
+      <div class="choices">${[TODAY.type, 'Dagopvang', 'Naschoolse begeleiding', 'Logeeropvang'].filter((x,i,a) => a.indexOf(x) === i).map(x => `<button class="choice" type="button" data-act="actpick" data-k="type" data-v="${x}" aria-pressed="${f.type === x}">${x}</button>`).join('')}</div>
+      <div class="field"><span>Reden</span></div>
+      <div class="choices">${['Extra opvang','Ruil van dag','Noodopvang'].map(x => `<button class="choice" type="button" data-act="actpick" data-k="why" data-v="${x}" aria-pressed="${f.why === x}">${x}</button>`).join('')}</div>
+      <label class="field"><span>Tijd</span><input class="input" name="time" value="${esc(f.time ?? TODAY.time)}"></label>
+      <button class="btn block" type="submit">${ic('plus')} ${k.first} toevoegen aan ${LOCS[loc].name}</button>
+      <p class="small muted">${k.parent.split(' ')[0]} krijgt een melding en zit vandaag in de groepschat van ${LOCS[loc].name}.</p>
+    </form></div>`;
+  },
   actie(r, id){
     const a = actOf(id), b = batchOf(a), k = kid(a.kid), f = V[r].form;
     if (r === 'ouder' && a.status === 'open') return actForm(a, b, f);
@@ -1009,6 +1045,12 @@ Object.assign(ACT, {
 });
 
 Object.assign(FORM, {
+  kindtoevoegen(r, fd, id){
+    syncInputs(r); const loc = V.beg.loc, f = V[r].form, k = kid(id);
+    S.plan.push({id:++idc, kid:id, loc, off:0, type:f.type, time:(f.time || TODAY.time).trim(), status:'verwacht', extra:true, reason:f.why});
+    V[r].form = {}; V[r].stack = []; V[r].tab = 'vandaag'; render(r);
+    toast('beg', `${k.first} toegevoegd`, `${k.first} staat vandaag op de lijst van ${LOCS[loc].name}.`);
+  },
   actie(r, fd, id){
     syncInputs(r); const a = actOf(id), b = batchOf(a), f = V[r].form; let res = {note:(f.note || '').trim()};
     const fail = m => { f.err = m; rerender(r); };
@@ -1066,7 +1108,11 @@ document.addEventListener('keydown', e => {
   e.preventDefault(); runForm(f);
 });
 document.addEventListener('input', e => {
-  const i = e.target; const ph = i.closest('.phone'); if (!ph || !i.name) return;
+  const i = e.target;
+  if (i.dataset.filter === 'kids') { const ph = i.closest('.phone'), q = i.value.trim().toLowerCase(); V[ph.dataset.role].form.q = i.value; let n = 0;
+    ph.querySelectorAll('#kidlist [data-search]').forEach(el => { const show = el.dataset.search.includes(q); el.hidden = !show; if (show) n++; });
+    ph.querySelector('#kidnone').hidden = n > 0; return; }
+  const ph = i.closest('.phone'); if (!ph || !i.name) return;
   const r = ph.dataset.role, f = i.closest('[data-form]');
   if (f?.dataset.form === 'send') V[r].form['msg-' + f.dataset.id] = i.value;
   if (f?.dataset.form === 'groupsend') V[r].form['msg-groep'] = i.value;
