@@ -19,6 +19,8 @@
 | 17-10-2026 | Begeleiders hebben een persoonlijke inlog en kiezen daarna een locatie. Chats met ouders zijn teamgesprekken per locatie: alle begeleiders van die locatie zien alle berichten, met de naam van de afzender. |
 | 17-10-2026 | Binnen Uniek zijn er drie rollen: begeleider, manager en beheerder. Managers en beheerders beheren locaties, medewerkers, ouders en kinderen, en de koppelingen daartussen (F-07). |
 | 17-10-2026 | De beheerder is locatie-onafhankelijk: geen locatiekeuze, wel een overzicht van alle locaties, medewerkers en kinderen, met per locatie wat er openstaat (F-09). De manager werkt per locatie. |
+| 17-10-2026 | Elk gebouw is een eigen locatie, zoals op de website: 7 locaties (Ulft 2, Didam 3, Bemmel 2). |
+| 17-10-2026 | Administratie is gegroepeerd per kind, niet per status. Statussen per actie: te controleren, klaargezet, goedgekeurd, afgekeurd. Bij lezen en akkoord kan een ouder ook niet akkoord geven. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen
@@ -47,3 +49,5 @@
 - Beheerder: mag de beheerder ook de chats met ouders en de groepschats van alle locaties lezen? (In de demo nu niet: de beheerder heeft geen tab Berichten.)
 - Beheer: zien managers en beheerders de chats en medische gegevens van alle locaties, of alleen de locaties waaraan ze gekoppeld zijn?
 - Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)
+- Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
+- Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?

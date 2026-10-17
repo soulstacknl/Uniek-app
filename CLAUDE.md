@@ -1,6 +1,6 @@
 # Uniek-app
 
-App voor **ouders en begeleiders** van Opvang Uniek. Opvang Uniek begeleidt kinderen, jongeren en jongvolwassenen met onder meer ADHD, ASS, hechtingsproblematiek of trauma. Het doet dat vanuit Ulft, Didam en Bemmel.
+App voor **ouders en begeleiders** van Opvang Uniek. Opvang Uniek begeleidt kinderen, jongeren en jongvolwassenen met onder meer ADHD, ASS, hechtingsproblematiek of trauma. Het doet dat vanuit 7 locaties in Ulft (Emailleplein 13, Oersterk), Didam (De Deel, Het Voorhuis, De Schuur) en Bemmel (Het Dorpshuis, Het Glazenhuis). Elk gebouw is in de app een eigen locatie.
 
 ## Waar staat wat
 
