@@ -18,7 +18,8 @@
 | 17-10-2026 | Bij administratieacties kunnen documenten worden meegestuurd, door Uniek en door de ouder. Akkoord geven gaat met een vinkje (geen getypte naam); de app legt vast wie en wanneer. |
 | 17-10-2026 | Begeleiders hebben een persoonlijke inlog en kiezen daarna een locatie. Chats met ouders zijn teamgesprekken per locatie: alle begeleiders van die locatie zien alle berichten, met de naam van de afzender. |
 | 17-10-2026 | Binnen Uniek zijn er drie rollen: begeleider, manager en beheerder. Managers en beheerders beheren locaties, medewerkers, ouders en kinderen, en de koppelingen daartussen (F-07). |
-| 17-10-2026 | De beheerder is locatie-onafhankelijk: geen locatiekeuze, wel een overzicht van alle locaties, medewerkers en kinderen, met per locatie wat er openstaat (F-09). De manager werkt per locatie. |
+| 17-10-2026 | De beheerder is locatie-onafhankelijk en ziet geen dagplanning. Hij of zij ziet de planning van de komende weken per locatie, en de administratie (open en gesloten) per locatie en voor alle locaties samen (F-09). De manager werkt per locatie. |
+| 17-10-2026 | Testgegevens in de demo: 6 tot 10 kinderen en 3 begeleiders per locatie, 1 of 2 managers per locatie, 5 beheerders. |
 | 17-10-2026 | Elk gebouw is een eigen locatie, zoals op de website: 7 locaties (Ulft 2, Didam 3, Bemmel 2). |
 | 17-10-2026 | Administratie is gegroepeerd per kind, niet per status. Statussen per actie: te controleren, klaargezet, goedgekeurd, afgekeurd. Bij lezen en akkoord kan een ouder ook niet akkoord geven. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
@@ -51,3 +52,4 @@
 - Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)
 - Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
 - Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?
+- Planning beheerder: is 4 weken vooruit genoeg, of wil de beheerder een langere periode of een vrije keuze van periode? Is er een maximum aantal kinderen (capaciteit) per locatie dat we moeten tonen?

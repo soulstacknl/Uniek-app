@@ -9,7 +9,7 @@ App voor ouders en begeleiders van Opvang Uniek.
 | Eisen: functioneel en niet-functioneel | Deels ingevuld (`docs/eisen/`) |
 | Huisstijl | Logo en kleuren (blauw `#0A62AB`, magenta `#D92A82`) staan in `assets/brand/` en in de demo. Lettertype volgt |
 | Functioneel en technisch ontwerp | Volgt |
-| Klikbare demo | Eerste versie in `demo/Uniek-app-demo.html`: inloggen als ouder en als begeleider, met de schermen Vandaag, Planning, Administratie, Berichten, Kinderen en Profiel, plus de groepschat van de dag met foto-toestemming, het kiezen van een locatie door de begeleider, de tab Administratie, een kind toevoegen aan vandaag, voor de begeleider de keuze tussen telefoon en webbrowser, twee begeleiders (Sanne en Ruben) die samen met ouders chatten, Beheer voor de manager (Petra) en de beheerder (Hanneke), en voor de beheerder een overzicht van alle locaties. Behalve de groepschat, de locatiekeuze en Administratie zijn de functies nog een voorstel |
+| Klikbare demo | Eerste versie in `demo/Uniek-app-demo.html`: inloggen als ouder en als begeleider, met de schermen Vandaag, Planning, Administratie, Berichten, Kinderen en Profiel, plus de groepschat van de dag met foto-toestemming, het kiezen van een locatie door de begeleider, de tab Administratie, een kind toevoegen aan vandaag, voor de begeleider de keuze tussen telefoon en webbrowser, twee begeleiders (Sanne en Ruben) die samen met ouders chatten, Beheer voor de manager (Petra) en de beheerder (Hanneke), voor de beheerder de planning en administratie van alle 7 locaties, en testgegevens met ongeveer 50 kinderen en 30 medewerkers. Behalve de groepschat, de locatiekeuze en Administratie zijn de functies nog een voorstel |
 | App | Volgt |
 
 Werkafspraken voor Claude staan in `CLAUDE.md`.
