@@ -215,6 +215,14 @@ ul.notes li.med svg{flex:none;width:18px;height:18px;margin-top:1px}
 .rtable tr:first-child td{border-top:0}
 .rtable td:first-child{color:var(--ink-2);font-weight:600;width:44%;padding-right:8px}
 label.btn{position:relative}
+.doclist{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:12px}
+.docrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.docrow .docico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
+.docrow .docico svg{width:20px;height:20px}
+.docrow b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.docrow small{color:var(--ink-2);font-size:12px}
+.docrow .grow{min-width:0}
+.docrow a.btn{text-decoration:none}
 /* Groepsgesprek */
 .wa{background-color:#EAF0F6;background-image:radial-gradient(rgba(11,47,91,.06) 1.2px, transparent 1.3px);background-size:16px 16px}
 .wa .bubble.them{border:0;box-shadow:0 1px 1px rgba(0,0,0,.06)}
@@ -871,12 +879,18 @@ const ACT_ST = {
   ingediend:{ouder:'Verstuurd', beg:'Te controleren', cls:'st-aangevraagd'},
   afgerond:{ouder:'Afgerond', beg:'Afgerond', cls:'st-aangekomen'}
 };
+function makeDoc(title, html){
+  try { return URL.createObjectURL(new Blob([`<!doctype html><meta charset="utf-8"><title>${title}</title><body style="font:16px/1.6 system-ui;max-width:680px;margin:40px auto;padding:0 20px;color:#0B2F5B"><p style="color:#C21F72;font-weight:700">VOORBEELD · demo Uniek-app</p>${html}</body>`], {type:'text/html'})); } catch (e) { return ''; }
+}
 function seedActions(){
   S.batches = [
     {id:1, loc:'didam', type:'vakantie', title:'Vakantieplanning kerstvakantie', period:'kerst', due:14, made:-2, by:'Sanne', info:ACT_TYPES.vakantie.info},
     {id:2, loc:'didam', type:'medicatie', title:'Medicatie controleren', due:3, made:-1, by:'Sanne', info:'Klopt de medicatie van Liam nog? We controleren dit elk half jaar. Pas aan wat veranderd is en bevestig.'},
-    {id:3, loc:'didam', type:'indicatie', title:'Indicatie verlengen', due:30, made:-5, by:'Planning Uniek', info:'De indicatie (Jeugdwet) van Liam loopt af op 31 december 2026. Vraag op tijd een verlenging aan bij de gemeente en laat hier weten hoe het staat.'},
-    {id:4, loc:'didam', type:'akkoord', title:'Nieuwe huisregels 2026', due:-10, made:-24, by:'Opvang Uniek', info:ACT_TYPES.akkoord.info, doc:HUISREGELS},
+    {id:3, loc:'didam', type:'indicatie', title:'Indicatie verlengen', due:30, made:-5, by:'Planning Uniek', docs:[{name:'Uitleg verlenging indicatie.pdf', size:182000}], info:'De indicatie (Jeugdwet) van Liam loopt af op 31 december 2026. Vraag op tijd een verlenging aan bij de gemeente en laat hier weten hoe het staat.'},
+    {id:4, loc:'didam', type:'akkoord', title:'Nieuwe huisregels 2026', due:-10, made:-24, by:'Opvang Uniek', info:ACT_TYPES.akkoord.info, doc:HUISREGELS, docs:[{name:'Huisregels Opvang Uniek 2026.pdf', size:96000}]},
+    {id:7, loc:'didam', type:'akkoord', title:'Zorgovereenkomst 2027', due:10, made:0, by:'Opvang Uniek',
+     info:'In de bijlage staat de nieuwe zorgovereenkomst voor 2027. Lees deze door en geef aan dat je akkoord bent of neem contact op met de persoonlijk begeleider.',
+     docs:[{name:'Zorgovereenkomst 2027 – Liam de Vries.pdf', size:248000, url:makeDoc('Zorgovereenkomst 2027', '<h1>Zorgovereenkomst 2027</h1><p><b>Kind:</b> Liam de Vries · <b>Locatie:</b> Didam</p><h2>1. Begeleiding</h2><p>Liam komt naar de naschoolse begeleiding en de zaterdagopvang, en één weekend per maand naar de logeeropvang.</p><h2>2. Afmelden</h2><p>Afmelden kan tot 24 uur van tevoren. Bij ziekte zo snel mogelijk.</p><h2>3. Medicatie</h2><p>Medicatie wordt alleen gegeven met een actueel overzicht, ingevuld via de app.</p><h2>4. Looptijd</h2><p>Deze overeenkomst geldt van 1 januari tot en met 31 december 2027.</p>')}]},
     {id:5, loc:'ulft', type:'medicatie', title:'Medicatie controleren', due:5, made:-1, by:'Sanne', info:ACT_TYPES.medicatie.info},
     {id:6, loc:'ulft', type:'vakantie', title:'Vakantieplanning kerstvakantie', period:'kerst', due:14, made:-2, by:'Sanne', info:ACT_TYPES.vakantie.info}
   ];
@@ -888,7 +902,8 @@ function seedActions(){
     {id:5, batch:1, kid:'mila', status:'open'},
     {id:6, batch:2, kid:'liam', status:'open', current:[{name:'Methylfenidaat', dose:'10 mg', time:'08:00', care:'nee'}]},
     {id:7, batch:3, kid:'liam', status:'open'},
-    {id:8, batch:4, kid:'liam', status:'afgerond', by:'Eva', doneOff:-18, doneT:'21:03', result:{sign:'Eva de Vries'}},
+    {id:8, batch:4, kid:'liam', status:'afgerond', by:'Eva', doneOff:-18, doneT:'21:03', result:{agree:true}},
+    {id:15, batch:7, kid:'liam', status:'open'},
     {id:9, batch:5, kid:'finn', status:'ingediend', by:'Sara', doneOff:0, doneT:ago(60), result:{none:false, meds:[{name:'Melatonine', dose:'1 mg', time:'19:30', care:'ja'}], note:'Alleen nodig bij logeren.'}},
     {id:10, batch:5, kid:'sem', status:'open'}, {id:11, batch:5, kid:'lotte', status:'open'},
     {id:12, batch:6, kid:'sem', status:'open'}, {id:13, batch:6, kid:'lotte', status:'ingediend', by:'Marco', doneOff:-1, doneT:'18:10', result:{days:['ma 21 dec','ma 28 dec'], note:'Tussen kerst en oud en nieuw zijn we thuis.'}}, {id:14, batch:6, kid:'finn', status:'open'}
@@ -904,13 +919,20 @@ const toCheck = loc => S.actions.filter(a => a.status === 'ingediend' && kid(a.k
 const typeIco = (type, cls='c5') => `<div class="avatar ${cls}">${ic(ACT_TYPES[type].icon).replace('<svg','<svg style="width:20px;height:20px"')}</div>`;
 const checkBtn = (k, on, label) => `<button class="check" type="button" data-act="actpick" data-k="${k}" data-mode="toggle" aria-pressed="${!!on}"><span class="box">${on ? ic('check') : ''}</span><span>${label}</span></button>`;
 
+const fmtSize = n => n > 1e6 ? (n/1e6).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(n/1e3)) + ' kB';
+function docList(docs, rmKey){
+  return `<div class="doclist">${docs.map((d, i) => `<div class="docrow"><span class="docico">${ic('doc')}</span><span class="grow"><b>${esc(d.name)}</b><small>${fmtSize(d.size || 0)}</small></span>
+    ${d.url ? `<a class="btn ghost sm" href="${d.url}" target="_blank" rel="noopener" download="${esc(d.name)}">Openen</a>` : `<button class="btn ghost sm" type="button" data-act="demodoc">Openen</button>`}
+    ${rmKey ? `<button class="iconbtn" type="button" data-act="rmdoc" data-k="${rmKey}" data-i="${i}" aria-label="${esc(d.name)} verwijderen" style="width:40px;height:40px">✕</button>` : ''}</div>`).join('')}</div>`;
+}
+const docPicker = (key, docs, label) => `${docs.length ? docList(docs, key) : ''}<label class="btn ghost block" style="margin-bottom:14px">${ic('plus')} ${label}<input type="file" multiple data-docfile="${key}" style="position:absolute;width:1px;height:1px;opacity:0"></label>`;
 function resultHtml(b, a){
   const r = a.result || {}; let rows = '';
   if (b.type === 'vakantie') rows = r.none ? '<p style="margin:0;font-weight:700">Geen opvang nodig</p>' : `<div class="tags" style="margin-top:0">${r.days.map(d => `<span class="tag" style="font-size:13px">${d}</span>`).join('')}</div>`;
   if (b.type === 'medicatie') rows = r.none ? '<p style="margin:0;font-weight:700">Geen medicatie</p>' : r.meds.map(m => `<table class="rtable" style="margin-bottom:8px"><tr><td>Medicijn</td><td><b>${esc(m.name)}</b></td></tr><tr><td>Dosering</td><td>${esc(m.dose)}</td></tr><tr><td>Tijdstip</td><td>${esc(m.time)}</td></tr><tr><td>Op de opvang geven</td><td>${m.care === 'ja' ? 'Ja' : 'Nee'}</td></tr></table>`).join('');
   if (b.type === 'indicatie') rows = `<table class="rtable"><tr><td>Stand van zaken</td><td><b>${IND_ST[r.st]}</b></td></tr>${r.date ? `<tr><td>Aangevraagd op</td><td>${new Date(r.date+'T12:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</td></tr>` : ''}${r.file ? `<tr><td>Beschikking</td><td>📎 ${esc(r.file)}</td></tr>` : ''}${r.until ? `<tr><td>Nieuwe indicatie tot</td><td>${new Date(r.until+'T12:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</td></tr>` : ''}</table>`;
-  if (b.type === 'akkoord') rows = `<p style="margin:0">${ic('check').replace('<svg','<svg style="width:18px;height:18px;vertical-align:-4px;color:var(--mint)"')} <b>Akkoord</b>, ondertekend als “${esc(r.sign)}”</p>`;
-  return rows + (r.note ? `<p class="small" style="margin:10px 0 0"><span class="muted">Opmerking:</span> ${esc(r.note)}</p>` : '');
+  if (b.type === 'akkoord') rows = `<p style="margin:0">${ic('check').replace('<svg','<svg style="width:18px;height:18px;vertical-align:-4px;color:var(--mint)"')} <b>Akkoord gegeven</b> door ${esc(a.by)}, ${fmtDay(a.doneOff).toLowerCase()}${a.doneT ? ' om ' + a.doneT : ''}</p>`;
+  return rows + (r.files?.length ? `<div style="margin-top:12px"><div class="small muted" style="font-weight:700;margin-bottom:6px">Toegevoegde documenten</div>${docList(r.files)}</div>` : '') + (r.note ? `<p class="small" style="margin:10px 0 0"><span class="muted">Opmerking:</span> ${esc(r.note)}</p>` : '');
 }
 
 O.acties = function(){
@@ -982,6 +1004,7 @@ Object.assign(SCREENS, {
     ];
     return header(r === 'beg' ? `${k.first} · ${b.title}` : b.title) + `<div class="screen">
       <div class="card"><div class="row">${typeIco(b.type)}<div class="grow"><div style="font-weight:800">${esc(b.title)}</div><div class="small muted">${r === 'beg' ? `${k.name} · ouder: ${k.parent}` : dueText(b.due)}</div></div>${actChip(a, r)}</div></div>
+      ${b.docs?.length ? `<div class="eyebrow">Documenten van Uniek</div>${docList(b.docs)}` : ''}
       <div class="card"><ul class="timeline">${steps.map(s => `<li class="${s.on ? 'on' : ''}"><span class="dot"></span><span class="grow"><b>${s.t}</b>${s.d ? `<span class="muted small"> · ${s.d}</span>` : ''}</span></li>`).join('')}</ul></div>
       ${a.remark ? `<div class="remark"><b>Teruggestuurd:</b> ${esc(a.remark)}</div>` : ''}
       ${a.status !== 'open' ? `<div class="eyebrow">${r === 'beg' ? 'Antwoord van ' + a.by : 'Wat je hebt doorgegeven'}</div><div class="card">${resultHtml(b, a)}</div>` : ''}
@@ -1001,7 +1024,7 @@ Object.assign(SCREENS, {
       <div class="card"><div class="row">${typeIco(b.type)}<div class="grow"><div style="font-weight:800">${ACT_TYPES[b.type].label}${b.period ? ' · ' + PERIODS[b.period].label : ''}</div><div class="small muted">Klaargezet door ${b.by} ${fmtDay(b.made).toLowerCase()} · ${dueText(b.due).toLowerCase()}</div></div></div>
         <p class="small" style="margin:12px 0 0">${esc(b.info)}</p>
         <div class="progress"><i style="width:${Math.round(filled/as.length*100)}%"></i></div>
-        <div class="small" style="margin-top:6px"><b>${filled}</b> van ${as.length} ouders hebben het ingevuld</div></div>
+        <div class="small" style="margin-top:6px"><b>${filled}</b> van ${as.length} ouders hebben het ingevuld</div>${b.docs?.length ? `<div style="margin-top:12px">${docList(b.docs)}</div>` : ''}</div>
       <div class="list">${as.sort((x,y) => order[x.status] - order[y.status]).map(a => { const k = kid(a.kid); return `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${k.first} <span class="muted" style="font-weight:500">· ${k.parent}</span></div><div class="s">${a.status === 'open' ? (a.remark ? 'Teruggestuurd' : 'Nog niet ingevuld') : 'Ingevuld ' + fmtDay(a.doneOff).toLowerCase()}</div></div>${actChip(a,'beg')}</button>`; }).join('')}</div>
       ${open ? `<button class="btn ghost block" type="button" data-act="remind" data-id="${b.id}">${ic('bell')} Herinnering sturen aan ${open} ${open === 1 ? 'ouder' : 'ouders'}</button>` : ''}
     </div>`;
@@ -1017,6 +1040,8 @@ Object.assign(SCREENS, {
       ${t === 'vakantie' ? `<div class="field"><span>Welke vakantie?</span></div><div class="choices">${Object.entries(PERIODS).map(([id, p]) => `<button class="choice" type="button" data-act="actpick" data-k="period" data-v="${id}" aria-pressed="${f.period === id}">${p.label}</button>`).join('')}</div>` : ''}
       <label class="field"><span>Titel</span><input class="input" name="title" value="${esc(f.title ?? (ACT_TYPES[t].label + (t === 'vakantie' && f.period ? ' ' + PERIODS[f.period].label.split(' ')[0].toLowerCase() : '')))}"></label>
       <label class="field"><span>Uitleg voor ouders</span><textarea class="input" name="info">${esc(f.info ?? ACT_TYPES[t].info)}</textarea></label>
+      <div class="field"><span>Documenten voor ouders (mag leeg blijven)</span></div>
+      ${docPicker('docs', f.docs || [], 'Document toevoegen')}
       ${t === 'akkoord' ? `<label class="field"><span>Document</span><textarea class="input" name="doc" style="min-height:150px">${esc(f.doc ?? HUISREGELS)}</textarea></label>` : ''}
       <div class="field"><span>Voor wie?</span></div>
       <div class="choices"><button class="choice" type="button" data-act="actpick" data-k="to" data-v="all" aria-pressed="${f.to === 'all'}">Alle ouders van ${LOCS[loc].name} (${kids.length})</button><button class="choice" type="button" data-act="actpick" data-k="to" data-v="some" aria-pressed="${f.to === 'some'}">Kies ouders</button></div>
@@ -1060,13 +1085,14 @@ function actForm(a, b, f){
         <label class="btn ghost block" style="margin-bottom:14px">${ic('doc')} ${f.file ? esc(f.file) : 'Kies een bestand'}<input type="file" accept="image/*,.pdf" data-actfile="1" style="position:absolute;width:1px;height:1px;opacity:0"></label>` : ''}
       ${f.st === 'niet' ? `<div class="remark" style="background:var(--brand-tint);color:var(--ink)">Tip: vraag de verlenging aan bij het sociaal team of het jeugdloket van je gemeente. Wij helpen je graag; stuur Team Didam een bericht.</div>` : ''}`; }
   if (b.type === 'akkoord') {
-    body = `<div class="card doc">${esc(b.doc)}</div>
-      <label class="field"><span>Je naam</span><input class="input" name="sign" value="${esc(f.sign || '')}" placeholder="Voor- en achternaam"></label>
-      ${checkBtn('ok', f.ok, 'Ik heb het document gelezen en ga akkoord')}`; }
+    body = `${b.doc ? `<div class="card doc">${esc(b.doc)}</div>` : ''}
+      ${checkBtn('ok', f.ok, b.docs?.length ? 'Ik heb de bijlage gelezen en ga akkoord' : 'Ik heb het document gelezen en ga akkoord')}`; }
   return header(b.title) + `<div class="screen"><form data-form="actie" data-id="${a.id}">
-    <div class="card"><div class="row">${typeIco(b.type,'c1')}<div class="grow"><div style="font-weight:800">${esc(b.title)}</div><div class="small muted">Van ${b.by} · ${dueText(b.due).toLowerCase()}</div></div></div><p class="small" style="margin:12px 0 0">${esc(b.info)}</p></div>
+    <div class="card"><div class="row">${typeIco(b.type,'c1')}<div class="grow"><div style="font-weight:800">${esc(b.title)}</div><div class="small muted">Van ${b.by} · ${dueText(b.due).toLowerCase()}</div></div></div><p class="small" style="margin:12px 0 0">${esc(b.info)}</p>${b.docs?.length ? `<div style="margin-top:12px">${docList(b.docs)}</div>` : ''}</div>
     ${a.remark ? `<div class="remark"><b>${b.by} vraagt:</b> ${esc(a.remark)}</div>` : ''}
     ${body}
+    <div class="field"><span>Documenten meesturen (mag leeg blijven)</span></div>
+    ${docPicker('odocs', f.odocs || [], 'Document of foto toevoegen')}
     ${b.type !== 'akkoord' ? `<label class="field"><span>Opmerking (mag leeg blijven)</span><textarea class="input" name="note" style="min-height:80px">${esc(f.note || '')}</textarea></label>` : ''}
     ${f.err ? `<div class="err">${f.err}</div>` : ''}
     <button class="btn block" type="submit">Versturen naar Uniek</button>
@@ -1079,6 +1105,8 @@ Object.assign(ACT, {
     else if (d.mode === 'toggle') f[d.k] = !f[d.k];
     else { if (d.k === 'type' && f.type !== d.v) { delete f.title; delete f.info; delete f.doc; delete f.period; } if (d.k === 'period') delete f.title; f[d.k] = d.v; }
     f.err = ''; rerender(r); },
+  rmdoc(r, d){ syncInputs(r); V[r].form[d.k].splice(+d.i, 1); rerender(r); },
+  demodoc(r){ toast(r, 'Voorbeelddocument', 'In de demo is dit bestand niet echt aanwezig. In de app opent het document hier.'); },
   addmed(r){ syncInputs(r); const f = V[r].form; f.meds.push({name:'', dose:'', time:'', care:'nee'}); rerender(r); },
   actdone(r, d){ const a = actOf(d.id), b = batchOf(a); a.status = 'afgerond'; a.doneBy = 'Sanne'; a.remark = '';
     back(r); if (a.kid === 'liam') { rerender('ouder'); toast('ouder', 'Actie afgerond', `Sanne heeft “${b.title}” verwerkt. Dank je!`); } },
@@ -1114,7 +1142,8 @@ Object.assign(FORM, {
     if (b.type === 'indicatie') { if (!f.st) return fail('Kies hoe het staat met de verlenging.');
       res.st = f.st; if (f.st === 'aangevraagd') { if (!f.date) return fail('Vul in wanneer je het hebt aangevraagd.'); res.date = f.date; }
       if (f.st === 'ontvangen') { if (!f.until) return fail('Vul in tot wanneer de nieuwe indicatie geldt.'); res.until = f.until; res.file = f.file || ''; } }
-    if (b.type === 'akkoord') { if (!(f.sign || '').trim()) return fail('Vul je naam in.'); if (!f.ok) return fail('Geef aan dat je akkoord gaat.'); res = {sign:f.sign.trim()}; }
+    if (b.type === 'akkoord') { if (!f.ok) return fail('Zet een vinkje als je akkoord gaat. Heb je vragen? Neem contact op met de persoonlijk begeleider.'); res.agree = true; }
+    res.files = (f.odocs || []).slice();
     Object.assign(a, {status:'ingediend', result:res, by:'Eva', doneOff:0, doneT:now(), remark:''});
     V[r].form = {}; V[r].stack = []; V[r].tab = 'acties'; render(r);
     toast('ouder', 'Verstuurd', `“${b.title}” is naar Uniek gestuurd.`);
@@ -1129,7 +1158,7 @@ Object.assign(FORM, {
     if (!kids.length) return fail('Kies minstens één ouder.');
     const due = isoToOff(f.due || offToIso(14)); if (due < 1) return fail('Kies een datum vanaf morgen.');
     const title = (f.title || '').trim() || ACT_TYPES[f.type].label;
-    const b = {id:++idc, loc, type:f.type, title, period:f.period, due, made:0, by:'Sanne', info:(f.info || '').trim() || ACT_TYPES[f.type].info, doc:f.type === 'akkoord' ? (f.doc || HUISREGELS) : undefined};
+    const b = {id:++idc, loc, type:f.type, title, period:f.period, due, made:0, by:'Sanne', info:(f.info || '').trim() || ACT_TYPES[f.type].info, doc:f.type === 'akkoord' ? (f.doc || HUISREGELS) : undefined, docs:(f.docs || []).slice()};
     S.batches.push(b);
     kids.forEach(id => S.actions.push({id:++idc, batch:b.id, kid:id, status:'open', current:id === 'liam' && f.type === 'medicatie' ? [{name:'Methylfenidaat', dose:'10 mg', time:'08:00', care:'nee'}] : undefined}));
     V[r].form = {}; V[r].stack = [{v:'batch', id:b.id}]; render(r);
@@ -1175,6 +1204,8 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const i = e.target;
+  if (i.matches('[data-docfile]') && i.files.length) { const r = i.closest('.phone').dataset.role, k = i.dataset.docfile; syncInputs(r); const f = V[r].form; f[k] = f[k] || [];
+    [...i.files].forEach(file => f[k].push({name:file.name, size:file.size, url:URL.createObjectURL(file)})); f.err = ''; rerender(r); return; }
   if (i.matches('[data-actfile]') && i.files[0]) { const r = i.closest('.phone').dataset.role; syncInputs(r); V[r].form.file = i.files[0].name; rerender(r); return; }
   if (!i.matches('[data-upload]') || !i.files[0]) return;
   const r = i.closest('.phone').dataset.role, rd = new FileReader();
