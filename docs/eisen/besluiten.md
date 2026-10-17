@@ -14,6 +14,7 @@
 | 17-10-2026 | Een begeleider kan op meerdere locaties werken en kiest na het inloggen een locatie. |
 | 17-10-2026 | Ouder en begeleider krijgen een tab Administratie (eerst 'Acties' genoemd): Uniek zet een actie klaar, de ouder voert die uit, de begeleider ziet het resultaat en de status. |
 | 17-10-2026 | Een begeleider kan op Vandaag een kind toevoegen; de keuzelijst bevat alle kinderen van de hele organisatie. |
+| 17-10-2026 | De begeleider kan de app ook in de webbrowser gebruiken (zie NF-01). De demo laat beide weergaven zien. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen

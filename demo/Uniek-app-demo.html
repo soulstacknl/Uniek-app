@@ -30,7 +30,7 @@ body{background:var(--page);color:var(--page-fg);font-family:var(--font);font-si
 button,input,select,textarea{font:inherit;color:inherit}
 [hidden]{display:none!important}
 
-.shell{max-width:1180px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;min-height:100%}
+.shell{max-width:1380px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;min-height:100%}
 .bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
 .bar h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em}
 .pill{padding:4px 10px;border:1px solid var(--page-line);border-radius:999px;color:var(--page-muted);font-size:13px;font-weight:600;white-space:nowrap}
@@ -235,6 +235,46 @@ label.btn{position:relative}
 .composer .iconbtn[aria-pressed="true"]{background:var(--pink-tint);color:var(--pink-strong)}
 .grp{background:var(--pink);color:#fff}
 .notice{margin:2px 0 12px;padding:10px 12px;border-radius:14px;background:var(--mint-tint);color:#14513C;font-size:13px}
+/* Webbrowser-weergave begeleider */
+.device-label{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px}
+.viewsw{display:inline-flex;padding:3px;border-radius:12px;background:var(--page-panel);border:1px solid var(--page-line)}
+.viewsw button{min-height:34px;padding:0 12px;border:0;border-radius:9px;background:transparent;font-weight:700;font-size:13px;color:var(--page-muted);cursor:pointer}
+.viewsw button[aria-pressed="true"]{background:var(--brand);color:#fff}
+.chrome{display:none}
+.device.web .phone{width:clamp(560px, calc(100vw - 500px), 860px);border-radius:14px;border:1px solid #C5CFDC;box-shadow:0 24px 60px var(--shadow)}
+.device.web .statusbar{display:none}
+.device.web .chrome{display:flex;flex:none;align-items:center;gap:7px;height:42px;padding:0 14px;background:#E8EDF3;border-bottom:1px solid #D3DBE5}
+.device.web .chrome i{width:11px;height:11px;border-radius:50%;background:#C9D2DD}
+.device.web .chrome i:first-child{background:#F0857A}.device.web .chrome i:nth-child(2){background:#F2C45A}.device.web .chrome i:nth-child(3){background:#6BC58A}
+.device.web .chrome .url{flex:1;max-width:420px;margin-left:14px;padding:5px 12px;border-radius:8px;background:#fff;font-size:12.5px;color:#55657D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.webapp{flex-direction:row}
+.app.webapp .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--ground)}
+.app.webapp .main .screen{padding:20px 32px 32px}
+.app.webapp .main .screen > *{max-width:720px}
+.app.webapp .main .top{padding:10px 24px 6px 16px}
+.app.webapp .main .composer{padding:12px 24px}
+.app.webapp .main .tray{padding:12px 24px}
+.app.webapp textarea.input{min-height:160px}
+.app.webapp .tabbar{flex:none;flex-direction:column;justify-content:flex-start;gap:2px;width:220px;padding:14px 12px;border-top:0;border-right:1px solid var(--line)}
+.app.webapp .side-logo{display:block;align-self:flex-start;height:40px;width:auto;margin:2px 8px 18px}
+.app.webapp .tab{flex:none;flex-direction:row;justify-content:flex-start;gap:10px;min-height:44px;padding:0 10px;border-radius:12px;font-size:14px;letter-spacing:0}
+.app.webapp .tab-ico{width:auto;height:auto;background:none!important}
+.app.webapp .tab[aria-current="page"]{background:var(--brand-tint)}
+.app.webapp .tab:hover{background:var(--ground)}
+.app.webapp .badge{position:static;margin-left:auto}
+.app.webapp .side-foot{margin-top:auto;padding:12px 8px 2px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.app.webapp .side-foot b{display:block;color:var(--ink);font-size:14px}
+.app.webapp .side-foot .linkbtn{min-height:32px;font-size:13px}
+.device.web .login{align-items:center}
+.device.web .login > *{width:100%;max-width:440px}
+.device.web .toast{left:auto;right:16px;top:54px;width:340px}
+@media (max-width: 819px){
+  .device.web .phone{width:calc(100vw - 32px)}
+  .app.webapp .tabbar{width:64px;padding:12px 6px}
+  .app.webapp .tab{font-size:0;justify-content:center;padding:0}
+  .app.webapp .side-logo,.app.webapp .side-foot{display:none}
+  .app.webapp .main .screen{padding:16px}
+}
 @media (max-width: 819px){
   .switch{display:flex}
   .stage{gap:0}
@@ -262,6 +302,7 @@ label.btn{position:relative}
       <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
       <li>Begeleider: open <b>Groep vandaag</b> en deel een foto of tekst. Alle ouders van kinderen die er vandaag zijn, zien het, alleen vandaag. Ouders kunnen niet reageren. Bij Daan staat geen toestemming voor foto's; dat ziet de begeleider bij het delen.</li>
       <li>Stuur ook 1-op-1-berichten heen en weer.</li>
+      <li>Wissel bij de begeleider tussen <b>Telefoon</b> en <b>Webbrowser</b>. In de browser staat het menu links en is er meer ruimte om te typen.</li>
       <li><b>Administratie:</b> de ouder vult bij Administratie de medicatie, de vakantieplanning of de indicatie in. De begeleider ziet het bij Administratie onder <b>Te controleren</b>, zet het op Verwerkt of stuurt het terug. Met <b>Nieuwe actie</b> (bij Administratie) zet de begeleider zelf iets klaar voor één of alle ouders.</li>
     </ol>
   </details>
@@ -275,8 +316,9 @@ label.btn{position:relative}
       <div class="phone" data-role="ouder"><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
     </section>
     <section class="device" data-device="beg">
-      <div class="device-label"><b>Begeleider</b> · Sanne, locaties Didam en Ulft</div>
-      <div class="phone" data-role="beg"><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
+      <div class="device-label"><b>Begeleider</b> · Sanne, locaties Didam en Ulft
+        <span class="viewsw" role="group" aria-label="Weergave begeleider"><button type="button" data-view="phone" aria-pressed="true">Telefoon</button><button type="button" data-view="web" aria-pressed="false">Webbrowser</button></span></div>
+      <div class="phone" data-role="beg"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span class="url">app.opvanguniek.nl</span></div><div class="statusbar"><span class="clock">9:41</span><i></i></div><div class="app"></div><div class="toast" role="status" aria-live="polite"></div></div>
     </section>
   </main>
 </div>
@@ -346,7 +388,7 @@ const HIGHLIGHTS = ['Buiten gespeeld','Samen gespeeld','Goed gegeten','Rustig mo
 
 const LOCS = {ulft:{name:'Ulft'}, didam:{name:'Didam'}, bemmel:{name:'Bemmel'}};
 const BEG_LOCS = ['didam','ulft'];   /* Sanne werkt op twee locaties */
-let S, V, idc = 100;
+let S, V, idc = 100, WEB = false;
 function seed(){
   S = {
     kids: {
@@ -447,8 +489,9 @@ function tabbar(r){
     if (r === 'beg' && t === 'acties') n = toCheck(V.beg.loc).length;
     return n ? `<span class="badge" aria-label="${n} nieuw">${n}</span>` : '';
   };
-  return `<nav class="tabbar" aria-label="Menu">${TABS[r].map(([id,label,icon]) =>
-    `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}</nav>`;
+  const web = r === 'beg' && WEB;
+  return `<nav class="tabbar" aria-label="Menu">${web ? `<img class="side-logo" src="${LOGO}" alt="Opvang Uniek">` : ''}${TABS[r].map(([id,label,icon]) =>
+    `<button class="tab" type="button" data-act="tab" data-v="${id}" ${V[r].tab===id && !V[r].stack.length ? 'aria-current="page"' : ''}><span class="tab-ico">${ic(icon)}</span>${label}${badge(id)}</button>`).join('')}${web ? `<div class="side-foot"><b>Sanne Willemsen</b>Locatie ${LOCS[V.beg.loc].name}<br><button class="linkbtn" type="button" data-act="chooseloc">Andere locatie</button> · <button class="linkbtn" type="button" data-act="logout">Uitloggen</button></div>` : ''}</nav>`;
 }
 const oHello = (small, title) => `<div class="hello"><small>${small}</small><h2>${title}</h2></div>`;
 const header = (title, extra='') => `<div class="top"><button class="iconbtn" type="button" data-act="back" aria-label="Terug">${ic('back')}</button><h2>${esc(title)}</h2>${extra}</div>`;
@@ -696,10 +739,15 @@ const SCREENS = {
 function render(r){
   const el = phone(r), app = el.querySelector('.app'), v = V[r];
   const keepScroll = app.querySelector('.screen:not([data-scroll])')?.scrollTop || 0;
+  const web = r === 'beg' && WEB;
+  app.classList.toggle('webapp', false);
+  if (web) el.querySelector('.url').textContent = 'app.opvanguniek.nl/' + (!v.auth ? 'inloggen' : !v.loc ? 'locatie' : (v.stack.at(-1)?.v || v.tab));
   if (!v.auth) { app.innerHTML = loginScreen(r); return; }
   if (r === 'beg' && !v.loc) { app.innerHTML = locationScreen(); return; }
   const top = v.stack.at(-1);
-  app.innerHTML = (top ? SCREENS[top.v](r, top.id) : (r === 'ouder' ? O : B)[v.tab](r)) + tabbar(r);
+  const content = top ? SCREENS[top.v](r, top.id) : (r === 'ouder' ? O : B)[v.tab](r);
+  if (web) { app.classList.add('webapp'); app.innerHTML = tabbar(r) + `<div class="main">${content}</div>`; }
+  else app.innerHTML = content + tabbar(r);
   const sc = app.querySelector('.screen');
   if (sc) { if (sc.dataset.scroll === 'end') sc.scrollTop = sc.scrollHeight; else if (v.keep) sc.scrollTop = keepScroll; }
   v.keep = false;
@@ -1090,11 +1138,19 @@ Object.assign(FORM, {
   }
 });
 
+function setWeb(on){
+  WEB = on;
+  document.querySelector('[data-device="beg"]').classList.toggle('web', on);
+  document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.view === 'web') === on));
+  render('beg');
+}
 /* Formulieren zonder submit-event: werkt ook in previews die formulieren blokkeren. */
 function runForm(f){ const r = f.closest('.phone').dataset.role; FORM[f.dataset.form](r, new FormData(f), f.dataset.id); }
 document.addEventListener('click', e => {
   const sub = e.target.closest('button[type="submit"]');
   if (sub) { const f = sub.closest('[data-form]'); if (f) { e.preventDefault(); runForm(f); return; } }
+  const vw = e.target.closest('[data-view]');
+  if (vw) { setWeb(vw.dataset.view === 'web'); return; }
   const sw = e.target.closest('[data-switch]');
   if (sw) { document.querySelectorAll('[data-switch]').forEach(b => b.setAttribute('aria-pressed', b === sw)); document.querySelectorAll('.device').forEach(d => d.classList.toggle('is-active', d.dataset.device === sw.dataset.switch)); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
@@ -1130,6 +1186,7 @@ const tick = () => document.querySelectorAll('.clock').forEach(c => c.textConten
 setInterval(tick, 15000); tick();
 if (matchMedia('(min-width: 820px)').matches) document.getElementById('tips').open = true;
 seed(); renderAll();
+if (matchMedia('(min-width: 1200px)').matches) setWeb(true);
 })();
 </script>
 </body>

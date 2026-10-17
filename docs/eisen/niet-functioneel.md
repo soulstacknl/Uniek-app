@@ -4,7 +4,7 @@ Status: **concept**. De voorgestelde punten zijn ingevuld op basis van de BPB-ap
 
 | Nr | Onderwerp | Eis | Status |
 | --- | --- | --- | --- |
-| NF-01 | Platforms | Android en iPhone. Begeleiders werken ook in de webbrowser. | Voorstel |
+| NF-01 | Platforms | Android en iPhone voor ouders en begeleiders. Begeleiders kunnen ook in de webbrowser werken, met dezelfde functies, het menu links in een zijbalk en meer ruimte om te typen (berichten, groepschat, administratie). | Besloten |
 | NF-02 | Hosting | Data staat in de EU (Supabase, Frankfurt). | Voorstel |
 | NF-03 | Privacy | Voldoet aan de AVG. Zorggegevens van kinderen zijn bijzondere persoonsgegevens. Alleen gegevens die nodig zijn worden bewaard. | Voorstel |
 | NF-04 | Toegang | Iedereen ziet alleen gegevens van het eigen kind of de eigen cliënten. Dat wordt in de database afgedwongen en getest. | Voorstel |
