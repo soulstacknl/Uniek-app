@@ -1,6 +1,6 @@
 # Uniek-app
 
-App voor **ouders en begeleiders** van Opvang Uniek. Opvang Uniek begeleidt kinderen, jongeren en jongvolwassenen met onder meer ADHD, ASS, hechtingsproblematiek of trauma. Het doet dat vanuit 7 locaties in Ulft (Emailleplein 13, Oersterk), Didam (De Deel, Het Voorhuis, De Schuur) en Bemmel (Het Dorpshuis, Het Glazenhuis). Elk gebouw is in de app een eigen locatie.
+App voor **ouders en medewerkers** (begeleider, manager, beheerder) van Opvang Uniek. Opvang Uniek begeleidt kinderen, jongeren en jongvolwassenen met onder meer ADHD, ASS, hechtingsproblematiek of trauma. Het doet dat vanuit 7 locaties in Ulft (Emailleplein 13, Oersterk), Didam (De Deel, Het Voorhuis, De Schuur) en Bemmel (Het Dorpshuis, Het Glazenhuis). Elk gebouw is in de app een eigen locatie.
 
 ## Waar staat wat
 
@@ -10,7 +10,8 @@ App voor **ouders en begeleiders** van Opvang Uniek. Opvang Uniek begeleidt kind
 | Niet-functionele eisen (privacy, beveiliging, toegankelijkheid, huisstijl) | `docs/eisen/niet-functioneel.md` |
 | Open vragen en genomen besluiten | `docs/eisen/besluiten.md` |
 | Functioneel en technisch ontwerp (HTML, voor de klant) | `docs/` (volgt) |
-| Klikbare demo (losse HTML, zonder backend) | `demo/` (volgt) |
+| Klikbare demo (losse HTML, zonder backend) | `demo/Uniek-app-demo.html` |
+| Context van Uniek (locaties, adressen, opvangvormen) | `docs/context-opvang-uniek.md` |
 | Logo en huisstijlbestanden | `assets/brand/` |
 
 Lees de eisen voordat je iets bouwt of ontwerpt. Staat iets er niet in, vraag het dan. Verzin geen eisen; leg een aanname vast in `besluiten.md`.
@@ -44,4 +45,6 @@ Het gaat om zorggegevens van kinderen. Dat zijn bijzondere persoonsgegevens onde
 ## Werkwijze
 
 - Werk de README bij met de stand van zaken na elke afgeronde bouwstap.
+- Houd de demo en de eisen gelijk: een nieuwe functie in de demo krijgt een eis (F-nummer) en, waar nodig, een besluit of open vraag.
+- Testgegevens in de demo zijn verzonnen en worden met een vast patroon gemaakt (zie `genKids`, `genPlan` en `genActions` in de demo).
 - Pas eerst de eisen aan als die veranderen, en daarna pas de code.

@@ -1,10 +1,12 @@
 # Besluiten en open vragen – Uniek-app
 
+Laatst bijgewerkt: 17 oktober 2026. Een besluit gaat vóór een eerdere aanname; een open vraag wordt een besluit zodra Uniek hem heeft beantwoord.
+
 ## Besluiten
 
 | Datum | Besluit |
 | --- | --- |
-| 17-10-2026 | De app is voor ouders en begeleiders van Opvang Uniek. |
+| 17-10-2026 | De app is voor ouders en medewerkers van Opvang Uniek (begeleider, manager, beheerder). |
 | 17-10-2026 | De BPB-app (`C:\GIT\BPB app`) is het voorbeeld voor techniek, opbouw, ontwerpdocumenten en demo. |
 | 17-10-2026 | Huisstijl: gebaseerd op de website en het logo van Uniek, maar moderner en frisser. |
 | 17-10-2026 | Requirements staan in `docs/eisen/`, met CLAUDE.md als korte wegwijzer. |
@@ -26,31 +28,48 @@
 
 ## Open vragen
 
+### Algemeen
+
 - Welke functies heeft de eerste versie? (zie `functioneel.md`)
 - Mag het kind of de jongere zelf inloggen?
 - Is er een koppeling met een bestaand cliëntsysteem nodig?
 - Welke bewaartermijn geldt voor de gegevens?
-- Groepschat: wordt de foto-toestemming bij de intake op papier vastgelegd en door de begeleiding ingevoerd, of geeft de ouder die alleen in de app? (In de demo doet de ouder het in de app.)
-- Groepschat: mogen ouders foto's uit de groep opslaan? Technisch is een screenshot nooit helemaal te voorkomen.
+
+### Locaties en inloggen
+
 - Locatie kiezen: moet de app de laatst gekozen locatie onthouden, of telkens opnieuw vragen? (In de demo wordt het na elk inloggen gevraagd.)
 - Locatie kiezen: wie koppelt een begeleider aan locaties: de planning of een beheerder?
 - Locatie kiezen: krijgt een begeleider meldingen van een locatie waar hij of zij op dat moment niet werkt?
+- Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
+- Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?
+
+### Chat en groepschat
+
+- Groepschat: wordt de foto-toestemming bij de intake op papier vastgelegd en door de begeleiding ingevoerd, of geeft de ouder die alleen in de app? (In de demo doet de ouder het in de app.)
+- Groepschat: mogen ouders foto's uit de groep opslaan? Technisch is een screenshot nooit helemaal te voorkomen.
+- Teamgesprek: moet een begeleider een gesprek kunnen 'oppakken' of markeren als afgehandeld, zodat collega's weten dat iemand al reageert?
+- Teamgesprek: zijn berichten van ouders 'gelezen' als één begeleider ze heeft gelezen, of houdt elke begeleider een eigen leesstand bij?
+
+### Administratie en documenten
+
 - Administratie: wie mag acties klaarzetten: elke begeleider, of ook (alleen) kantoor of planning? Ziet een begeleider ook acties die kantoor heeft klaargezet?
 - Administratie: moeten ingevulde gegevens, zoals medicatie of de indicatie, automatisch naar het dossier of ECD van het kind?
 - Administratie: zijn er nog andere soorten acties nodig, zoals een vragenlijst of het doorgeven van een adreswijziging?
 - Administratie: medicatie is gevoelige informatie. Wie bij Uniek mag die antwoorden zien?
+- Documenten: welke bestandstypen en welke maximale grootte zijn toegestaan? Hoe lang bewaren we documenten die ouders meesturen?
+- Akkoord met een vinkje: is dat juridisch voldoende voor bijvoorbeeld een zorgovereenkomst, of is een digitale handtekening nodig?
+
+### Kinderen en ouders
+
 - Kind toevoegen: de keuzelijst laat begeleiders kinderen van alle locaties zien. Dat wijkt af van de privacyregel 'alleen eigen kinderen'. Voorstel: in de lijst alleen naam, leeftijd, vaste locatie en naam van de ouder; de rest pas na toevoegen. Akkoord?
 - Kind toevoegen: moet de ouder (of de planning) het toevoegen eerst goedkeuren, of alleen een melding krijgen?
 - Kind toevoegen: wordt een toegevoegd kind ook in de planning en de facturatie verwerkt?
-- Documenten: welke bestandstypen en welke maximale grootte zijn toegestaan? Hoe lang bewaren we documenten die ouders meesturen?
-- Akkoord met een vinkje: is dat juridisch voldoende voor bijvoorbeeld een zorgovereenkomst, of is een digitale handtekening nodig?
-- Teamgesprek: moet een begeleider een gesprek kunnen 'oppakken' of markeren als afgehandeld, zodat collega's weten dat iemand al reageert?
-- Teamgesprek: zijn berichten van ouders 'gelezen' als één begeleider ze heeft gelezen, of houdt elke begeleider een eigen leesstand bij?
+- Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)
+- Goed om te weten: mag de ouder dit ook zien, of zelf punten voorstellen? En moet medische informatie ook door de ouder bevestigd worden (bijvoorbeeld via de actie Medicatie)?
+
+### Beheer en rollen
+
 - Beheer: mag een manager alleen de eigen locaties beheren (medewerkers en kinderen daarvan), en mag alleen de beheerder rollen toekennen en locaties toevoegen?
 - Beheerder: mag de beheerder ook de chats met ouders en de groepschats van alle locaties lezen? (In de demo nu niet: de beheerder heeft geen tab Berichten.)
 - Beheer: zien managers en beheerders de chats en medische gegevens van alle locaties, of alleen de locaties waaraan ze gekoppeld zijn?
-- Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)
-- Locaties: is 'Oersterk' hetzelfde als Emailleplein 17 in Ulft? De website zegt dat niet letterlijk. In de demo staat Oersterk op Emailleplein 17.
-- Locaties: hebben De Deel en Het Voorhuis (Didam) elk een eigen team en groepschat, of horen ze voor de begeleiding bij elkaar?
 - Planning beheerder: is 4 weken vooruit genoeg, of wil de beheerder een langere periode of een vrije keuze van periode? Is er een maximum aantal kinderen (capaciteit) per locatie dat we moeten tonen?
-- Goed om te weten: mag de ouder dit ook zien, of zelf punten voorstellen? En moet medische informatie ook door de ouder bevestigd worden (bijvoorbeeld via de actie Medicatie)?
