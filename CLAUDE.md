@@ -9,7 +9,7 @@ App voor **ouders en medewerkers** (begeleider, manager, beheerder) van Opvang U
 | Functionele eisen (wat de app doet, per rol) | `docs/eisen/functioneel.md` |
 | Niet-functionele eisen (privacy, beveiliging, toegankelijkheid, huisstijl) | `docs/eisen/niet-functioneel.md` |
 | Open vragen en genomen besluiten | `docs/eisen/besluiten.md` |
-| Functioneel en technisch ontwerp (HTML, voor de klant) | `docs/` (volgt) |
+| Functioneel en technisch ontwerp (HTML, voor de klant) | `demo/Uniek-app-functioneel-ontwerp.html`, `demo/Uniek-app-technisch-ontwerp.html` |
 | Klikbare demo (losse HTML, zonder backend) | `demo/Uniek-app-demo.html` |
 | Context van Uniek (locaties, adressen, opvangvormen) | `docs/context-opvang-uniek.md` |
 | Logo en huisstijlbestanden | `assets/brand/` |

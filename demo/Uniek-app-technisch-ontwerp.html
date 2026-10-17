@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uniek-app · Technisch ontwerp</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--ink:#0B2F5B;--ink2:#4F6280;--line:#D6E0EC;--ground:#F2F6FB;--paper:#FFFFFF;--accent:#D92A82;--accent-text:#B01D69;--brand:#0A62AB;--calm:#E4EFFA;--soft:#FCE6F1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55}
+.paper{max-width:880px;margin:32px auto;padding:56px 64px 40px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+.cover{display:flex;flex-direction:column;gap:18px;margin-bottom:36px;padding-bottom:32px;border-bottom:3px solid var(--accent)}
+.cover img{width:170px;height:auto}
+.kicker{margin:0;color:var(--accent-text);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{margin:0;font-size:42px;line-height:1.08;letter-spacing:-0.02em;text-wrap:balance}
+.lede{max-width:60ch;margin:0;color:var(--ink2);font-size:19px;line-height:1.45;text-wrap:pretty}
+dl.meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 28px;margin:10px 0 0;font-size:15px}
+dl.meta dt{color:var(--ink2)}
+dl.meta dd{margin:0;font-weight:600}
+.toc h2{margin:0 0 10px;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 32px;margin:0;padding:0;list-style:none}
+.toc a{display:flex;gap:10px;padding:4px 0;color:var(--ink);text-decoration:none}
+.toc a:hover span:last-child{text-decoration:underline}
+.num{color:var(--accent-text);font-variant-numeric:tabular-nums;font-weight:700}
+h2{margin:52px 0 12px;font-size:25px;line-height:1.2;letter-spacing:-0.01em;text-wrap:balance}
+h2 .num{margin-right:12px}
+h3{margin:28px 0 8px;font-size:17.5px;line-height:1.3}
+h3 .num{margin-right:10px}
+p{max-width:72ch;margin:0 0 12px;text-wrap:pretty}
+ul,ol{margin:0 0 14px;padding-left:22px}
+li{max-width:70ch;margin-bottom:6px}
+ol.rules{padding-left:26px}
+ol.rules li::marker{color:var(--accent-text);font-weight:700}
+a{color:var(--brand)}
+.tablewrap{overflow-x:auto;margin:10px 0 18px}
+table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.45}
+th{padding:8px 14px 8px 0;border-bottom:2px solid var(--ink);font-weight:700;text-align:left;vertical-align:bottom}
+td{padding:9px 14px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+td.key{font-weight:600}
+td.no{color:var(--ink2)}
+code{font-size:14px;background:var(--ground);padding:1px 5px;border-radius:4px}
+.note{max-width:none;margin:16px 0;padding:14px 18px;border-radius:8px;background:var(--calm);font-size:15px}
+.note.pink{background:var(--soft)}
+.note p{max-width:none;margin:0}
+.note p + p{margin-top:8px}
+figure{margin:18px 0 22px}
+figure svg{display:block;width:100%;height:auto;font-family:inherit}
+figcaption{margin-top:10px;color:var(--ink2);font-size:14px}
+.lane{fill:#F2F6FB;stroke:#D6E0EC}
+.bx{fill:#FFFFFF;stroke:#8DA2BD;stroke-width:1.25}
+.bx-p{fill:#FCE6F1;stroke:#D92A82;stroke-width:2}
+.bx-b{fill:#E4EFFA;stroke:#0A62AB;stroke-width:2}
+.tn{fill:#0B2F5B;font-size:13px;font-weight:700}
+.tb{fill:#4F6280;font-size:11.5px}
+.tb-d{fill:#0B2F5B;font-size:11.5px}
+.ln{fill:none;stroke:#6C819E;stroke-width:1.25}
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink2);font-size:13px}
+@media (max-width:680px){
+  .paper{margin:0;padding:28px 20px;border:0;border-radius:0}
+  h1{font-size:32px}
+  h2{font-size:22px}
+  .toc ol{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#FFFFFF}
+  .paper{max-width:none;margin:0;padding:0;border:0}
+  h2,h3{break-after:avoid}
+  tr,figure,.note,li{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+
+</style>
+</head>
+<body>
+<div class="paper">
+
+<header class="cover">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABWCAYAAADboOrOAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjBlOTNkNmU1LTZjMmEtNDRlYS1iMDQzLWU4YTRmNDJlZmU2NwAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNokN0Z/qNk0Soom17ohyIifgAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6MmQ3NDljNzgtMWZjYy00MTY3LWI1NGMtYzk5YjkzNzMzMTc1bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaOL85qgWs1axT1FkFi+Jn/oAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIBrZZlhTMAsMZtlHxR1xC0poss/TUzkItJpnYENYP8fhpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2hBsFJdJRXtZsYXZKSsSefUAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFgg4XUtEf9DidNfltdvhrtrD12u6FPmnnTM+tuulBp/PlZkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTowZTkzZDZlNS02YzJhLTQ0ZWEtYjA0My1lOGE0ZjQyZWZlNjcvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyODRmZmQyMS0yYjVhLTQxYzctYjJlZS1mYjRhM2I2MDRjOTZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggGtlmWFMwCwxm2UfFHXELSmiyz9NTOQi0mmdgQ1g/x+GiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIAq3JBZnJnvZXsq8jKiaMMp5KvoE4Ie0curaz/m85B6XomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYILZyEFmywkm+W3ZZsuJ8qBYUJRZz22K9c8KcvIOt7QExdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2WECcFLJdnPsAPT/vzWrpZVKqsaafKNcQGCRzKJxUgbhdCeKjEHXr2qRrrsmp8DypMLO90NxencVJkMbFECi8scPSJzumdAAAAAlwSFlzAAALEwAACxMBAJqcGAAABfFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ4IDc5LjE2NDAzNiwgMjAxOS8wOC8xMy0wMTowNjo1NyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjEgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyMC0wOS0wNVQxNzoxNzoxOSswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6Mjk2Y2Y1NTktM2Q0MC02YjRlLTk0OTYtZjlhOTgyMWViNjRiIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjlkNDBlMWQtYzViOS1kYzQ0LWFhZWEtNjVkZTAwZmY1Y2U2Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2OWQ0MGUxZC1jNWI5LWRjNDQtYWFlYS02NWRlMDBmZjVjZTYiIHN0RXZ0OndoZW49IjIwMjAtMDktMDVUMTc6MTc6MTkrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4xIChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiBzdEV2dDp3aGVuPSIyMDIwLTA5LTA1VDE3OjQyOjE2KzAyOjAwIiBzdEV2dDpzb2Z0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" alt="Opvang Uniek">
+  <p class="kicker">Technisch ontwerp</p>
+  <h1>Uniek-app</h1>
+  <p class="lede">Hoe de app voor ouders en medewerkers van Opvang Uniek wordt gebouwd, beveiligd en in gebruik genomen.</p>
+  <dl class="meta">
+    <dt>Opdrachtgever</dt><dd>Opvang Uniek</dd>
+    <dt>Versie</dt><dd>0.1</dd>
+    <dt>Datum</dt><dd>17 oktober 2026</dd>
+    <dt>Status</dt><dd>Concept, ter bespreking bij de demo</dd>
+  </dl>
+</header>
+
+<nav class="toc" aria-label="Inhoud">
+  <h2>Inhoud</h2>
+  <ol>
+    <li><a href="#h1"><span class="num">1</span><span>Inleiding</span></a></li>
+    <li><a href="#h2"><span class="num">2</span><span>Architectuur</span></a></li>
+    <li><a href="#h3"><span class="num">3</span><span>Technische keuzes</span></a></li>
+    <li><a href="#h4"><span class="num">4</span><span>Gegevensmodel</span></a></li>
+    <li><a href="#h5"><span class="num">5</span><span>Toegang en beveiliging</span></a></li>
+    <li><a href="#h6"><span class="num">6</span><span>Fasering</span></a></li>
+    <li><a href="#h7"><span class="num">7</span><span>Accounts en kosten van derden</span></a></li>
+    <li><a href="#h8"><span class="num">8</span><span>Uitgangspunten en open punten</span></a></li>
+    <li><a href="#h9"><span class="num">9</span><span>Bronnen</span></a></li>
+    <li><a href="#h10"><span class="num">10</span><span>Versiebeheer</span></a></li>
+  </ol>
+</nav>
+
+<h2 id="h1"><span class="num">1</span>Inleiding</h2>
+<p>De Uniek-app wordt één codebase in Expo voor Android en iPhone, met Supabase in Frankfurt als backend. Medewerkers gebruiken dezelfde app ook in de webbrowser. De privacyregels liggen vast in de database zelf, en niet alleen in de app. Dezelfde opzet wordt gebruikt voor de BPB-app.</p>
+<p>Dit document hoort bij het functioneel ontwerp (<a href="Uniek-app-functioneel-ontwerp.html">Uniek-app-functioneel-ontwerp.html</a>), dat beschrijft wat de app doet en voor wie. Het technisch ontwerp geldt voor de bouw na akkoord. De klikbare demo (<a href="Uniek-app-demo.html">Uniek-app-demo.html</a>) werkt met verzonnen voorbeeldgegevens en heeft geen backend en geen accounts.</p>
+
+<h2 id="h2"><span class="num">2</span>Architectuur</h2>
+<p>De app en de webomgeving communiceren alleen met Supabase. Pushmeldingen lopen via de push-dienst van Expo en worden door Supabase verstuurd. Een paar vaste taken draaien elke nacht op de server: de groepschats van de dag leegmaken en de groepen voor de nieuwe dag klaarzetten.</p>
+<figure>
+<svg viewBox="0 0 760 400" role="img" aria-label="Architectuur: app en webomgeving, Supabase in Frankfurt, pushmeldingen via Expo">
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6C819E"/></marker></defs>
+  <rect class="lane" x="24" y="136" width="712" height="136" rx="8"/>
+  <text class="tn" x="40" y="157">Supabase · project in Frankfurt (EU)</text>
+  <path class="ln" d="M194 88V136" marker-end="url(#arrow)"/>
+  <path class="ln" d="M566 88V136" marker-end="url(#arrow)"/>
+  <path class="ln" d="M641 256V320" marker-end="url(#arrow)"/>
+
+  <rect class="bx" x="24" y="24" width="340" height="64" rx="8"/><text class="tn" x="36" y="48">App voor ouders en medewerkers</text><text class="tb" x="36" y="66">Expo, één codebase voor Android en iPhone</text>
+  <rect class="bx" x="396" y="24" width="340" height="64" rx="8"/><text class="tn" x="408" y="48">Webomgeving voor medewerkers</text><text class="tb" x="408" y="66">In de browser, met dezelfde inlog en regels</text>
+
+  <rect class="bx" x="40" y="168" width="158" height="88" rx="8"/><text class="tn" x="52" y="192">Inloggen</text><text class="tb" x="52" y="208">Alleen op uitnodiging,</text><text class="tb" x="52" y="224">met e-mailadres</text><text class="tb" x="52" y="240">en wachtwoord</text>
+  <rect class="bx-p" x="214" y="168" width="158" height="88" rx="8"/><text class="tn" x="226" y="192">Database</text><text class="tb-d" x="226" y="208">Toegangsregels per rij:</text><text class="tb-d" x="226" y="224">eigen kind, eigen</text><text class="tb-d" x="226" y="240">locatie en onderdeel</text>
+  <rect class="bx" x="388" y="168" width="158" height="88" rx="8"/><text class="tn" x="400" y="192">Bestanden</text><text class="tb" x="400" y="208">Foto's van de groep,</text><text class="tb" x="400" y="224">documenten en</text><text class="tb" x="400" y="240">bijlagen, besloten</text>
+  <rect class="bx" x="562" y="168" width="158" height="88" rx="8"/><text class="tn" x="574" y="192">Serverfuncties</text><text class="tb" x="574" y="208">Meldingen versturen,</text><text class="tb" x="574" y="224">nachtelijke taken,</text><text class="tb" x="574" y="240">uitnodigingen</text>
+
+  <rect class="bx" x="396" y="320" width="340" height="64" rx="8"/><text class="tn" x="408" y="344">Expo push, via Apple en Google</text><text class="tb" x="408" y="362">Melding zonder inhoud naar de telefoon</text>
+  <rect class="bx" x="24" y="320" width="340" height="64" rx="8"/><text class="tn" x="36" y="344">Maildienst (EU)</text><text class="tb" x="36" y="362">Uitnodigingen en wachtwoord herstellen</text>
+  <path class="ln" d="M574 256V296H194V320" marker-end="url(#arrow)"/>
+  <text class="tb" x="651" y="304">melding</text>
+  <text class="tb" x="300" y="290">e-mail</text>
+</svg>
+<figcaption>Figuur 1. Architectuur. De database (roze) bewaakt zelf wie welke gegevens mag zien.</figcaption>
+</figure>
+
+<h2 id="h3"><span class="num">3</span>Technische keuzes</h2>
+<p>Per onderdeel is één keuze gemaakt. De tabel geeft de reden en het alternatief voor het geval de keuze later niet blijkt te passen.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Onderdeel</th><th>Keuze</th><th>Waarom</th><th>Alternatief</th></tr></thead>
+  <tbody>
+    <tr><td class="key">App voor Android en iPhone</td><td><a href="https://docs.expo.dev/workflow/overview/">Expo</a> (React Native, TypeScript), met Expo Router voor de schermen</td><td>Eén codebase voor beide telefoons. De app wordt in de cloud gebouwd; een lokale installatie van Android Studio of Xcode is niet nodig.</td><td>Flutter</td></tr>
+    <tr><td class="key">Webomgeving voor medewerkers</td><td>Dezelfde Expo-app als website, met het menu in een zijbalk</td><td>Typen en beheren gaan beter op een groot scherm. Inlog, schermen en toegangsregels zijn dezelfde als in de app.</td><td>Een losse webapp in React op dezelfde backend</td></tr>
+    <tr><td class="key">Backend: inloggen, database, bestanden</td><td><a href="https://supabase.com/docs/guides/platform/regions">Supabase</a>, project in Frankfurt (eu-central-1)</td><td>Inloggen, database en bestandsopslag in één dienst, met toegangsregels per rij. De regio wordt per project gekozen.</td><td>Supabase zelf hosten bij een Europese partij</td></tr>
+    <tr><td class="key">Teamgesprekken en groepschat</td><td>Tabellen in de database, met live-updates van Supabase</td><td>Een aparte chatdienst is niet nodig. Berichten vallen onder dezelfde toegangsregels als de rest.</td><td>Een losse chatdienst</td></tr>
+    <tr><td class="key">Foto's, documenten en bijlagen</td><td>Besloten opslag in <a href="https://supabase.com/docs/guides/storage/security/access-control">Supabase Storage</a></td><td>Zonder toegangsregel kan niemand iets uploaden of ophalen. Foto's uit de groepschat worden elke nacht verwijderd.</td><td>Geen</td></tr>
+    <tr><td class="key">Pushmeldingen</td><td><a href="https://docs.expo.dev/push-notifications/overview/">Push-dienst van Expo</a></td><td>Eén manier van versturen voor Android en iPhone. Expo regelt het verkeer met de diensten van Google en Apple.</td><td>Rechtstreeks via Google en Apple</td></tr>
+    <tr><td class="key">Nachtelijke taken</td><td>Geplande taken in de database (pg_cron) en serverfuncties</td><td>De groepschat van gisteren leegmaken, de groepen voor vandaag klaarzetten en herinneringen voor acties versturen, zonder extra dienst.</td><td>Een externe planner</td></tr>
+    <tr><td class="key">Tests</td><td>Tests op de toegangsregels (<code>tests/db/</code>) en op de schermen (<code>tests/app/</code>)</td><td>Elke toegangsregel heeft een test die als ouder, begeleider, manager en beheerder probeert andermans gegevens te lezen. Die moet falen.</td><td>Geen</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note"><p><strong>Aandachtspunt.</strong> Supabase is geen Europees bedrijf. De <a href="https://supabase.com/legal/dpa">verwerkersovereenkomst</a> wordt gesloten met Supabase Pte. Ltd., en de gegevens staan in een datacenter van Amazon in Frankfurt. Het gaat om zorggegevens van kinderen. Of dit voor Uniek volstaat, is een vraag voor een privacydeskundige. Zie hoofdstuk 8.</p></div>
+
+<h2 id="h4"><span class="num">4</span>Gegevensmodel</h2>
+<p>Bijna alles hangt aan twee gegevens: het <strong>kind</strong> (met vaste locatie en onderdelen) en de combinatie van <strong>locatie en onderdeel</strong>. Een medewerker krijgt toegang via de locaties waaraan die gekoppeld is; een ouder via de koppeling met het kind. Namen in de database zijn Engels; de vertaaltabel staat in de README van het project.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Tabel</th><th>In de database</th><th>Inhoud</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Locaties</td><td><code>locations</code></td><td>Naam, adres, actief of uitgeschreven</td></tr>
+    <tr><td class="key">Onderdelen</td><td><code>units</code></td><td>Ambulant, BSO, Dag/Weekend opvang (<code>ambulatory</code>, <code>after_school</code>, <code>day_weekend</code>)</td></tr>
+    <tr><td class="key">Medewerkers</td><td><code>staff</code></td><td>Naam, e-mailadres, rol (<code>caregiver</code>, <code>manager</code>, <code>admin</code>), status van het account</td></tr>
+    <tr><td class="key">Medewerker ↔ locatie</td><td><code>staff_locations</code></td><td>Aan welke locaties een medewerker gekoppeld is</td></tr>
+    <tr><td class="key">Kinderen</td><td><code>children</code></td><td>Naam, geboortedatum, vaste locatie, ingeschreven sinds, status</td></tr>
+    <tr><td class="key">Kind ↔ onderdeel</td><td><code>child_units</code></td><td>Bij welke onderdelen een kind hoort</td></tr>
+    <tr><td class="key">Ouders</td><td><code>parents</code></td><td>Naam, e-mailadres, telefoonnummer, status van het account</td></tr>
+    <tr><td class="key">Ouder ↔ kind</td><td><code>child_parents</code></td><td>Welke ouders bij welk kind horen (ook broers en zussen)</td></tr>
+    <tr><td class="key">Goed om te weten</td><td><code>child_notes</code></td><td>Kind, tekst, medisch ja of nee (<code>is_medical</code>), volgorde, wie het laatst wijzigde</td></tr>
+    <tr><td class="key">Foto-toestemming</td><td><code>photo_consents</code></td><td>Kind, toestemming ja of nee, wie het gaf en wanneer</td></tr>
+    <tr><td class="key">Planning</td><td><code>bookings</code></td><td>Kind, locatie, onderdeel, datum, soort opvang, tijd, status (gepland, aangevraagd, afgemeld, afgewezen), reden</td></tr>
+    <tr><td class="key">Aanwezigheid</td><td><code>attendance</code></td><td>Het opvangmoment, aangekomen en opgehaald met tijd en medewerker</td></tr>
+    <tr><td class="key">Teamgesprekken</td><td><code>conversations</code>, <code>messages</code></td><td>Eén gesprek per kind en onderdeel; berichten met afzender, tekst en tijd</td></tr>
+    <tr><td class="key">Groepschat van de dag</td><td><code>daily_group_posts</code></td><td>Locatie, onderdeel, datum, medewerker, tekst en foto. Wordt elke nacht leeggemaakt</td></tr>
+    <tr><td class="key">Administratie</td><td><code>tasks</code>, <code>task_requests</code></td><td>De actie (soort, titel, uitleg, uiterste datum, locatie, onderdeel) en per kind het verzoek met status, antwoord en opmerking</td></tr>
+    <tr><td class="key">Documenten</td><td><code>attachments</code></td><td>Bij een actie of een antwoord, verwijzing naar het bestand</td></tr>
+    <tr><td class="key">Nieuwsbrief</td><td><code>newsletters</code>, <code>newsletter_reads</code></td><td>Titel, samenvatting, tekst, bijlagen; per ouder of die gelezen is</td></tr>
+    <tr><td class="key">Leesstand</td><td><code>read_state</code></td><td>Per gebruiker en gesprek tot waar gelezen is, voor de tellers</td></tr>
+    <tr><td class="key">Apparaten</td><td><code>devices</code></td><td>Per gebruiker het adres voor pushmeldingen</td></tr>
+    <tr><td class="key">Logboek</td><td><code>audit_log</code></td><td>Wie wat wanneer wijzigde in beheer, Goed om te weten en administratie</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Welke locatie en welk onderdeel een medewerker in de app heeft gekozen, is een instelling van de app en geen recht. De database bepaalt de toegang op basis van de locaties waaraan de medewerker gekoppeld is. De app filtert daarbinnen op de gekozen combinatie.</p>
+
+<h2 id="h5"><span class="num">5</span>Toegang en beveiliging</h2>
+<p>De database controleert bij elk verzoek wie er vraagt en geeft alleen de rijen terug die bij die persoon horen. Een fout in de app kan daardoor geen gegevens van een ander tonen.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Regel uit het functioneel ontwerp</th><th>Technische maatregel</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Een ouder ziet alleen het eigen kind</td><td><a href="https://supabase.com/docs/guides/auth/row-level-security">Toegangsregels per rij</a>: planning, aanwezigheid, teamgesprekken, administratie en Goed om te weten zijn voor een ouder alleen leesbaar via <code>child_parents</code>. Lijsten met andere kinderen of ouders zijn voor ouders niet opvraagbaar.</td></tr>
+    <tr><td class="key">De ouder ziet de groepschat alleen op de dag zelf, en alleen als het kind er is</td><td>Een ouder leest <code>daily_group_posts</code> alleen als er die dag een opvangmoment van het eigen kind is bij die locatie en dat onderdeel, dat niet is afgemeld. Ouders kunnen geen berichten in de groep plaatsen.</td></tr>
+    <tr><td class="key">Een begeleider of manager ziet alleen de eigen locaties</td><td>Toegang loopt via <code>staff_locations</code>: kinderen, planning, gesprekken, groepschat en administratie zijn alleen leesbaar als de locatie van het kind (of van het opvangmoment) bij de medewerker hoort.</td></tr>
+    <tr><td class="key">Kind toevoegen aan vandaag: keuzelijst met alle kinderen</td><td>Een aparte, afgebakende functie geeft voor alle kinderen alleen naam, leeftijd, vaste locatie en naam van de ouder. Na het toevoegen geldt de gewone toegang via de locatie van het opvangmoment.</td></tr>
+    <tr><td class="key">De beheerder ziet alle locaties, maar leest geen chats</td><td>De rol <code>admin</code> heeft leestoegang tot kinderen, planning en administratie van alle locaties. Teamgesprekken en de groepschat zijn voor de beheerder niet leesbaar.</td></tr>
+    <tr><td class="key">Alleen managers en beheerders beheren</td><td>Locaties, medewerkers, ouders, kinderen en koppelingen wijzigen gaat via afgebakende functies die alleen <code>manager</code> en <code>admin</code> mogen aanroepen. Je eigen rol wijzigen of jezelf uitschrijven weigert de database.</td></tr>
+    <tr><td class="key">Foto's alleen met toestemming, en alleen die dag</td><td>De app toont bij het delen welke kinderen geen toestemming hebben. Foto's staan in een besloten map per dag; een nachtelijke taak verwijdert de berichten en de bestanden.</td></tr>
+    <tr><td class="key">Bestanden zijn besloten</td><td>Documenten, bijlagen en foto's vallen onder dezelfde regels als de rij waar ze bij horen. Ophalen gaat met een ondertekende link die snel verloopt.</td></tr>
+    <tr><td class="key">Een melding toont geen inhoud</td><td>De pushmelding bevat alleen dat er iets nieuws is, bijvoorbeeld <em>Nieuw bericht over Liam</em>. De app haalt de inhoud pas op na het openen.</td></tr>
+    <tr><td class="key">Wijzigingen worden vastgelegd</td><td>Triggers in de database schrijven elke wijziging in beheer, Goed om te weten en administratie naar <code>audit_log</code>, met medewerker en tijd. Het logboek kan niet worden gewijzigd.</td></tr>
+    <tr><td class="key">Accounts alleen op uitnodiging</td><td>Vrij registreren staat uit. Een account ontstaat alleen via een uitnodiging door een manager of beheerder.</td></tr>
+    <tr><td class="key">Gegevens in de EU</td><td>Het Supabase-project staat in Frankfurt. Er worden geen diensten buiten de EU gebruikt zonder besluit. Geheime sleutels staan alleen op de server; de app bevat alleen de publieke sleutel.</td></tr>
+  </tbody>
+</table>
+</div>
+<h3><span class="num">5.1</span>Grenzen van deze maatregelen</h3>
+<ul>
+  <li>Inloggen gebeurt in de eerste versie met e-mailadres en wachtwoord. Wie het wachtwoord van een medewerker kent, kan bij de gegevens van diens locaties. <a href="https://supabase.com/docs/guides/auth/auth-mfa">Tweestapsverificatie</a> kan later met één instelling verplicht worden voor medewerkers (NF-06).</li>
+  <li>Een ouder kan een screenshot maken van een foto in de groepschat. Dat is technisch niet te voorkomen.</li>
+  <li>Wie het Supabase-account zelf beheert, kan technisch altijd bij alle gegevens. Het advies is die toegang te beperken tot één of twee personen.</li>
+  <li>De keuzelijst bij <em>Kind toevoegen aan vandaag</em> toont namen van kinderen van andere locaties. Dat is een bewuste uitzondering die Uniek nog moet bevestigen.</li>
+</ul>
+
+<h2 id="h6"><span class="num">6</span>Fasering</h2>
+<p>De bouw verloopt in elf stappen. Elke stap wordt afgesloten met een test op een telefoon en in de browser. De toegangsregels komen eerst, zodat alles wat daarna wordt gebouwd er vanaf het begin onder valt.</p>
+<ol class="rules">
+  <li><strong>Fundament.</strong> Supabase-project in Frankfurt, de tabellen en de toegangsregels, met automatische tests die als ouder, begeleider, manager en beheerder proberen andermans gegevens te lezen. Die tests moeten falen.</li>
+  <li><strong>Inloggen.</strong> Uitnodiging per e-mail, wachtwoord, wachtwoord herstellen, en het kiezen van locatie en onderdeel.</li>
+  <li><strong>Beheer.</strong> Locaties, medewerkers, ouders en kinderen, de koppelingen en het logboek, zodat de testgegevens via de app zelf kunnen worden ingevoerd.</li>
+  <li><strong>Vandaag en planning.</strong> Aanwezigheid, afmelden, extra opvang aanvragen en inplannen, en kind toevoegen aan vandaag.</li>
+  <li><strong>Kinderen.</strong> Kinddossier, Goed om te weten (medisch apart) en de contactgegevens van ouders.</li>
+  <li><strong>Teamgesprekken.</strong> Eén gesprek per kind en onderdeel, met live-updates en tellers.</li>
+  <li><strong>Groepschat van de dag.</strong> Foto's en berichten, foto-toestemming en de nachtelijke opruimtaak.</li>
+  <li><strong>Administratie.</strong> De vier soorten acties, documenten, goedkeuren en afkeuren, herinneringen en het filter op status.</li>
+  <li><strong>Beheerder en nieuwsbrief.</strong> Het overzicht per locatie en onderdeel, de kinderen per onderdeel, administratie over alle locaties, en de nieuwsbrief.</li>
+  <li><strong>Pushmeldingen.</strong> Voor alle meldingen uit het functioneel ontwerp, zonder gevoelige inhoud.</li>
+  <li><strong>Pilot en publicatie.</strong> Een proef op één of twee locaties met een beperkte groep medewerkers en ouders, daarna indienen bij de App Store en Google Play.</li>
+</ol>
+
+<h2 id="h7"><span class="num">7</span>Accounts en kosten van derden</h2>
+<p>Voor de app zijn vier accounts bij derden nodig, plus een maildienst. Na de bouw bedragen de vaste kosten daarvan minimaal 25 USD per maand en 99 USD per jaar, plus eenmalig 25 USD. De bedragen zijn lijstprijzen van de aanbieders, met als peildatum 9 oktober 2026 (dezelfde peildatum als bij de BPB-app). Ze worden voor de bouw opnieuw gecontroleerd.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Account</th><th>Prijs</th><th>Toelichting</th></tr></thead>
+  <tbody>
+    <tr><td class="key"><a href="https://developer.apple.com/programs/enroll/">Apple Developer Program</a></td><td>99 USD per jaar</td><td>Aanmelden als organisatie vraagt een rechtspersoon, een D-U-N-S-nummer, een werkende website en een e-mailadres op het eigen domein.</td></tr>
+    <tr><td class="key"><a href="https://support.google.com/googleplay/android-developer/answer/6112435">Google Play Console</a></td><td>25 USD eenmalig</td><td>Het uitgangspunt is een account op naam van de organisatie. Voor nieuwe persoonlijke accounts geldt eerst een <a href="https://support.google.com/googleplay/android-developer/answer/14151465">besloten test met minimaal 12 testers gedurende 14 dagen</a>.</td></tr>
+    <tr><td class="key"><a href="https://supabase.com/pricing">Supabase</a></td><td>Gratis tijdens de bouw, daarna Pro vanaf 25 USD per maand</td><td>Het gratis plan pauzeert een project na 1 week zonder gebruik. Pro bevat 8 GB database en 100 GB bestandsopslag; dat is ruim genoeg voor ongeveer 150 kinderen, hun ouders en 65 medewerkers.</td></tr>
+    <tr><td class="key"><a href="https://expo.dev/pricing">Expo</a></td><td>Gratis, of Starter voor 19 USD per maand</td><td>Het gratis plan bevat per maand tot 15 builds voor Android en 15 voor iPhone.</td></tr>
+    <tr><td class="key">Maildienst</td><td>Nog te kiezen</td><td>Voor uitnodigingen en wachtwoord herstellen, vanaf een e-mailadres van Uniek. Bij voorkeur een Europese dienst.</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Niet in dit overzicht: de kosten van ontwikkeling en beheer, en de toets door een privacydeskundige.</p>
+
+<h2 id="h8"><span class="num">8</span>Uitgangspunten en open punten</h2>
+<h3><span class="num">8.1</span>Uitgangspunten</h3>
+<ol class="rules">
+  <li>Uniek heeft 7 locaties, ongeveer 150 cliënten met hun ouders en ongeveer 65 medewerkers (NF-13).</li>
+  <li>De accounts bij Apple, Google en Supabase staan op naam van Opvang Uniek als organisatie.</li>
+  <li>Uitnodigingen worden verstuurd vanaf een e-mailadres van Uniek.</li>
+  <li>Er is in de eerste versie geen koppeling met een cliëntsysteem of ECD. Kinderen, ouders en planning worden in de app ingevoerd.</li>
+</ol>
+<h3><span class="num">8.2</span>Open punten</h3>
+<p>De eerste twee punten bepalen of de gekozen diensten en de opzet blijven staan.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Open punt</th><th>Wat nodig is</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Supabase als verwerker</td><td>Toets door een privacydeskundige of een niet-Europees bedrijf met opslag in Frankfurt volstaat voor zorggegevens van kinderen. Het alternatief is Supabase zelf hosten bij een Europese partij.</td></tr>
+    <tr><td class="key">Koppeling met cliëntsysteem of ECD</td><td>Vaststellen of planning, kinderen en ouders uit een bestaand systeem moeten komen, en zo ja welk. Dat bepaalt de omvang van de bouw (NF-15).</td></tr>
+    <tr><td class="key">Bewaartermijn</td><td>Vaststellen hoe lang gegevens na het einde van de begeleiding bewaard blijven. Daarna komt een opruimtaak zoals bij de groepschat (NF-07).</td></tr>
+    <tr><td class="key">Tweede inlogstap</td><td>Vaststellen of tweestapsverificatie voor medewerkers vanaf het begin verplicht is (NF-06).</td></tr>
+    <tr><td class="key">Akkoord met een vinkje</td><td>Nagaan of een vinkje met naam en tijd juridisch volstaat voor bijvoorbeeld een zorgovereenkomst.</td></tr>
+    <tr><td class="key">Onderdelen per medewerker</td><td>Als medewerkers aan onderdelen gekoppeld worden, komt er een tabel medewerker ↔ onderdeel bij en worden de toegangsregels daarop aangepast.</td></tr>
+    <tr><td class="key">D-U-N-S-nummer</td><td>Nagaan of Uniek een D-U-N-S-nummer heeft. Apple vraagt hierom bij de aanmelding als organisatie.</td></tr>
+    <tr><td class="key">Maildienst</td><td>Kiezen welke maildienst de uitnodigingen verstuurt, en vanaf welk adres.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="h9"><span class="num">9</span>Bronnen</h2>
+<p>Geraadpleegd op 9 oktober 2026, bij het opstellen van het technisch ontwerp van de BPB-app.</p>
+<ul>
+  <li><a href="https://docs.expo.dev/workflow/overview/">Expo: werkwijze en bouwen in de cloud</a></li>
+  <li><a href="https://docs.expo.dev/push-notifications/overview/">Expo: pushmeldingen</a></li>
+  <li><a href="https://expo.dev/pricing">Expo: prijzen</a></li>
+  <li><a href="https://supabase.com/docs/guides/platform/regions">Supabase: regio's</a></li>
+  <li><a href="https://supabase.com/pricing">Supabase: prijzen</a></li>
+  <li><a href="https://supabase.com/docs/guides/auth/row-level-security">Supabase: toegangsregels per rij</a></li>
+  <li><a href="https://supabase.com/docs/guides/auth/auth-mfa">Supabase: tweestapsverificatie</a></li>
+  <li><a href="https://supabase.com/docs/guides/storage/security/access-control">Supabase: toegang tot bestanden</a></li>
+  <li><a href="https://supabase.com/legal/dpa">Supabase: verwerkersovereenkomst</a></li>
+  <li><a href="https://developer.apple.com/programs/enroll/">Apple Developer Program: aanmelden</a></li>
+  <li><a href="https://support.google.com/googleplay/android-developer/answer/6112435">Google Play Console: account aanmaken</a></li>
+  <li><a href="https://support.google.com/googleplay/android-developer/answer/14151465">Google Play Console: testeisen voor nieuwe persoonlijke accounts</a></li>
+</ul>
+
+<h2 id="h10"><span class="num">10</span>Versiebeheer</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Versie</th><th>Datum</th><th>Wijziging</th></tr></thead>
+  <tbody>
+    <tr><td class="key">0.1</td><td>17 oktober 2026</td><td>Eerste concept, opgesteld bij de demo, op basis van de opzet van de BPB-app</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer><span>Uniek-app · Technisch ontwerp</span><span>Versie 0.1 · 17 oktober 2026 · concept</span></footer>
+
+</div>
+</body>
+</html>

@@ -14,7 +14,7 @@ De eisen staan in `docs/eisen/`, de klikbare demo in `demo/`. Werkafspraken voor
 | Besluiten en open vragen | Bijgehouden in `docs/eisen/besluiten.md` |
 | Huisstijl | Logo, beeldmerk en kleuren in `assets/brand/` en in de demo. Lettertype in de demo: Plus Jakarta Sans (nog te bevestigen) |
 | Klikbare demo | Klaar om te tonen: `demo/Uniek-app-demo.html` (zie hieronder) |
-| Functioneel en technisch ontwerp (HTML, voor de klant) | Volgt, net als bij de BPB-app |
+| Functioneel en technisch ontwerp (HTML, voor de klant) | Concept 0.1: `demo/Uniek-app-functioneel-ontwerp.html` en `demo/Uniek-app-technisch-ontwerp.html`, te openen vanuit de demo |
 | App (Expo, React Native, Supabase) | Volgt |
 
 ## De klikbare demo
@@ -64,7 +64,7 @@ Via de keuzelijst op het inlogscherm kun je ook inloggen als een van de andere m
 | --- | --- |
 | `docs/eisen/` | Functionele en niet-functionele eisen, besluiten en open vragen |
 | `docs/context-opvang-uniek.md` | Wat Uniek doet, locaties met adressen, huisstijl |
-| `demo/` | Klikbare demo |
+| `demo/` | Klikbare demo, functioneel ontwerp en technisch ontwerp (HTML, voor de klant) |
 | `assets/brand/` | Logo en beeldmerk van Opvang Uniek |
 
 Volgen bij de bouw, zoals bij de BPB-app: `app/`, `supabase/migrations/`, `supabase/demo/`, `tests/db/`, `tests/app/`.
@@ -92,3 +92,6 @@ De app en de ontwerpen zijn Nederlands, de code en de database Engels. Deze tabe
 | Administratie: actie en verzoek per kind | `tasks`, `task_requests` |
 | Documenten bij een actie | `attachments` |
 | Logboek | `audit_log` |
+| Nieuwsbrief en wie hem las | `newsletters`, `newsletter_reads` |
+| Leesstand van gesprekken | `read_state` |
+| Telefoon voor pushmeldingen | `devices` |

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uniek-app · Functioneel ontwerp</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--ink:#0B2F5B;--ink2:#4F6280;--line:#D6E0EC;--ground:#F2F6FB;--paper:#FFFFFF;--accent:#D92A82;--accent-text:#B01D69;--brand:#0A62AB;--calm:#E4EFFA;--soft:#FCE6F1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55}
+.paper{max-width:880px;margin:32px auto;padding:56px 64px 40px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+.cover{display:flex;flex-direction:column;gap:18px;margin-bottom:36px;padding-bottom:32px;border-bottom:3px solid var(--accent)}
+.cover img{width:170px;height:auto}
+.kicker{margin:0;color:var(--accent-text);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{margin:0;font-size:42px;line-height:1.08;letter-spacing:-0.02em;text-wrap:balance}
+.lede{max-width:60ch;margin:0;color:var(--ink2);font-size:19px;line-height:1.45;text-wrap:pretty}
+dl.meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 28px;margin:10px 0 0;font-size:15px}
+dl.meta dt{color:var(--ink2)}
+dl.meta dd{margin:0;font-weight:600}
+.toc h2{margin:0 0 10px;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.toc ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 32px;margin:0;padding:0;list-style:none}
+.toc a{display:flex;gap:10px;padding:4px 0;color:var(--ink);text-decoration:none}
+.toc a:hover span:last-child{text-decoration:underline}
+.num{color:var(--accent-text);font-variant-numeric:tabular-nums;font-weight:700}
+h2{margin:52px 0 12px;font-size:25px;line-height:1.2;letter-spacing:-0.01em;text-wrap:balance}
+h2 .num{margin-right:12px}
+h3{margin:28px 0 8px;font-size:17.5px;line-height:1.3}
+h3 .num{margin-right:10px}
+p{max-width:72ch;margin:0 0 12px;text-wrap:pretty}
+ul,ol{margin:0 0 14px;padding-left:22px}
+li{max-width:70ch;margin-bottom:6px}
+ol.rules{padding-left:26px}
+ol.rules li::marker{color:var(--accent-text);font-weight:700}
+a{color:var(--brand)}
+.tablewrap{overflow-x:auto;margin:10px 0 18px}
+table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.45}
+th{padding:8px 14px 8px 0;border-bottom:2px solid var(--ink);font-weight:700;text-align:left;vertical-align:bottom}
+td{padding:9px 14px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+td.key{font-weight:600}
+td.no{color:var(--ink2)}
+code{font-size:14px;background:var(--ground);padding:1px 5px;border-radius:4px}
+.note{max-width:none;margin:16px 0;padding:14px 18px;border-radius:8px;background:var(--calm);font-size:15px}
+.note.pink{background:var(--soft)}
+.note p{max-width:none;margin:0}
+.note p + p{margin-top:8px}
+figure{margin:18px 0 22px}
+figure svg{display:block;width:100%;height:auto;font-family:inherit}
+figcaption{margin-top:10px;color:var(--ink2);font-size:14px}
+.lane{fill:#F2F6FB;stroke:#D6E0EC}
+.bx{fill:#FFFFFF;stroke:#8DA2BD;stroke-width:1.25}
+.bx-p{fill:#FCE6F1;stroke:#D92A82;stroke-width:2}
+.bx-b{fill:#E4EFFA;stroke:#0A62AB;stroke-width:2}
+.tn{fill:#0B2F5B;font-size:13px;font-weight:700}
+.tb{fill:#4F6280;font-size:11.5px}
+.tb-d{fill:#0B2F5B;font-size:11.5px}
+.ln{fill:none;stroke:#6C819E;stroke-width:1.25}
+footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink2);font-size:13px}
+@media (max-width:680px){
+  .paper{margin:0;padding:28px 20px;border:0;border-radius:0}
+  h1{font-size:32px}
+  h2{font-size:22px}
+  .toc ol{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#FFFFFF}
+  .paper{max-width:none;margin:0;padding:0;border:0}
+  h2,h3{break-after:avoid}
+  tr,figure,.note,li{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+}
+
+</style>
+</head>
+<body>
+<div class="paper">
+
+<header class="cover">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAABWCAYAAADboOrOAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjBlOTNkNmU1LTZjMmEtNDRlYS1iMDQzLWU4YTRmNDJlZmU2NwAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNokN0Z/qNk0Soom17ohyIifgAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6MmQ3NDljNzgtMWZjYy00MTY3LWI1NGMtYzk5YjkzNzMzMTc1bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaOL85qgWs1axT1FkFi+Jn/oAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIBrZZlhTMAsMZtlHxR1xC0poss/TUzkItJpnYENYP8fhpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2hBsFJdJRXtZsYXZKSsSefUAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFgg4XUtEf9DidNfltdvhrtrD12u6FPmnnTM+tuulBp/PlZkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTowZTkzZDZlNS02YzJhLTQ0ZWEtYjA0My1lOGE0ZjQyZWZlNjcvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyODRmZmQyMS0yYjVhLTQxYzctYjJlZS1mYjRhM2I2MDRjOTZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggGtlmWFMwCwxm2UfFHXELSmiyz9NTOQi0mmdgQ1g/x+GiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIAq3JBZnJnvZXsq8jKiaMMp5KvoE4Ie0curaz/m85B6XomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYILZyEFmywkm+W3ZZsuJ8qBYUJRZz22K9c8KcvIOt7QExdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2WECcFLJdnPsAPT/vzWrpZVKqsaafKNcQGCRzKJxUgbhdCeKjEHXr2qRrrsmp8DypMLO90NxencVJkMbFECi8scPSJzumdAAAAAlwSFlzAAALEwAACxMBAJqcGAAABfFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ4IDc5LjE2NDAzNiwgMjAxOS8wOC8xMy0wMTowNjo1NyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjEgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyMC0wOS0wNVQxNzoxNzoxOSswMjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjAtMDktMDVUMTc6NDI6MTYrMDI6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6Mjk2Y2Y1NTktM2Q0MC02YjRlLTk0OTYtZjlhOTgyMWViNjRiIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6NjlkNDBlMWQtYzViOS1kYzQ0LWFhZWEtNjVkZTAwZmY1Y2U2Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2OWQ0MGUxZC1jNWI5LWRjNDQtYWFlYS02NWRlMDBmZjVjZTYiIHN0RXZ0OndoZW49IjIwMjAtMDktMDVUMTc6MTc6MTkrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4xIChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NjdhMmNmNzgtNzBiYy1mZTQ1LWFmYjMtYjVhODExYjJhM2MxIiBzdEV2dDp3aGVuPSIyMDIwLTA5LTA1VDE3OjQyOjE2KzAyOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+UAynVwAADy5JREFUeJztnT1y4zgTht+Z2oTRck6wnPIBRJ9g6BNYLh1g5Yjh2KGjsSKFtkNGpg/AsnwCc7LNhqraaKtUwz3B8osUzhegaYLgH0BRsmT3U+WySAIgRKqBRqPR+AADLD9yAbgAHDqVAkjWwSQxKYdh3iu/fv3SSvdBJ5HlR1MA31AIpEoKYLYOJqHWXRnmnTKIYFp+ZAN4BOBp3jcGcLYOJplmeoZ5V2wsmCSUzxCqqwkJgBMWToapoiuYH1uu3cNcKEF5HnvkYxiGqBVMy488AOMNyvUsP9okP8O8a35rOP91gLK/AliYZLD8yIHocV0Af6AwNjloNjzlpNLfvxDj3YRVauYQqR1jWn6kpwh386lNMGj6xQPwhf7bA91XJoEQ0u/rYLLYQvkMo01v4w+psc8D1eNkHUxipfwxgFMIVdneoOwEQIaih1QZUfkOit42g+jF73julXkNdAWzSZXdJqaGoRRCCJcQPV/WR6iod3Yg1OQby48yAE8898rsI68hmF2kEL3adwDxUGNEEuYE0riXpoQYZu+oE8x0wPIzg3QhgIddqphsGGL2lSbjz090W0G7yNbB5JNSrofy+DUFMAOwYCFh3gObjjEfIHxjN2FRc86l/ynYt5ZhGmny/LmFvhpaRwbRE6qc0vljFkqGaabNV3YK4ZbXh8t1MLmtKdNZB5O0Z5kMc/AMtbpkCnPhDNfB5Nwkw2o096TD5Gh5lRnek2EOgsHWY5JDwD26nQEyiJ4y1LnxajR3IMax05rLMYDZ0fIq1imLYQ6FoRdK2xACdIrq2swEwlgU6lpWV6P5FMANuoX99mh5dalTJsMcAoMK5pCQUJqox+HR8spINWaYfWUvBXM1mtsAfsLcR/aE1VrmLTDEQultcIF+juubzqkyzEHRZZW9AK3IGMIzZzWab+JR9PloeZVuWgeGeU02Xl1C7nM3dHhj+VEM4VieKEldAPY6mFxr3M/RqlVz3nSD/AxzMNQKJllhZQONDbF+ctxQzvGAdWKYd09Tj3kB/d7tcteLjlejuYvyWDVlNZd5S1QEk+Lu6Bpb4jrXuxYS9Iu8l+fNeYTScKxG8/xjhiK6wVI6ZuFlDoa6HlNXKDMApvOLT+gnmHHupkceQ05LWhuFE8RYvrAazVMIIf1OZSY96sIwW6ckmBR+Y6qZ966HQ/otRPQ82zCfvFJl2pAmQ9Grfm8p63cID6ZTUoljAA9Hy6uFYZ0YZmuoPaZu2MoUQsiMOFpeZavR/Axmwb5efGbJQeErhBDGKOIAseM786Z4mcekseVPzXznm6ynpNUkj+juOS+Plle3Uj4XgMO9G3OoGLvkWX50Db3xZboOJp/7VauAer8LAH+iPGbMIKIfzNhYw7w1+jgY/KlZ9p1xbWog1fOa/vJelFVShgH1mGT0+aGZpzW6ehPUQz6DrLncGzLvEdMe09Mst5fPrCSULp36sRrNFxDTJzH3kgxTJhfML5rpH3reR93Sz4aY9pgCL/OLKbgnZRgAxbIvRzN9bHqD1Wh+j+4t/WwAdyyUDCPIe0xXI63xlnar0XyMboeFDGIhdGJSNsO8ZT6S4UeH2KRgcp3TCSFyzkLJMGU+Qt89bmlYtk6wrXN2FmCYKiahRVLdhDQnOe5IFh4tr0KD+zPMu+EjNKdK1A1oO+jyuU0BcFhKhmlg8GBcNLYcdyQ757lLhmlGVzAzgzKnHddjDkXJMO3oCmZiUOZpx3VWYRmmg48YMPIcqbFuSxKOGsAwGvyGYUNCeh3X+7r0McxeQeuXp3SYwWDvHh0a48oquJrpRi3XsiGnRyjEpiudSnnvTUbG8qNnFJ1FvA4mJwMWP0V5/XKCHi6rTfwGvfGjrVme23JtoVlGI9RKfYWw+jo11zOIh3NnOL3DbIjlR3KU/c7F9JYf3aPc45wMGQaVApZ70inP8iPvUH4XH4fsftGuyrYFyOqEtmv4ifaYtzaE0D5bfnRPvSqzG5yGzzrpbfTb0+bNkltl466EBj61TSR9M1LretOZsMwU/beqZw4c6hlj6VR8KL0lUAhmopHWbrtIFtlG+lpjaUfrqXI6AXAGEU3hA4BPEDFuUyXdmLarZ94h62Bysg4mH+hvyPHl1smNPzoO6h7ae1an5Vpbvi7UnjKBGI9k+Qn6HFp+tEA5UgIgBuih7s1obALswJhEY2YnP96kRe9Tb+X+2a63uujLtt6R8jxe1ZiYC2askbbN4roVqLd0lNNnTePidTDJLD+6RDlurWP5kSv/6CRDRQaxIVIG0QBMlfvHUPZmsfzoPxTaw2IdTM4a6n6BolHJ1sHkE533IAKfjaFoIZYfAeJdzOqEVDGYnK+DSUjRDUtBtC0/SiGeU4Ia6LneQHm2dH+VXjGeNmWI76oYpMJ1MKndOYDKVaM15mXP+oRqJU1NXmHVeP86PgIAtQxJR1rXtHISfQ0/qhfRoqsVox+0mmasHDv036ZrP1HvSuhBGJLchtuNqZWto+LITwLxTPeyG/Ll9xzXXJPvNbL86AeERqCW5aCh3vQjrOz90kKljB3hSJ97fVd0GKQsP7KlcivX6dw9NRLaUF3UZY9PJmXILnlxR1qn5UcIbGfvSvV+umtCE+X4j5a0XetGbZTV6YVyfaxmoBfj1ORxlaQpxHOPG+rVxkVNeTI2lDjBNRtGpRDbT9yi/v1l2MBoNyAXMPyumqixqFIUzyOTzk91bRU0E6AGMz9fB5OFScVkwdTxyvGaLmwpXo96v1gznyrAjkaeGYQR6ROq2z94Uoustnx18XjVc3meBOKFzwB8XgeTz2SgOKH7pnKdOxrCnJDK+oCqH/JYOZ5KnzMAx+tgcr0OJpcoVPqcs3UweRU1toUQ+t+1FRpSyHkW9D7y5/EZ5eehu33IPcq/t9s+qvCLYJKOnnSk73JQP1TO6YVk9HeJaiMwBgBq+TLpvFsjQGPpc5a3lutgsqAf+7WqkpMALJRy1HJVwnUwOc/Loi0REzmBZCgBytEQSzGc6LOcd9/etel37UJtPOWNq+reh9s1L07DhLF0KqTfkjGqS94d2uf+xpYf2S2taAz9GLX7QtzQoj2h/F1k49cC5d7HA1l+VUsrzDye/meQFg3GhLatDjPps11z3ZE+/2tSl23T47t2oeazNQTbRbPWdgqhcucYGXtUVMFcoHvMNUXzTl9pw/ldW3R/V46zHmUkyrEtfX5CWTBPUUzJjJV8lUE/GXZOIQTB61G3vnxHUT/X8qOLdTC5pZ5ANYCkO6zXa+AqxyY70NVxoRxvtGCjtB6TesKuvUnadO0m66utX6USiXLsaeZzlWPTQGKt1KizY0nNkVWkFzUWKFkBHyEE2xuyXhqEKD/TG8uPfgH4D+UfVooBfJvfIFnLtYVyvJFLaN1C6duOCjgNpnyguZt3dSukkCrHnT0vPQxPOZ30uLfdcX2hHOdTJ25LmkdUrYAhxPhmhgFXJ7TgdFxP0TJXrIuG4crepPwtcNLxd9zhgHGH8vtzYO5G+kJl2RdN0s86Cv2Kmhb1aHmVrkbzBDX6+2o0d3pYbmXVC6Aff8dc5oVyXOq1arAbzqvbRqjaQJ06q5b1osbSD9WTriVQPJjIeCCnGRp5mLKA0CTy75kC+L7BvqcJyu/dQ4PHVU0DtpHXU09SKKr7AJ4+5xCbc9l0PLX86Ml0qgRoCC1SZ/FS8Fp6zSbd2tOtlESIau/92KQi0FyTOp/VpZq76gQylT9V0iXyQZ06i7IlU20QHKW8p5peSR0bD81U+vydrMMn9LfRZsSo9vY3LY4ZqoFxscF9+xIrx9NNCyTBnimne6m0bQulc+lv4gb1D3SB+t72Cwx8VoGX3vsOZWFzAfyw/OgBxcN1qPypUkQKvS3pp/Tw8kZF9TDJUK9mLlC1zsrXZDLl+NTyo9tcOMmF70KjrpuQofheN5YfqVMiCYRleNHDb/YO5frbEB45IQrNwYXQtpyavLtG1Xi+kUtimPec1LB4EHW+ow6rFTKmnaL4LdgQDVGt62YTjcG46MW0mXsdUr1KkLoa1qQfm1RMqsc1qr23AyE8z/Qn+1XmZDAbK40hxoDqOBAQL6WunDY3q9I1ep6pdMoF8NPyo2fy6ew9HjFAnVPzlL8LiOf6w/KjR5OCG3oLm8rM31PFPxdCEGKTew0BaTPqfb9BvJNfZBT7gaLOtkHx56gaB6cm9WuNkkeqTdiS5FuDujJDtYewaZOhPpxAr+fLidE9WM9J0K62h9Q4VKhRZ3OaxrVnqM4lepAcrVvqMQQJ9KdBxpYfGTUW9JxMJtRnm8z1DcAZ9AxuGQwMiA2N1I2JStsZvpIeXNiSpKJDU69Zp57oujWpdci9cT6jsF5mSrIYQniPacyUahafrYPJMZUr54khPIK6fjjnKPxd87/aPNRQHEM8T/leC4jePX/WeTlyGoA2+qW/sKE+cj0WeRmSD6dD6RLQelZpTasqVNOGezRC6t5nKitG+T1ldO4SwrXuuqWo3t9VIpSuV7Qb+l2dQLwvNb9c1+Oahrb13vQcZko6u+F7VPigk4heqrrOUaZ2+dNqNP9Rk+fktQM+k5qSM3SQpr1EWYYGNGgUNM/q5scktMxA6G71rhXwmcZXJ2huuZrUHlXXBvqtAmA2x1aOHTUBDUtc6VS6rcow7Ri3hsoCVpWKyX01mk9RNY+fveb2e9xjvrBA4RU1QtVAd6ljiWT0GbTHlKFxkDqwzblXrU8US/ZWSXezGs1t03szGxGiasAYQ2gw31AVypCF8vXotdsXDdpVC2POvTqNcrS8ukRZDXbAEex2ijQcUY1cKgsIj6TXtJa+ezYa2JNr1T3qvXoqy15Wo7mqBp+/xua1ytKs0rrE94JVjWR/MMG4DhldVXYQixv1kHVGnRjKJL8inBmElTYZoh4Ms+/sVDCBUgAiT7mUQolixsLJvFd2Lpg5kiO5o1yayRPKq9H8AoWVMIEQzmzo+jDMPvFqggm8jF8uoMQAheg9z3PfyNVo7qEIXpSBe07mjfOqgplDAjpGtQeNATysg0lI0yY3EKptBmB2tLy63Wa9GOa12AvBlGmIQJ5BmOfv/v7rHxtCgD2QjyL3nsxbY+8EU0Za5/YHCpO9DeDh77/+WaDYA/PhaHl1vePqMczW2GvB1CXfQWxLwaQZZudoC6ZuQoZhdkcvlzyGYbYLCybD7CEsmAyzh/wfBV48oqrwJ90AAAAASUVORK5CYII=" alt="Opvang Uniek">
+  <p class="kicker">Functioneel ontwerp</p>
+  <h1>Uniek-app</h1>
+  <p class="lede">Een app voor ouders en medewerkers van Opvang Uniek. Ouders zien hoe het met hun kind gaat, wat er gepland staat en regelen de administratie. Medewerkers zien per locatie en onderdeel wie er vandaag is en houden contact met ouders.</p>
+  <dl class="meta">
+    <dt>Opdrachtgever</dt><dd>Opvang Uniek</dd>
+    <dt>Versie</dt><dd>0.1</dd>
+    <dt>Datum</dt><dd>17 oktober 2026</dd>
+    <dt>Status</dt><dd>Concept, ter bespreking bij de demo</dd>
+  </dl>
+</header>
+
+<nav class="toc" aria-label="Inhoud">
+  <h2>Inhoud</h2>
+  <ol>
+    <li><a href="#h1"><span class="num">1</span><span>Inleiding</span></a></li>
+    <li><a href="#h2"><span class="num">2</span><span>Locaties en onderdelen</span></a></li>
+    <li><a href="#h3"><span class="num">3</span><span>Gebruikers en rechten</span></a></li>
+    <li><a href="#h4"><span class="num">4</span><span>Opbouw van de app</span></a></li>
+    <li><a href="#h5"><span class="num">5</span><span>Functies in de eerste versie</span></a></li>
+    <li><a href="#h6"><span class="num">6</span><span>Privacy</span></a></li>
+    <li><a href="#h7"><span class="num">7</span><span>Buiten de eerste versie</span></a></li>
+    <li><a href="#h8"><span class="num">8</span><span>Uitgangspunten en open vragen</span></a></li>
+    <li><a href="#h9"><span class="num">9</span><span>Versiebeheer</span></a></li>
+  </ol>
+</nav>
+
+<h2 id="h1"><span class="num">1</span>Inleiding</h2>
+<p>Dit document beschrijft wat de Uniek-app doet en voor wie. Opvang Uniek begeleidt kinderen, jongeren en jongvolwassenen met onder meer ADHD, ASS, hechtingsproblematiek of trauma. De app brengt het contact tussen Uniek en ouders samen op één plek. Medewerkers krijgen per locatie en onderdeel een helder overzicht.</p>
+<p>De eerste versie heeft deze onderdelen:</p>
+<ul>
+  <li><strong>Vandaag:</strong> wie er is, wie verwacht wordt en wie is afgemeld, met een melding aan de ouder bij aankomen en ophalen;</li>
+  <li><strong>planning</strong> van de opvang, met afmelden en extra opvang aanvragen door de ouder;</li>
+  <li><strong>berichten:</strong> een teamgesprek tussen ouder en begeleiders, een groepschat van de dag met foto's, en een nieuwsbrief van Uniek;</li>
+  <li><strong>administratie:</strong> acties die Uniek klaarzet voor ouders, zoals de vakantieplanning, medicatie, de verlenging van de indicatie en lezen en akkoord geven, met documenten;</li>
+  <li><strong>kinddossier</strong> met <em>Goed om te weten</em>, waarin medische punten altijd apart staan;</li>
+  <li><strong>beheer</strong> van locaties, medewerkers, ouders en kinderen, en een <strong>overzicht</strong> voor de beheerder over alle locaties.</li>
+</ul>
+<p>Bij dit document horen een klikbare demo (<a href="Uniek-app-demo.html">Uniek-app-demo.html</a>) en een technisch ontwerp (<a href="Uniek-app-technisch-ontwerp.html">Uniek-app-technisch-ontwerp.html</a>). De demo laat de schermen en de werking zien met verzonnen voorbeeldgegevens. Het technisch ontwerp beschrijft hoe de app wordt gebouwd en beveiligd.</p>
+<p>Het ontwerp is een concept. Opmerkingen uit de bespreking van de demo worden verwerkt in een volgende versie. De nummers tussen haakjes, zoals (F-04), verwijzen naar de lijst met eisen die bij het project hoort.</p>
+
+<h2 id="h2"><span class="num">2</span>Locaties en onderdelen</h2>
+<p>Uniek werkt vanuit zeven gebouwen. In de app is elk gebouw een eigen locatie:</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Locatie</th><th>Adres</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Ulft – Emailleplein 13</td><td>Emailleplein 13, 7071 AZ Ulft (DRU-park)</td></tr>
+    <tr><td class="key">Ulft – Oersterk</td><td>Emailleplein 17, 7071 AZ Ulft (DRU-park)</td></tr>
+    <tr><td class="key">Didam – De Deel</td><td>Greffelkampseweg 25, 6941 RM Didam</td></tr>
+    <tr><td class="key">Didam – Het Voorhuis</td><td>Greffelkampseweg 25, 6941 RM Didam</td></tr>
+    <tr><td class="key">Didam – De Schuur</td><td>Greffelkampseweg 25, 6941 RM Didam</td></tr>
+    <tr><td class="key">Bemmel – Het Dorpshuis</td><td>Dorpsstraat 30, 6681 BN Bemmel</td></tr>
+    <tr><td class="key">Bemmel – Het Glazenhuis</td><td>Dorpsstraat 30, 6681 BN Bemmel (achter het Dorpshuis)</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Elke locatie heeft drie <strong>onderdelen</strong> (F-16):</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Onderdeel</th><th>Wat valt eronder</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Ambulant</td><td>Begeleiding thuis, op school of in de wijk</td></tr>
+    <tr><td class="key">BSO</td><td>Naschoolse begeleiding en vakantieopvang</td></tr>
+    <tr><td class="key">Dag/Weekend opvang</td><td>Dagbesteding, dagopvang, zaterdagopvang, logeeropvang en vakantieopvang</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Een kind heeft één vaste locatie en hoort bij één of meer onderdelen van die locatie. Elk opvangmoment in de planning hoort bij één onderdeel. Begeleiders en managers werken altijd binnen één combinatie van locatie en onderdeel, bijvoorbeeld <em>De Schuur · BSO</em>. Alles wat ze zien gaat over die combinatie: de kinderen van vandaag, de berichten, de groepschat, de verzoeken van ouders en de administratie.</p>
+<figure>
+<svg viewBox="0 0 760 236" role="img" aria-label="Na het inloggen kiest een begeleider een locatie en een onderdeel">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6C819E"/></marker></defs>
+  <rect class="lane" x="16" y="12" width="728" height="128" rx="8"/>
+  <text class="tn" x="32" y="33">Begeleider en manager</text>
+  <rect class="bx" x="32" y="46" width="128" height="78" rx="8"/><text class="tn" x="44" y="70">Inloggen</text><text class="tb" x="44" y="88">Eigen e-mailadres</text><text class="tb" x="44" y="104">en wachtwoord</text>
+  <path class="ln" d="M160 85H186" marker-end="url(#arr)"/>
+  <rect class="bx" x="188" y="46" width="140" height="78" rx="8"/><text class="tn" x="200" y="70">Locatie kiezen</text><text class="tb" x="200" y="88">Alleen als je aan meer</text><text class="tb" x="200" y="104">locaties gekoppeld bent</text>
+  <path class="ln" d="M328 85H354" marker-end="url(#arr)"/>
+  <rect class="bx-p" x="356" y="46" width="160" height="78" rx="8"/><text class="tn" x="368" y="70">Onderdeel kiezen</text><text class="tb-d" x="368" y="88">Ambulant, BSO of</text><text class="tb-d" x="368" y="104">Dag/Weekend opvang</text>
+  <path class="ln" d="M516 85H542" marker-end="url(#arr)"/>
+  <rect class="bx-p" x="544" y="46" width="184" height="78" rx="8"/><text class="tn" x="556" y="70">Werken in de combinatie</text><text class="tb-d" x="556" y="88">Vandaag, Kinderen, Berichten,</text><text class="tb-d" x="556" y="104">groepschat, Administratie</text>
+  <rect class="lane" x="16" y="152" width="728" height="72" rx="8"/>
+  <text class="tn" x="32" y="173">Beheerder</text>
+  <rect class="bx" x="32" y="182" width="128" height="32" rx="8"/><text class="tn" x="44" y="203">Inloggen</text>
+  <path class="ln" d="M160 198H186" marker-end="url(#arr)"/>
+  <rect class="bx-b" x="188" y="182" width="540" height="32" rx="8"/><text class="tn" x="200" y="203">Overzicht van alle locaties en onderdelen · geen keuze nodig</text>
+</svg>
+<figcaption>Figuur 1. Van inloggen naar werken. Wisselen van onderdeel of locatie kan altijd, via de knop bovenaan Vandaag of via Profiel.</figcaption>
+</figure>
+
+<h2 id="h3"><span class="num">3</span>Gebruikers en rechten</h2>
+<p>Vier rollen loggen in: de ouder, de begeleider, de manager en de beheerder. De ouder gebruikt de app voor het eigen kind. Begeleiders werken op de groep en zijn gekoppeld aan één of meer locaties. Managers hebben dezelfde schermen als begeleiders, en daarnaast Beheer. De beheerder werkt locatie-onafhankelijk: die kiest geen locatie, ziet geen dagplanning en heeft een overzicht over alle locaties.</p>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Wat</th><th>Ouder</th><th>Begeleider</th><th>Manager</th><th>Beheerder</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Vandaag, teamgesprekken en groepschat</td><td>Alleen eigen kind</td><td>Gekozen locatie en onderdeel</td><td>Gekozen locatie en onderdeel</td><td class="no">Nee</td></tr>
+    <tr><td class="key">Kinderen en kinddossier</td><td>Alleen eigen kind</td><td>Eigen locaties</td><td>Eigen locaties</td><td>Alle locaties</td></tr>
+    <tr><td class="key">Goed om te weten bewerken</td><td class="no">Nee</td><td>Ja</td><td>Ja</td><td>Alleen lezen</td></tr>
+    <tr><td class="key">Kind toevoegen aan vandaag (keuze uit alle kinderen)</td><td class="no">Nee</td><td>Ja</td><td>Ja</td><td class="no">Nee</td></tr>
+    <tr><td class="key">Afmelden en extra opvang aanvragen</td><td>Ja</td><td>Inplannen of afwijzen</td><td>Inplannen of afwijzen</td><td class="no">Nee</td></tr>
+    <tr><td class="key">Administratie</td><td>Invullen en akkoord geven</td><td>Klaarzetten, goedkeuren, afkeuren</td><td>Klaarzetten, goedkeuren, afkeuren</td><td>Alle locaties, ook klaarzetten</td></tr>
+    <tr><td class="key">Overzicht van alle locaties, onderdelen, kinderen en acties</td><td class="no">Nee</td><td class="no">Nee</td><td class="no">Nee</td><td>Ja</td></tr>
+    <tr><td class="key">Nieuwsbrief</td><td>Lezen</td><td class="no">Nee</td><td>Versturen</td><td>Versturen</td></tr>
+    <tr><td class="key">Locaties toevoegen en uitschrijven</td><td class="no">Nee</td><td class="no">Nee</td><td>Ja</td><td>Ja</td></tr>
+    <tr><td class="key">Medewerkers uitnodigen en uitschrijven, rol en locaties instellen</td><td class="no">Nee</td><td class="no">Nee</td><td>Ja</td><td>Ja</td></tr>
+    <tr><td class="key">Ouders en kinderen inschrijven en uitschrijven</td><td class="no">Nee</td><td class="no">Nee</td><td>Ja</td><td>Ja</td></tr>
+    <tr><td class="key">Koppelingen: medewerker ↔ locatie, ouder ↔ kind, kind ↔ locatie en onderdelen</td><td class="no">Nee</td><td class="no">Nee</td><td>Ja</td><td>Ja</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="h4"><span class="num">4</span>Opbouw van de app</h2>
+<p>Iedereen gebruikt dezelfde app, elk met vijf of zes hoofdschermen. Medewerkers kunnen de app ook in de webbrowser gebruiken, met dezelfde functies. Het menu staat dan links, en er is meer ruimte om berichten en administratie te typen (NF-01).</p>
+<figure>
+<svg viewBox="0 0 760 560" role="img" aria-label="Schermen per rol: ouder, begeleider, manager en beheerder">
+  <rect class="lane" x="16" y="12" width="728" height="116" rx="8"/>
+  <text class="tn" x="32" y="33">Ouder · app op de telefoon</text>
+  <rect class="bx" x="32" y="44" width="132" height="68" rx="8"/><text class="tn" x="44" y="67">Vandaag</text><text class="tb" x="44" y="84">Status van het kind,</text><text class="tb" x="44" y="99">acties te doen</text>
+  <rect class="bx" x="176" y="44" width="132" height="68" rx="8"/><text class="tn" x="188" y="67">Planning</text><text class="tb" x="188" y="84">Afmelden en extra</text><text class="tb" x="188" y="99">opvang aanvragen</text>
+  <rect class="bx" x="320" y="44" width="132" height="68" rx="8"/><text class="tn" x="332" y="67">Administratie</text><text class="tb" x="332" y="84">Acties invullen,</text><text class="tb" x="332" y="99">akkoord geven</text>
+  <rect class="bx" x="464" y="44" width="132" height="68" rx="8"/><text class="tn" x="476" y="67">Berichten</text><text class="tb" x="476" y="84">Groep, team per</text><text class="tb" x="476" y="99">onderdeel, nieuws</text>
+  <rect class="bx" x="608" y="44" width="120" height="68" rx="8"/><text class="tn" x="620" y="67">Profiel</text><text class="tb" x="620" y="84">Contactgegevens,</text><text class="tb" x="620" y="99">foto-toestemming</text>
+
+  <rect class="lane" x="16" y="140" width="728" height="116" rx="8"/>
+  <text class="tn" x="32" y="161">Begeleider · telefoon of webbrowser</text>
+  <rect class="bx-p" x="32" y="172" width="132" height="68" rx="8"/><text class="tn" x="44" y="195">Vandaag</text><text class="tb-d" x="44" y="212">Aanwezigheid,</text><text class="tb-d" x="44" y="227">verzoeken, groep</text>
+  <rect class="bx-p" x="176" y="172" width="132" height="68" rx="8"/><text class="tn" x="188" y="195">Kinderen</text><text class="tb-d" x="188" y="212">Kinddossier en</text><text class="tb-d" x="188" y="227">Goed om te weten</text>
+  <rect class="bx-p" x="320" y="172" width="132" height="68" rx="8"/><text class="tn" x="332" y="195">Administratie</text><text class="tb-d" x="332" y="212">Per kind, met</text><text class="tb-d" x="332" y="227">filter op status</text>
+  <rect class="bx-p" x="464" y="172" width="132" height="68" rx="8"/><text class="tn" x="476" y="195">Berichten</text><text class="tb-d" x="476" y="212">Groep van vandaag,</text><text class="tb-d" x="476" y="227">teamgesprekken</text>
+  <rect class="bx" x="608" y="172" width="120" height="68" rx="8"/><text class="tn" x="620" y="195">Profiel</text><text class="tb" x="620" y="212">Wisselen,</text><text class="tb" x="620" y="227">uitloggen</text>
+
+  <rect class="lane" x="16" y="268" width="728" height="132" rx="8"/>
+  <text class="tn" x="32" y="289">Manager · de schermen van de begeleider, en daarnaast</text>
+  <rect class="bx" x="32" y="300" width="224" height="84" rx="8"/><text class="tn" x="44" y="323">Beheer</text><text class="tb" x="44" y="340">Locaties, medewerkers, ouders en</text><text class="tb" x="44" y="355">kinderen, koppelingen, nieuwsbrief,</text><text class="tb" x="44" y="370">logboek</text>
+  <text class="tb" x="276" y="340">Op de telefoon staat Beheer op de plek van Profiel;</text>
+  <text class="tb" x="276" y="355">Profiel is dan te openen vanuit Beheer.</text>
+
+  <rect class="lane" x="16" y="412" width="728" height="116" rx="8"/>
+  <text class="tn" x="32" y="433">Beheerder · locatie-onafhankelijk</text>
+  <rect class="bx-b" x="32" y="444" width="132" height="68" rx="8"/><text class="tn" x="44" y="467">Overzicht</text><text class="tb-d" x="44" y="484">Per locatie en</text><text class="tb-d" x="44" y="499">onderdeel</text>
+  <rect class="bx-b" x="176" y="444" width="132" height="68" rx="8"/><text class="tn" x="188" y="467">Kinderen</text><text class="tb-d" x="188" y="484">Per locatie en</text><text class="tb-d" x="188" y="499">onderdeel</text>
+  <rect class="bx-b" x="320" y="444" width="132" height="68" rx="8"/><text class="tn" x="332" y="467">Administratie</text><text class="tb-d" x="332" y="484">Totaal en per</text><text class="tb-d" x="332" y="499">locatie</text>
+  <rect class="bx" x="464" y="444" width="132" height="68" rx="8"/><text class="tn" x="476" y="467">Beheer</text><text class="tb" x="476" y="484">Zoals bij de</text><text class="tb" x="476" y="499">manager</text>
+  <rect class="bx" x="608" y="444" width="120" height="68" rx="8"/><text class="tn" x="620" y="467">Profiel</text><text class="tb" x="620" y="484">Uitloggen</text>
+
+  <rect class="bx-p" x="16" y="540" width="14" height="14" rx="3"/><text class="tb" x="38" y="551">Alleen de gekozen locatie en het onderdeel</text>
+  <rect class="bx-b" x="300" y="540" width="14" height="14" rx="3"/><text class="tb" x="322" y="551">Alle locaties en onderdelen</text>
+</svg>
+<figcaption>Figuur 2. Schermen per rol. De roze schermen tonen alleen de gekozen combinatie van locatie en onderdeel. De ouder ziet altijd alleen het eigen kind.</figcaption>
+</figure>
+
+<h2 id="h5"><span class="num">5</span>Functies in de eerste versie</h2>
+
+<h3><span class="num">5.1</span>Inloggen, locatie en onderdeel (F-04, F-16)</h3>
+<ul>
+  <li>Een account bestaat alleen op uitnodiging van Uniek, per e-mail. Zelf registreren kan niet (NF-05).</li>
+  <li>Iedereen logt in met een eigen e-mailadres en wachtwoord. Begeleiders hebben een persoonlijk account.</li>
+  <li>Een begeleider of manager kiest na het inloggen de locatie waar die vandaag werkt. Wie aan één locatie gekoppeld is, slaat die stap over.</li>
+  <li>Daarna kiest de begeleider het onderdeel: Ambulant, BSO of Dag/Weekend opvang. Bij elk onderdeel staat hoeveel kinderen er vandaag zijn en wat er nieuw is.</li>
+  <li>Wisselen van onderdeel of locatie kan altijd: via de knop met locatie en onderdeel bovenaan Vandaag, via Profiel, of in de webbrowser onderaan het menu.</li>
+  <li>De beheerder kiest niets en komt direct op het Overzicht.</li>
+</ul>
+
+<h3><span class="num">5.2</span>Vandaag (F-11, F-06)</h3>
+<ul>
+  <li>De begeleider ziet de kinderen van vandaag bij de gekozen locatie en het onderdeel, met de aantallen aanwezig, verwacht en afgemeld.</li>
+  <li>De begeleider zet een kind op <em>aangekomen</em> en later op <em>opgehaald</em>. De ouder krijgt bij allebei een melding.</li>
+  <li>Afmeldingen staan in de lijst met de reden. Verzoeken van ouders voor extra opvang staan bovenaan, met de knoppen <em>inplannen</em> en <em>niet mogelijk</em>.</li>
+  <li>Is er administratie te controleren, dan staat dat als melding op Vandaag.</li>
+  <li><strong>Kind toevoegen aan vandaag:</strong> de begeleider kiest een kind uit alle kinderen van de organisatie, zoekt op naam van kind of ouder en filtert op locatie. Daarbij kiest de begeleider de soort opvang (passend bij het onderdeel), de reden (extra opvang, ruil van dag, noodopvang) en de tijd. Medische punten van het kind worden direct getoond.</li>
+  <li>De ouder ziet op Vandaag de status van het eigen kind, het onderdeel, de volgende keer opvang en eventuele acties die nog moeten gebeuren.</li>
+</ul>
+
+<h3><span class="num">5.3</span>Planning, afmelden en extra opvang (F-12)</h3>
+<ul>
+  <li>De ouder ziet de komende opvang van het kind, per moment met het onderdeel, de soort opvang, de datum en de tijd.</li>
+  <li>De ouder meldt af met een reden (ziek, afspraak, familiebezoek, anders) en een toelichting. De begeleiding ziet het direct.</li>
+  <li>De ouder vraagt extra opvang aan: soort, datum en opmerking. Alleen soorten die bij de onderdelen van het kind horen, zijn te kiezen.</li>
+  <li>De begeleider plant de aanvraag in of geeft aan dat het niet mogelijk is. De ouder krijgt een melding.</li>
+</ul>
+
+<h3><span class="num">5.4</span>Teamgesprek tussen ouder en begeleiding (F-02)</h3>
+<ul>
+  <li>De ouder chat niet met één begeleider, maar met het <strong>team van het onderdeel</strong> op de locatie van het kind, bijvoorbeeld <em>Team BSO · De Schuur</em>.</li>
+  <li>Hoort een kind bij twee onderdelen, dan heeft de ouder twee teamgesprekken.</li>
+  <li>Alle begeleiders die de locatie en het onderdeel hebben gekozen, zien het hele gesprek, ook de berichten van collega's. Elk bericht staat op naam van de begeleider die het stuurde.</li>
+  <li>Hoe de dag ging, deelt de begeleider ook via dit gesprek. Aparte dagverslagen zijn er niet.</li>
+</ul>
+
+<h3><span class="num">5.5</span>Groepschat van de dag (F-01, F-03)</h3>
+<ul>
+  <li>Per locatie en onderdeel maakt de app elke dag een groep voor de ouders van de kinderen die er die dag zijn.</li>
+  <li>De begeleider deelt er foto's en korte berichten in, in de stijl van een WhatsApp-groep. <strong>Ouders kunnen niet reageren</strong>; ze kunnen alleen lezen.</li>
+  <li>De groep is <strong>alleen die dag zichtbaar</strong>. Om 0:00 verdwijnen de berichten en foto's.</li>
+  <li>Wordt een kind afgemeld, dan gaat de ouder uit de groep.</li>
+  <li>Per kind is er een <strong>aparte toestemming voor foto's in de groepschat</strong>. De ouder geeft of trekt die in via Profiel. De begeleider ziet bij het delen van een foto welke kinderen van vandaag geen toestemming hebben.</li>
+</ul>
+
+<h3><span class="num">5.6</span>Nieuwsbrief van Uniek (F-15)</h3>
+<ul>
+  <li>Een algemene nieuwsbrief voor alle ouders, los van locaties, onderdelen en groepen.</li>
+  <li>De ouder vindt die bij Berichten, onderaan, als <em>Nieuws van Uniek</em>. De nieuwste staat bovenaan; een ongelezen editie heeft het label <em>Nieuw</em>.</li>
+  <li>Ouders kunnen niet reageren. Voor vragen verwijst de nieuwsbrief naar het teamgesprek.</li>
+  <li>Managers en beheerders versturen een nieuwsbrief via Beheer, met titel, samenvatting, tekst en bijlagen, en zien hoeveel ouders hem hebben gelezen.</li>
+</ul>
+
+<h3><span class="num">5.7</span>Administratie (F-05)</h3>
+<ul>
+  <li>Uniek zet een actie klaar voor één ouder, een paar ouders of alle ouders van een locatie en onderdeel, met uitleg en een uiterste datum. Elke actie hoort bij één onderdeel.</li>
+  <li>Soorten acties:
+    <ul>
+      <li><strong>vakantieplanning doorgeven:</strong> dagen kiezen, of aangeven dat er geen opvang nodig is;</li>
+      <li><strong>medicatie doorgeven of controleren:</strong> medicijn, dosering, tijdstip, en of de begeleiding het op de opvang moet geven;</li>
+      <li><strong>indicatie verlengen:</strong> stand van zaken, datum van de aanvraag, nieuwe beschikking en einddatum;</li>
+      <li><strong>lezen en akkoord:</strong> een document of bijlage lezen en akkoord geven met een vinkje. De ouder kan ook <em>niet akkoord</em> geven, met een verplichte toelichting.</li>
+    </ul>
+  </li>
+  <li>Uniek kan documenten meesturen, bijvoorbeeld een zorgovereenkomst als pdf. De ouder kan bij het invullen zelf documenten of foto's meesturen.</li>
+  <li>De ouder krijgt een melding en ziet de actie onder Administratie bij <em>Te doen</em>, met het onderdeel erbij.</li>
+  <li>De begeleider ziet de kinderen van de locatie en het onderdeel, en per kind de acties met de status <strong>te controleren</strong> (ingevuld door de ouder), <strong>klaargezet</strong> (wacht op de ouder), <strong>goedgekeurd</strong> (klaar) of <strong>afgekeurd</strong> (teruggestuurd, of de ouder gaat niet akkoord). Kinderen met iets te controleren staan bovenaan.</li>
+  <li>De totalen per status werken als filter. Met <em>Alleen open</em> verdwijnen de goedgekeurde acties.</li>
+  <li>De begeleider keurt een antwoord goed, of keurt het af en stuurt het terug met een opmerking. Een herinnering sturen kan ook.</li>
+</ul>
+
+<h3><span class="num">5.8</span>Kinderen en kinddossier (F-13, F-10, F-08)</h3>
+<ul>
+  <li>De begeleider ziet de kinderen van de locatie die bij het gekozen onderdeel horen.</li>
+  <li>Per kind: leeftijd, locatie en onderdelen, de status van vandaag, <em>Goed om te weten</em>, de planning, de administratie, de ouders met telefoon en e-mail (bellen en mailen met één tik) en de foto-toestemming.</li>
+  <li><strong>Goed om te weten</strong> heeft twee delen: <em>Medisch</em> (allergieën, aandoeningen, noodmedicatie en waar die ligt) en <em>Overige punten</em>. Medische punten staan altijd apart, in een rood blok bovenaan.</li>
+  <li>Begeleiders en managers kunnen Goed om te weten bewerken. Onder het blok staat wie het het laatst heeft bijgewerkt en wanneer. De beheerder kan het alleen lezen.</li>
+  <li>De ouder ziet de eigen contactgegevens in Profiel en kan ze daar wijzigen.</li>
+</ul>
+
+<h3><span class="num">5.9</span>Beheer (F-07)</h3>
+<ul>
+  <li><strong>Locaties:</strong> toevoegen met naam en adres, uitschrijven en weer actief maken. Uitschrijven kan pas als er geen kinderen meer staan ingeschreven. Een nieuwe locatie krijgt automatisch de drie onderdelen.</li>
+  <li><strong>Medewerkers:</strong> uitnodigen met naam, e-mailadres, rol en locaties. Rol en locaties zijn later te wijzigen; uitschrijven sluit het account af. Je eigen rol wijzigen of jezelf uitschrijven kan niet.</li>
+  <li><strong>Ouders en kinderen:</strong> een kind inschrijven met vaste locatie en één of meer onderdelen, en een nieuwe ouder uitnodigen of een bestaande ouder koppelen (bij broers en zussen). Per kind de locatie en onderdelen wijzigen, ouders koppelen en ontkoppelen, een ouderaccount afsluiten of heropenen, en het kind uitschrijven.</li>
+  <li><strong>Nieuwsbrief</strong> versturen (zie 5.6).</li>
+  <li><strong>Logboek:</strong> elke wijziging wordt vastgelegd met naam en tijd.</li>
+</ul>
+
+<h3><span class="num">5.10</span>Overzicht voor de beheerder (F-09)</h3>
+<ul>
+  <li>De beheerder ziet geen dagplanning en geen status van vandaag. De tabs zijn Overzicht, Kinderen, Administratie, Beheer en Profiel.</li>
+  <li><strong>Overzicht:</strong> per locatie en per onderdeel de gekoppelde kinderen, en hoeveel acties te controleren, klaargezet, afgekeurd en goedgekeurd zijn. Bovenaan staan de totalen. De beheerder filtert op locatie en op de status van de acties, bijvoorbeeld <em>alleen open</em>, <em>alleen gesloten</em> of alleen <em>afgekeurd</em>. Een tik op een kind opent het kinddossier, een tik op een actie het antwoord.</li>
+  <li><strong>Kinderen:</strong> alle kinderen, ingedeeld per locatie en onderdeel, met zoeken en een filter op locatie en onderdeel. Een tik op een kind toont de gegevens van het kind en de ouders.</li>
+  <li><strong>Administratie:</strong> een totaal over de hele organisatie, en per locatie hoeveel acties open en gesloten zijn, met de voortgang en een uitsplitsing per soort actie. Kies je een locatie, dan zie je per kind de documenten. De beheerder kan ook zelf acties klaarzetten en kiest dan locatie en onderdeel.</li>
+</ul>
+
+<h3><span class="num">5.11</span>Meldingen (NF-11)</h3>
+<ul>
+  <li>De ouder krijgt een melding bij aankomen en ophalen, een nieuw bericht in het teamgesprek of de groep, een nieuwe of teruggestuurde actie, een beslissing over een aanvraag en een nieuwe nieuwsbrief.</li>
+  <li>De begeleider krijgt een melding bij een nieuw bericht van een ouder, een afmelding, een aanvraag en een ingevulde actie.</li>
+  <li>Een melding toont geen gevoelige inhoud: wel <em>Nieuw bericht over Liam</em>, niet wat er in het bericht staat.</li>
+</ul>
+
+<h2 id="h6"><span class="num">6</span>Privacy</h2>
+<p>De app verwerkt zorggegevens van kinderen. Dat zijn bijzondere persoonsgegevens onder de AVG. Daarom dwingt de app deze regels af, ongeacht wat een gebruiker probeert:</p>
+<ol class="rules">
+  <li>Een ouder ziet alleen de gegevens van het eigen kind, en nooit iets van andere kinderen. In de groepschat ziet de ouder alleen wat de begeleiding deelt, en alleen op die dag.</li>
+  <li>Een begeleider of manager ziet alleen de kinderen van de eigen locaties. Gesprekken, de groepschat en de administratie zijn beperkt tot de gekozen locatie en het onderdeel.</li>
+  <li>Uitzondering: bij <em>Kind toevoegen aan vandaag</em> ziet een begeleider een keuzelijst met alle kinderen, met alleen naam, leeftijd, vaste locatie en naam van de ouder.</li>
+  <li>Foto's met een herkenbaar kind komen alleen in de groepschat als daar toestemming voor is. Foto's en berichten in de groep worden na de dag verwijderd.</li>
+  <li>Medische informatie staat apart, in een eigen blok bovenaan Goed om te weten. Alleen medewerkers die toegang hebben tot het kind zien die.</li>
+  <li>Een melding op het vergrendelscherm toont geen inhoud.</li>
+  <li>Wijzigingen in beheer, in Goed om te weten en in de administratie worden vastgelegd met naam en tijd (NF-12).</li>
+  <li>De gegevens staan in de EU (NF-02). Diensten buiten de EU worden alleen gebruikt na een besluit.</li>
+</ol>
+<p>Het technisch ontwerp beschrijft per regel hoe die wordt afgedwongen.</p>
+
+<h2 id="h7"><span class="num">7</span>Buiten de eerste versie</h2>
+<p>De volgende onderdelen horen niet bij de eerste versie. Zo blijft die klein en snel te testen.</p>
+<ul>
+  <li>Aparte dagverslagen met stemming en tags. Dit gaat via het teamgesprek.</li>
+  <li>Reageren door ouders in de groepschat of op de nieuwsbrief.</li>
+  <li>Zelf inloggen door het kind of de jongere.</li>
+  <li>Koppelingen met een bestaand cliëntsysteem, ECD, planning- of facturatiesysteem.</li>
+  <li>Een planning van de komende weken voor de beheerder (zie de open vragen).</li>
+</ul>
+
+<h2 id="h8"><span class="num">8</span>Uitgangspunten en open vragen</h2>
+<h3><span class="num">8.1</span>Uitgangspunten</h3>
+<p>Dit ontwerp gaat uit van het volgende. De uitgangspunten worden bij de bespreking van de demo met Uniek bevestigd of aangepast.</p>
+<ol class="rules">
+  <li>Elk gebouw is een eigen locatie: 7 locaties, elk met de onderdelen Ambulant, BSO en Dag/Weekend opvang.</li>
+  <li>Iedere medewerker van een locatie kan elk van de drie onderdelen kiezen.</li>
+  <li>Een kind heeft één vaste locatie en één of meer onderdelen.</li>
+  <li>Elk onderdeel heeft een eigen groepschat en een eigen teamgesprek met ouders.</li>
+  <li>Akkoord geven gaat met een vinkje; de app legt vast wie wanneer akkoord gaf.</li>
+  <li>Managers en beheerders hebben dezelfde beheerrechten. De beheerder werkt over alle locaties heen en leest geen chats.</li>
+  <li>Medewerkers werken op de telefoon en in de webbrowser; ouders op de telefoon.</li>
+</ol>
+<h3><span class="num">8.2</span>Open vragen</h3>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Onderwerp</th><th>Vraag</th></tr></thead>
+  <tbody>
+    <tr><td class="key">Onderdelen per medewerker</td><td>Is een medewerker aan bepaalde onderdelen gekoppeld, of mag iedereen van de locatie elk onderdeel kiezen?</td></tr>
+    <tr><td class="key">Ambulant</td><td>Is een groepschat bij Ambulant nodig? Passen <em>aangekomen</em> en <em>opgehaald</em> bij een afspraak, of zijn <em>gestart</em> en <em>afgerond</em> beter?</td></tr>
+    <tr><td class="key">Vakantieopvang</td><td>Hoort vakantieopvang bij BSO, bij Dag/Weekend opvang of bij allebei?</td></tr>
+    <tr><td class="key">Twee teamgesprekken</td><td>Wil een ouder met een kind in twee onderdelen twee gesprekken, of één gesprek waarin alle betrokken begeleiders meelezen?</td></tr>
+    <tr><td class="key">Foto-toestemming</td><td>Wordt die bij de intake op papier vastgelegd, of geeft de ouder die alleen in de app?</td></tr>
+    <tr><td class="key">Akkoord met een vinkje</td><td>Is dat juridisch voldoende voor een zorgovereenkomst, of is een digitale handtekening nodig?</td></tr>
+    <tr><td class="key">Medicatie</td><td>Wie bij Uniek mag de antwoorden over medicatie zien?</td></tr>
+    <tr><td class="key">Kind toevoegen</td><td>Moet de ouder of de planning het toevoegen aan vandaag eerst goedkeuren? Wordt het ook in de planning en facturatie verwerkt?</td></tr>
+    <tr><td class="key">Meerdere kinderen</td><td>Hoe kiest een ouder met meer kinderen bij Uniek tussen de kinderen?</td></tr>
+    <tr><td class="key">Planning beheerder</td><td>Wil de beheerder naast kinderen en acties ook de planning van de komende weken per locatie en onderdeel zien?</td></tr>
+    <tr><td class="key">Bewaartermijn</td><td>Hoe lang blijven gegevens bewaard na het einde van de begeleiding (NF-07)?</td></tr>
+    <tr><td class="key">Koppeling met andere systemen</td><td>Is een koppeling met een bestaand cliëntsysteem of ECD nodig, en zo ja, welk (NF-15)?</td></tr>
+  </tbody>
+</table>
+</div>
+<p>De volledige lijst met besluiten en open vragen wordt bijgehouden bij het project.</p>
+
+<h2 id="h9"><span class="num">9</span>Versiebeheer</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Versie</th><th>Datum</th><th>Wijziging</th></tr></thead>
+  <tbody>
+    <tr><td class="key">0.1</td><td>17 oktober 2026</td><td>Eerste concept, opgesteld bij de demo: 7 locaties met de onderdelen Ambulant, BSO en Dag/Weekend opvang; rollen ouder, begeleider, manager en beheerder; overzicht voor de beheerder</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer><span>Uniek-app · Functioneel ontwerp</span><span>Versie 0.1 · 17 oktober 2026 · concept</span></footer>
+
+</div>
+</body>
+</html>
