@@ -18,10 +18,10 @@ _Wat moet de app oplossen voor ouders en begeleiders? Wat gebeurt er nu zonder a
 | --- | --- | --- |
 | Ouder / verzorger | Ouder of verzorger van een kind bij Uniek. Gekoppeld aan één of meer kinderen. | telefoon |
 | Begeleider | Medewerker op de groep. Persoonlijk account, gekoppeld aan één of meer locaties. | telefoon / browser |
-| Manager | Medewerker van Uniek met beheerrechten. | telefoon / browser |
-| Beheerder | Medewerker van Uniek met beheerrechten. | telefoon / browser |
+| Manager | Medewerker van Uniek met beheerrechten. Gekoppeld aan locaties en kiest na het inloggen een locatie, net als een begeleider. | telefoon / browser |
+| Beheerder | Medewerker van Uniek met beheerrechten. **Locatie-onafhankelijk:** kiest geen locatie en ziet alle locaties, medewerkers en kinderen. | telefoon / browser |
 
-Manager en beheerder hebben in deze versie dezelfde rechten (zie de open vraag in `besluiten.md`). Ze werken ook als begeleider: na het inloggen kiezen ze een locatie.
+Manager en beheerder hebben dezelfde beheerrechten. Het verschil: de manager werkt per locatie (kiest na het inloggen een locatie, zoals een begeleider), de beheerder werkt locatie-onafhankelijk en begint op het Overzicht van alle locaties (F-09).
 
 _Mag het kind of de jongere zelf inloggen?_
 
@@ -29,7 +29,8 @@ _Mag het kind of de jongere zelf inloggen?_
 
 | Wat | Ouder | Begeleider | Manager | Beheerder |
 | --- | --- | --- | --- | --- |
-| Vandaag, kinderen, chats en groepschat van eigen locaties | Alleen eigen kind | Ja | Ja | Ja |
+| Vandaag, kinderen, chats en groepschat van eigen locaties | Alleen eigen kind | Ja | Ja | Kinderen: alle locaties |
+| Overzicht van alle locaties met wat er openstaat | Nee | Nee | Nee | Ja |
 | Administratie klaarzetten en controleren | Invullen | Ja | Ja | Ja |
 | Locaties toevoegen en uitschrijven | Nee | Nee | Ja | Ja |
 | Medewerkers toevoegen en uitschrijven, rol en locaties instellen | Nee | Nee | Ja | Ja |
@@ -48,6 +49,7 @@ _Mag het kind of de jongere zelf inloggen?_
 | F-06 | **Kind toevoegen aan vandaag** | Begeleider | M | Op Vandaag kan de begeleider een kind toevoegen aan de lijst van vandaag op de gekozen locatie. De keuzelijst bevat **alle kinderen van de hele organisatie** (alle locaties), met zoeken op naam van kind of ouder en een filter per locatie. Kinderen die vandaag al ergens op de lijst staan, zijn niet te kiezen. Bij toevoegen kiest de begeleider de soort opvang, de reden (extra opvang, ruil van dag, noodopvang) en de tijd. Medische punten van het kind worden direct getoond. Het kind staat daarna als *extra* op de lijst, met de vaste locatie erbij als die anders is, en de ouder zit die dag in de groepschat van die locatie. In de demo sinds 17-10-2026. |
 | F-07 | **Beheer** | Manager, beheerder | M | Managers en beheerders hebben een onderdeel Beheer. **Locaties:** toevoegen (naam, adres), uitschrijven en weer actief maken. Uitschrijven kan pas als er geen ingeschreven kinderen meer op de locatie staan. **Medewerkers:** toevoegen met naam, e-mail, rol (begeleider, manager of beheerder) en locaties; de medewerker krijgt een uitnodiging per e-mail. Rol en locaties zijn later te wijzigen; uitschrijven sluit het account af. Je eigen rol kun je niet wijzigen en jezelf niet uitschrijven. **Ouders en kinderen:** een kind inschrijven met vaste locatie, en een nieuwe ouder uitnodigen of een bestaande ouder koppelen (bij broers en zussen). Per kind de vaste locatie wijzigen, ouders koppelen en ontkoppelen, het account van een ouder afsluiten of heropenen, en het kind uitschrijven. **Logboek:** elke wijziging wordt vastgelegd met naam en tijd. In de demo sinds 17-10-2026. |
 | F-08 | **Contactgegevens van ouders** | Ouder, begeleider | M | Van elke ouder zijn een telefoonnummer en een e-mailadres bekend. De ouder ziet die in Profiel en kan ze zelf wijzigen. De begeleider ziet ze bij het kind (Kinderen › kind › Ouder en toestemming), per gekoppelde ouder, met bellen en mailen met één tik. Managers en beheerders vullen ze in bij het inschrijven of uitnodigen van een ouder. In de demo sinds 17-10-2026. |
+| F-09 | **Overzicht voor de beheerder** | Beheerder | M | De beheerder logt in zonder een locatie te kiezen en ziet de tabs Overzicht, Kinderen, Administratie, Beheer en Profiel. **Overzicht:** totalen voor de hele organisatie (kinderen aanwezig, nog verwacht, te controleren, acties open bij ouders), en per locatie een kaart met: de kinderen van vandaag (aanwezig, verwacht, afgemeld, extra), wat openstaat (te controleren, wacht op ouder, te laat, verzoeken van ouders, ongelezen berichten) en de gekoppelde medewerkers. Vanuit een kaart ga je direct naar de kinderen of de administratie van die locatie, of naar de locatie in Beheer. **Kinderen en Administratie** tonen alle locaties, met een filter per locatie. Bij een nieuwe actie kiest de beheerder eerst de locatie. In de demo sinds 17-10-2026. |
 
 _Mogelijke onderwerpen, om aan te vullen of te schrappen: berichten tussen ouder en begeleider, planning (logeren, dagopvang, vakantie- en zaterdagopvang), aan- en afmelden, foto's, doelen en voortgang, documenten, nieuws van Uniek, meldingen._
 

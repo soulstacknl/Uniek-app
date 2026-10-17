@@ -18,6 +18,7 @@
 | 17-10-2026 | Bij administratieacties kunnen documenten worden meegestuurd, door Uniek en door de ouder. Akkoord geven gaat met een vinkje (geen getypte naam); de app legt vast wie en wanneer. |
 | 17-10-2026 | Begeleiders hebben een persoonlijke inlog en kiezen daarna een locatie. Chats met ouders zijn teamgesprekken per locatie: alle begeleiders van die locatie zien alle berichten, met de naam van de afzender. |
 | 17-10-2026 | Binnen Uniek zijn er drie rollen: begeleider, manager en beheerder. Managers en beheerders beheren locaties, medewerkers, ouders en kinderen, en de koppelingen daartussen (F-07). |
+| 17-10-2026 | De beheerder is locatie-onafhankelijk: geen locatiekeuze, wel een overzicht van alle locaties, medewerkers en kinderen, met per locatie wat er openstaat (F-09). De manager werkt per locatie. |
 | 17-10-2026 | Geen aparte verslagen: hoe de dag ging, deelt de begeleider via de 1-op-1-chat. De ouder heeft de tabs Vandaag, Planning, Administratie, Berichten en Profiel. |
 
 ## Open vragen
@@ -42,6 +43,7 @@
 - Akkoord met een vinkje: is dat juridisch voldoende voor bijvoorbeeld een zorgovereenkomst, of is een digitale handtekening nodig?
 - Teamgesprek: moet een begeleider een gesprek kunnen 'oppakken' of markeren als afgehandeld, zodat collega's weten dat iemand al reageert?
 - Teamgesprek: zijn berichten van ouders 'gelezen' als één begeleider ze heeft gelezen, of houdt elke begeleider een eigen leesstand bij?
-- Beheer: wat is het verschil tussen manager en beheerder? Bijvoorbeeld: een manager beheert alleen de eigen locaties, een beheerder alles. Of mag alleen de beheerder rollen toekennen?
+- Beheer: mag een manager alleen de eigen locaties beheren (medewerkers en kinderen daarvan), en mag alleen de beheerder rollen toekennen en locaties toevoegen?
+- Beheerder: mag de beheerder ook de chats met ouders en de groepschats van alle locaties lezen? (In de demo nu niet: de beheerder heeft geen tab Berichten.)
 - Beheer: zien managers en beheerders de chats en medische gegevens van alle locaties, of alleen de locaties waaraan ze gekoppeld zijn?
 - Ouder met meerdere kinderen: hoe kiest de ouder in de app tussen de kinderen? (In de demo kan een ouder al aan meerdere kinderen gekoppeld worden, maar de ouderapp toont nog alleen Liam.)
