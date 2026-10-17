@@ -59,7 +59,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* Tabbalk */
 .tabbar{flex:none;display:flex;justify-content:space-around;padding:8px 6px 14px;background:var(--surface);border-top:1px solid var(--line)}
-.tab{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;padding:4px 0;border:0;background:none;color:var(--ink-2);font-size:11px;font-weight:600;cursor:pointer}
+.tab{position:relative;flex:1;min-width:0;letter-spacing:-.01em;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px;padding:4px 0;border:0;background:none;color:var(--ink-2);font-size:11px;font-weight:600;cursor:pointer}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--brand)}
 .tab[aria-current="page"] .tab-ico{background:var(--brand-tint)}
@@ -260,7 +260,7 @@ label.btn{position:relative}
       <li>Ouder: meld Liam af of vraag extra opvang aan. De begeleider ziet het verzoek op <b>Vandaag</b>.</li>
       <li>Begeleider: open <b>Groep vandaag</b> en deel een foto of tekst. Alle ouders van kinderen die er vandaag zijn, zien het, alleen vandaag. Ouders kunnen niet reageren. Bij Daan staat geen toestemming voor foto's; dat ziet de begeleider bij het delen.</li>
       <li>Stuur ook 1-op-1-berichten heen en weer.</li>
-      <li><b>Acties:</b> de ouder vult bij Acties de medicatie, de vakantieplanning of de indicatie in. De begeleider ziet het bij Acties onder <b>Te controleren</b>, zet het op Verwerkt of stuurt het terug. Met <b>Nieuwe actie</b> zet de begeleider zelf iets klaar voor één of alle ouders.</li>
+      <li><b>Administratie:</b> de ouder vult bij Administratie de medicatie, de vakantieplanning of de indicatie in. De begeleider ziet het bij Administratie onder <b>Te controleren</b>, zet het op Verwerkt of stuurt het terug. Met <b>Nieuwe actie</b> (bij Administratie) zet de begeleider zelf iets klaar voor één of alle ouders.</li>
     </ol>
   </details>
   <div class="switch" role="group" aria-label="Kies telefoon">
@@ -426,8 +426,8 @@ const PHOTO_LABEL = {bos:'Hutten bouwen in het bos', knutsel:'Knutselen aan tafe
 const requests = loc => S.plan.filter(p => p.status === 'aangevraagd' && kid(p.kid).loc === loc);
 
 const TABS = {
-  ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['acties','Acties','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']],
-  beg:[['vandaag','Vandaag','home'],['kinderen','Kinderen','users'],['acties','Acties','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']]
+  ouder:[['vandaag','Vandaag','home'],['planning','Planning','cal'],['acties','Administratie','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']],
+  beg:[['vandaag','Vandaag','home'],['kinderen','Kinderen','users'],['acties','Administratie','task'],['berichten','Berichten','chat'],['profiel','Profiel','user']]
 };
 function tabbar(r){
   const badge = t => {
@@ -675,7 +675,7 @@ const SCREENS = {
       <div class="eyebrow">Goed om te weten</div>
       <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6"><ul class="notes">${k.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
       ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
-      ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Acties</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
+      ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Administratie</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
       <div class="eyebrow">Ouder en toestemming</div>
       <div class="card"><dl class="kv"><dt>Naam</dt><dd>${k.parent}</dd><dt>Telefoon</dt><dd>06-12345678</dd><dt>Foto's in groepschat</dt><dd>${k.photoOk ? '<span class="chip st-aangekomen">Toestemming</span>' : '<span class="chip st-afgemeld">Geen toestemming</span>'}</dd></dl></div>
     </div>`;
@@ -860,8 +860,8 @@ O.acties = function(){
   const open = ouderOpen();
   const done = S.actions.filter(a => a.kid === 'liam' && a.status !== 'open').sort((a,b) => b.doneOff - a.doneOff);
   const row = a => { const b = batchOf(a); return `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(b.type, a.status === 'open' ? 'c1' : 'c5')}<div class="grow"><div class="t">${esc(b.title)}</div><div class="s">${a.status === 'open' ? (a.remark ? `<b style="color:var(--pink-strong)">Aanpassen nodig</b> · ` : '') + dueText(b.due) : `${ACT_ST[a.status].ouder} ${fmtDay(a.doneOff).toLowerCase()}`}</div></div>${actChip(a,'ouder')}</button>`; };
-  return `<div class="screen">${oHello('Liam', 'Acties')}
-    <p class="muted small" style="margin:-6px 2px 14px">Hier zet Uniek dingen klaar die we van je nodig hebben. Vul ze in vóór de datum die erbij staat.</p>
+  return `<div class="screen">${oHello('Liam', 'Administratie')}
+    <p class="muted small" style="margin:-6px 2px 14px">Hier zet Uniek administratie klaar die we van je nodig hebben, zoals de vakantieplanning of medicatie. Vul ze in vóór de datum die erbij staat.</p>
     <div class="eyebrow">Te doen</div>
     ${open.length ? `<div class="list">${open.map(row).join('')}</div>` : `<div class="card empty">${ic('check').replace('<svg','<svg style="width:28px;height:28px;color:var(--mint);display:block;margin:0 auto 6px"')}Alles is gedaan. Fijn!</div>`}
     ${done.length ? `<div class="eyebrow">Gedaan</div><div class="list">${done.map(row).join('')}</div>` : ''}
@@ -872,7 +872,7 @@ B.acties = function(){
   const loc = V.beg.loc, chk = toCheck(loc);
   const batches = S.batches.filter(b => b.loc === loc).sort((a,b) => a.due - b.due);
   return `<div class="screen">
-    <div class="hello"><small>Locatie ${LOCS[loc].name}</small><h2>Acties</h2></div>
+    <div class="hello"><small>Locatie ${LOCS[loc].name}</small><h2>Administratie</h2></div>
     <button class="btn block" type="button" data-act="open" data-v="nieuweactie" style="margin-bottom:6px">${ic('plus')} Nieuwe actie voor ouders</button>
     ${chk.length ? `<div class="eyebrow">Te controleren</div><div class="list">${chk.map(a => { const b = batchOf(a), k = kid(a.kid); return `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}"><div class="avatar ${k.c}">${initials(k)}</div><div class="grow"><div class="t">${esc(b.title)}</div><div class="s">${k.first} · ingevuld door ${a.by} ${fmtDay(a.doneOff).toLowerCase()}</div></div>${actChip(a,'beg')}</button>`; }).join('')}</div>` : ''}
     <div class="eyebrow">Klaargezet</div>
@@ -938,7 +938,7 @@ Object.assign(SCREENS, {
       <label class="field"><span>Uiterlijk invullen op</span><input class="input" type="date" name="due" min="${offToIso(1)}" value="${f.due || offToIso(14)}"></label>
       ${f.err ? `<div class="err">${f.err}</div>` : ''}
       <button class="btn block" type="submit">Klaarzetten voor ouders</button>
-      <p class="small muted">Ouders krijgen een melding en zien de actie in hun tab Acties.</p>` : ''}
+      <p class="small muted">Ouders krijgen een melding en zien de actie onder Administratie.</p>` : ''}
     </form></div>`;
   }
 });
