@@ -113,7 +113,8 @@ button.item:hover{background:var(--ground)}
 .monthnav .iconbtn:disabled{opacity:.3;cursor:default}
 .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
 .mgrid b{font-size:11px;font-weight:700;color:var(--ink-2);padding-bottom:2px}
-.mgrid span.d{display:grid;place-items:center;aspect-ratio:1;border-radius:10px;font-size:14px;font-weight:600}
+.mgrid span.d{display:grid;place-items:center;height:38px;border-radius:10px;font-size:14px;font-weight:600}
+.app.webapp .mcal{max-width:520px}
 .mgrid span.d.past{opacity:.4}
 .mgrid span.d.today{box-shadow:inset 0 0 0 2px var(--brand)}
 .mgrid span.d[class*="st-"]{font-weight:800}
@@ -175,6 +176,8 @@ textarea.input{min-height:110px;resize:vertical}
 .mark{width:34px;height:34px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none}
 .mark img{height:26px;width:auto}
 .bar .logo{height:40px;width:auto;flex:none;background:#fff;border-radius:10px;padding:4px 8px;box-sizing:content-box}
+.login{min-height:0}
+.login > *{flex-shrink:0}
 .login h2{margin:0;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
 .login p.lead{margin:8px 0 24px;color:var(--ink-2)}
 .who{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.7);border:1px solid var(--line);margin-bottom:18px;font-size:14px}
@@ -857,30 +860,16 @@ const O = {
     </div>`;
   },
   planning(){
-    const base = dayDate(0), mi = Math.min(V.ouder.month || 0, maxMonth());
-    const m0 = new Date(base.getFullYear(), base.getMonth() + mi, 1, 12);
-    const offOf = d => Math.round((d - base) / 864e5);
-    const nDays = new Date(m0.getFullYear(), m0.getMonth() + 1, 0).getDate(), first = offOf(m0), last = first + nDays - 1;
-    const mine = S.plan.filter(p => p.kid === 'liam' && p.off >= first && p.off <= last);
-    const byOff = {}; mine.forEach(p => { byOff[p.off] = p; });
-    const items = mine.filter(p => p.off >= 0).sort((a, b) => a.off - b.off);
-    const lead = (m0.getDay() + 6) % 7;
-    const cells = [...Array(lead).fill('<span></span>'), ...[...Array(nDays).keys()].map(i => { const off = first + i, p = byOff[off];
-      return `<span class="d${off < 0 ? ' past' : ''}${off === 0 ? ' today' : ''}${p ? ' st-' + p.status : ''}"${p ? ` title="${p.type} · ${STATUS_LABEL[p.status]}"` : ''}>${i + 1}</span>`; })].join('');
-    const label = m0.toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
+    const m = monthPlan('ouder', 'liam');
     return `<div class="screen">
       ${oHello('Liam', 'Planning')}
       <button class="btn block" type="button" data-act="open" data-v="aanvragen" style="margin-bottom:16px">${ic('plus')} Opvang aanvragen</button>
-      <div class="card mcal" data-swipe="month">
-        <div class="monthnav"><button class="iconbtn" type="button" data-act="month" data-v="-1" aria-label="Vorige maand" ${mi === 0 ? 'disabled' : ''}>${ic('back')}</button><b>${label}</b><button class="iconbtn" type="button" data-act="month" data-v="1" aria-label="Volgende maand" ${mi >= maxMonth() ? 'disabled' : ''}>${ic('back').replace('<svg', '<svg style="transform:scaleX(-1)"')}</button></div>
-        <div class="mgrid">${['ma','di','wo','do','vr','za','zo'].map(x => `<b>${x}</b>`).join('')}${cells}</div>
-        <div class="mlegend"><span class="st-gepland">Gepland</span><span class="st-aangevraagd">Aangevraagd</span><span class="st-afgemeld">Afgemeld</span></div>
-      </div>
-      ${items.length ? `<div class="list">${items.map(p => `<div class="item" style="cursor:default;align-items:flex-start">
-        <div class="avatar c5" style="flex-direction:column;gap:0;line-height:1"><span style="font-size:15px">${dayDate(p.off).getDate()}</span><span style="font-size:10px;font-weight:700">${dayDate(p.off).toLocaleDateString('nl-NL',{weekday:'short'}).replace('.','')}</span></div>
+      ${m.cal}
+      ${m.items.length ? `<div class="list">${m.items.map(p => `<div class="item" style="cursor:default;align-items:flex-start">
+        ${m.dateBox(p)}
         <div class="grow"><div class="t">${p.type}</div><div class="s">${UN(unitOf(p))} · ${fmtDay(p.off)} · ${p.time}</div>${p.note ? `<div class="s">“${esc(p.note)}”</div>` : ''}
         ${(p.status === 'gepland' || (p.status === 'verwacht')) ? `<button class="linkbtn small" type="button" data-act="open" data-v="afmelden" data-id="${p.id}" style="min-height:36px">Afmelden</button>` : ''}</div>
-        ${chip(p.status)}</div>`).join('')}</div>` : `<div class="card empty">Geen opvang gepland in ${m0.toLocaleDateString('nl-NL', {month:'long'})}.</div>`}
+        ${chip(p.status)}</div>`).join('')}</div>` : m.empty}
     </div>`;
   },
   berichten(){
@@ -1062,14 +1051,14 @@ const SCREENS = {
   },
   kind(r, id){
     const k = kid(id), t = todayOf(id);
-    const plan = S.plan.filter(p => p.kid === id && p.off > 0 && p.off <= 28).sort((a,b) => a.off - b.off);
     return header(k.name) + `<div class="screen">
       <div class="card"><div class="row"><div class="avatar lg ${k.c}">${initials(k)}</div><div class="grow"><h3 style="font-size:19px">${k.first}</h3><div class="small muted" style="margin-bottom:6px">${k.age} jaar · bij Uniek sinds ${k.since}</div><div class="small" style="margin-bottom:6px"><b>${LOCS[k.loc] ? LOCS[k.loc].name : '—'}</b> · ${k.units.map(x => UN(x)).join(', ')}</div>${t && !isBeheerder() ? chip(t.status) : ''}</div></div>
         ${isBeheerder() ? '' : `<button class="btn sm block" style="margin-top:14px" type="button" data-act="open" data-v="chat" data-id="${threadKey(id)}">${ic('chat')} Bericht aan ${k.parent.split(' ')[0]}</button>`}</div>
       <div class="eyebrow" style="display:flex;align-items:center;gap:8px">Goed om te weten${canEditNotes() ? `<button class="btn ghost sm" type="button" data-act="open" data-v="notities" data-id="${id}" style="margin-left:auto;min-height:34px;text-transform:none;letter-spacing:0">${ic('pen')} Bewerken</button>` : ''}</div>
       <div class="card" style="background:var(--sun-tint);border-color:#F2DFA6">${k.notes.length ? `<ul class="notes">${k.notes.map(n => n.med ? `<li class="med">${ic('pill')}<span><b>Medisch:</b> ${esc(n.text)}</span></li>` : `<li>${esc(n)}</li>`).join('')}</ul>` : '<p class="small muted" style="margin:0">Nog niets ingevuld.</p>'}
         ${k.notesBy ? `<p class="small muted" style="margin:10px 0 0">Bijgewerkt door ${esc(k.notesBy)}, ${k.notesAt}</p>` : ''}</div>
-      ${plan.length ? `<div class="eyebrow">Planning</div><div class="list">${plan.map(p => `<div class="item" style="cursor:default"><div class="grow"><div class="t">${p.type}</div><div class="s">${fmtDay(p.off)} · ${p.time}</div></div>${chip(p.status)}</div>`).join('')}</div>` : ''}
+      <div class="eyebrow">Planning</div>
+      ${(() => { const m = monthPlan(r, id); return m.cal + (m.items.length ? `<div class="list">${m.items.map(p => `<div class="item" style="cursor:default">${m.dateBox(p)}<div class="grow"><div class="t">${p.type}</div><div class="s">${UN(unitOf(p))} · ${fmtDay(p.off)} · ${p.time}${p.reason ? ' · ' + esc(p.reason) : ''}</div></div>${chip(p.status)}</div>`).join('')}</div>` : m.empty); })()}
       ${(() => { const as = S.actions.filter(a => a.kid === id); return as.length ? `<div class="eyebrow">Administratie</div><div class="list">${as.map(a => `<button class="item" type="button" data-act="open" data-v="actie" data-id="${a.id}">${typeIco(batchOf(a).type)}<div class="grow"><div class="t">${esc(batchOf(a).title)}</div><div class="s">${dueText(batchOf(a).due)}</div></div>${actChip(a,'beg')}</button>`).join('')}</div>` : ''; })()}
       <div class="eyebrow">Ouder en toestemming</div>
       ${(k.parents || []).map(pid => S.parents[pid]).filter(pp => pp && pp.active !== false).map(pp => `<div class="card" style="padding:14px 16px"><div class="row" style="margin-bottom:8px"><div class="avatar c1" style="width:36px;height:36px;border-radius:12px">${pp.name[0]}</div><div class="grow" style="font-weight:800">${esc(pp.name)}</div>${isBeheerder() ? '' : `<button class="btn ghost sm" type="button" data-act="open" data-v="chat" data-id="${threadKey(id)}">${ic('chat')} Bericht</button>`}</div>${contact(pp)}</div>`).join('') || '<div class="remark">Er is geen ouder gekoppeld.</div>'}
@@ -1109,7 +1098,7 @@ function toast(r, title, text){
 }
 
 /* ---------- Acties ---------- */
-const go = (r, v, id) => { V[r].form = {}; V[r].tray = false; V[r].stack.push({v, id}); render(r); };
+const go = (r, v, id) => { V[r].form = {}; V[r].tray = false; if (v === 'kind') V[r].month = 0; V[r].stack.push({v, id}); render(r); };
 const back = r => { V[r].form = {}; V[r].stack.pop(); render(r); };
 
 const ACT = {
@@ -1129,7 +1118,7 @@ const ACT = {
     toast('ouder', 'Toestemming aangepast', k.photoOk ? 'Foto\'s van Liam mogen in de groepschat.' : 'Er komen geen herkenbare foto\'s van Liam meer in de groepschat.');
     toast('beg', 'Toestemming gewijzigd', `Eva heeft toestemming voor foto's van Liam in de groepschat ${k.photoOk ? 'gegeven' : 'ingetrokken'}.`); },
   tray(r){ V[r].tray = !V[r].tray; render(r); },
-  month(r, d){ V[r].month = Math.max(0, Math.min(maxMonth(), (V[r].month || 0) + (+d.v))); render(r); },
+  month(r, d){ V[r].month = Math.max(0, Math.min(maxMonth(), (V[r].month || 0) + (+d.v))); rerender(r); },
   photo(r, d){ postGroup(r, {photo:d.v}); },
   checkin(r, d){ const p = S.plan.find(x => x.id == d.id); p.status = 'aangekomen'; p.at = now(); const k = kid(p.kid);
     rerender('beg'); if (p.kid === 'liam') { rerender('ouder'); toast('ouder', 'Liam is aangekomen', `Om ${p.at} bij ${LN()}.`); } },
@@ -1925,6 +1914,27 @@ Object.assign(FORM, {
 
 /* Formulieren zonder submit-event: werkt ook in previews die formulieren blokkeren. */
 function runForm(f){ const r = f.closest('.phone').dataset.role; FORM[f.dataset.form](r, new FormData(f), f.dataset.id); }
+/* Maandkalender met de planning van één kind (ouder: Planning, medewerker: kinddossier) */
+function monthPlan(r, kidId){
+  const base = dayDate(0), mi = Math.min(V[r].month || 0, maxMonth());
+  const m0 = new Date(base.getFullYear(), base.getMonth() + mi, 1, 12);
+  const offOf = d => Math.round((d - base) / 864e5);
+  const nDays = new Date(m0.getFullYear(), m0.getMonth() + 1, 0).getDate(), first = offOf(m0), last = first + nDays - 1;
+  const mine = S.plan.filter(p => p.kid === kidId && p.off >= first && p.off <= last);
+  const byOff = {}; mine.forEach(p => { byOff[p.off] = p; });
+  const items = mine.filter(p => p.off >= 0).sort((a, b) => a.off - b.off);
+  const lead = (m0.getDay() + 6) % 7;
+  const cells = [...Array(lead).fill('<span></span>'), ...[...Array(nDays).keys()].map(i => { const off = first + i, p = byOff[off];
+    return `<span class="d${off < 0 ? ' past' : ''}${off === 0 ? ' today' : ''}${p ? ' st-' + p.status : ''}"${p ? ` title="${p.type} · ${STATUS_LABEL[p.status]}"` : ''}>${i + 1}</span>`; })].join('');
+  const cal = `<div class="card mcal" data-swipe="month">
+      <div class="monthnav"><button class="iconbtn" type="button" data-act="month" data-v="-1" aria-label="Vorige maand" ${mi === 0 ? 'disabled' : ''}>${ic('back')}</button><b>${m0.toLocaleDateString('nl-NL', {month:'long', year:'numeric'})}</b><button class="iconbtn" type="button" data-act="month" data-v="1" aria-label="Volgende maand" ${mi >= maxMonth() ? 'disabled' : ''}>${ic('back').replace('<svg', '<svg style="transform:scaleX(-1)"')}</button></div>
+      <div class="mgrid">${['ma','di','wo','do','vr','za','zo'].map(x => `<b>${x}</b>`).join('')}${cells}</div>
+      <div class="mlegend"><span class="st-gepland">Gepland</span><span class="st-aangevraagd">Aangevraagd</span><span class="st-afgemeld">Afgemeld</span></div>
+    </div>`;
+  const dateBox = p => `<div class="avatar c5" style="flex-direction:column;gap:0;line-height:1"><span style="font-size:15px">${dayDate(p.off).getDate()}</span><span style="font-size:10px;font-weight:700">${dayDate(p.off).toLocaleDateString('nl-NL',{weekday:'short'}).replace('.','')}</span></div>`;
+  const empty = `<div class="card empty">Geen opvang gepland in ${m0.toLocaleDateString('nl-NL', {month:'long'})}.</div>`;
+  return {cal, items, dateBox, empty};
+}
 /* Vegen over de maandkalender: naar vorige of volgende maand */
 let swipeX = null;
 document.addEventListener('pointerdown', e => { swipeX = e.target.closest('[data-swipe="month"]') ? e.clientX : null; });
