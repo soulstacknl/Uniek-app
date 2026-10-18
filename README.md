@@ -23,7 +23,7 @@ Eén los HTML-bestand, zonder backend: open `demo/Uniek-app-demo.html` in een br
 
 **Locatie en onderdeel:** elke locatie heeft drie onderdelen: Ambulant, BSO en Dag/Weekend opvang. Een begeleider of manager kiest na het inloggen eerst de locatie en daarna het onderdeel. Vandaag, Kinderen, Berichten, de groepschat en Administratie gaan dan over die combinatie. Wisselen kan via de knop bovenaan Vandaag. **Opnieuw beginnen** zet alles terug.
 
-**Demo-dag kiezen:** op het inlogscherm kies je een dag (vandaag en de 7 dagen daarna). Zo zie je hoe een zaterdag werkt (zaterdagopvang in De Schuur, logeren) of een doordeweekse dag (naschoolse begeleiding, dagbesteding in Oersterk). Op zondag is er alleen logeeropvang. De demo begint dan opnieuw op die dag; de gekozen dag staat bovenaan de pagina. Doordeweeks is er BSO en Ambulant op alle locaties; Dag/Weekend opvang verschilt per locatie.
+**Demo-dag kiezen:** de demo start standaard op **zaterdag 24 oktober 2026**. Op het inlogscherm kies je een andere dag (vandaag tot en met een week vooruit). De planning loopt tot en met 31 december 2026; bij de ouder blader je per maand door november en december. Zo zie je hoe een zaterdag werkt (zaterdagopvang in De Schuur, logeren) of een doordeweekse dag (naschoolse begeleiding, dagbesteding in Oersterk). Op zondag is er alleen logeeropvang. De demo begint dan opnieuw op die dag; de gekozen dag staat bovenaan de pagina. Doordeweeks is er BSO en Ambulant op alle locaties; Dag/Weekend opvang verschilt per locatie.
 
 ### Inloggen in de demo
 
