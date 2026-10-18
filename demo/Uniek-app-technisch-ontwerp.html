@@ -154,7 +154,6 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-
   </tbody>
 </table>
 </div>
-<div class="note"><p><strong>Aandachtspunt.</strong> Supabase is geen Europees bedrijf. De <a href="https://supabase.com/legal/dpa">verwerkersovereenkomst</a> wordt gesloten met Supabase Pte. Ltd., en de gegevens staan in een datacenter van Amazon in Frankfurt. Het gaat om zorggegevens van kinderen. Of dit voor Uniek volstaat, is een vraag voor een privacydeskundige. Zie hoofdstuk 8.</p></div>
 
 <h2 id="h4"><span class="num">4</span>Gegevensmodel</h2>
 <p>Bijna alles hangt aan twee gegevens: het <strong>kind</strong> (met vaste locatie en onderdelen) en de combinatie van <strong>locatie en onderdeel</strong>. Een medewerker krijgt toegang via de locaties waaraan die gekoppeld is; een ouder via de koppeling met het kind. Namen in de database zijn Engels; de vertaaltabel staat in de README van het project.</p>
@@ -246,7 +245,7 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-
   </tbody>
 </table>
 </div>
-<p>Niet in dit overzicht: de kosten van ontwikkeling en beheer, en de toets door een privacydeskundige.</p>
+<p>Niet in dit overzicht: de kosten van ontwikkeling en beheer.</p>
 
 <h2 id="h8"><span class="num">8</span>Uitgangspunten en open punten</h2>
 <h3><span class="num">8.1</span>Uitgangspunten</h3>
@@ -257,12 +256,11 @@ footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-
   <li>Er is in de eerste versie geen koppeling met een cliëntsysteem of ECD. Kinderen, ouders en planning worden in de app ingevoerd.</li>
 </ol>
 <h3><span class="num">8.2</span>Open punten</h3>
-<p>De eerste twee punten bepalen of de gekozen diensten en de opzet blijven staan.</p>
+<p>Het eerste punt bepaalt de omvang van de bouw.</p>
 <div class="tablewrap">
 <table>
   <thead><tr><th>Open punt</th><th>Wat nodig is</th></tr></thead>
   <tbody>
-    <tr><td class="key">Supabase als verwerker</td><td>Toets door een privacydeskundige of een niet-Europees bedrijf met opslag in Frankfurt volstaat voor zorggegevens van kinderen. Het alternatief is Supabase zelf hosten bij een Europese partij.</td></tr>
     <tr><td class="key">Koppeling met cliëntsysteem of ECD</td><td>Vaststellen of planning, kinderen en ouders uit een bestaand systeem moeten komen, en zo ja welk. Dat bepaalt de omvang van de bouw (NF-15).</td></tr>
     <tr><td class="key">Bewaartermijn</td><td>Vaststellen hoe lang gegevens na het einde van de begeleiding bewaard blijven. Daarna komt een opruimtaak zoals bij de groepschat (NF-07).</td></tr>
     <tr><td class="key">Tweede inlogstap</td><td>Vaststellen of tweestapsverificatie voor medewerkers vanaf het begin verplicht is (NF-06).</td></tr>
